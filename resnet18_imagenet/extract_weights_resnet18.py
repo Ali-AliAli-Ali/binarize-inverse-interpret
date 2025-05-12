@@ -6,57 +6,57 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
-from torchvision import datasets, transforms, utils
-from pytorchcv.model_provider import get_model
+from torchvision import models, datasets, transforms, utils
 
 
 def fuse_avgpool_linear(
     model,
-    input_size=(1, 3, 32, 32),
-    trunk_attr='features',
-    pool_idx=-1,
-    classifier_attr='output',
+    input_size=(1, 3, 224, 224),  # ImageNet default input size
+    classifier_attr='fc',         # torchvision uses 'fc' for the final Linear
+    device='cpu'
 ):
     """
     Fuse an AvgPool2d followed by a Linear into one Linear layer.
 
     Args:
-        model:           PyTorch model instance (ResNet20 CIFAR10 from pytorchcv).
-        input_size:      Dummy input shape to infer adaptive pooling output.
-        trunk_attr:      Attribute name of the feature extractor (nn.Sequential).
-        pool_idx:        Index of the AvgPool2d layer in the trunk sequence.
-        classifier_attr: Attribute name of the final Linear classifier.
+        model:           PyTorch model instance (ResNet18 ImageNet from torchvision.models).
+        input_size:      Input shape (default ImageNet size: 224x224).
+        classifier_attr: Attribute name of final Linear ('fc' in torchvision).
+        device:          Device to perform computations on ('cuda' if is available else 'cpu')
 
     Returns:
         W_fused: (C_out, C_in * H * W) fused weight tensor.
         b_fused: (C_out,) fused bias tensor.
     """
-    # Extract feature trunk and classifier
-    trunk = getattr(model, trunk_attr)
+    # Extract classifier (fc layer)
     classifier = getattr(model, classifier_attr)
+    avgpool = model.avgpool
 
-    # Locate the pooling layer
-    avgpool = trunk[pool_idx]
-
-    # Determine the divisor H*W for pooling
+    # Determine divisor H*W for pooling
     if isinstance(avgpool, torch.nn.AdaptiveAvgPool2d):
+        # Forward pass through the model up to avgpool to get spatial dims
         model.eval()
         with torch.no_grad():
-            dummy = torch.zeros(input_size)
-            feats = trunk(dummy)
-            H, W = feats.shape[-2:]
+            dummy = torch.zeros(input_size).to(device)
+            feats = model.conv1(dummy)
+            feats = model.bn1(feats)
+            feats = model.relu(feats)
+            feats = model.maxpool(feats)
+            
+            feats = model.layer1(feats)
+            feats = model.layer2(feats)
+            feats = model.layer3(feats)
+            feats = model.layer4(feats)  # Get features right before avgpool
+            
+            feats = avgpool(feats)
+            H, W = feats.shape[-2:] if feats.dim() == 4 else (1, 1)
+        
         divisor = H * W
-    elif isinstance(avgpool, torch.nn.AvgPool2d):
-        k = avgpool.kernel_size
-        if isinstance(k, tuple):
-            divisor = k[0] * k[1]
-        else:
-            divisor = k * k
     else:
         raise ValueError(f"Unsupported pooling layer: {avgpool}")
 
     # Get original Linear parameters
-    W = classifier.weight.data       # shape (num_classes, channels)
+    W = classifier.weight.data       # shape (1000, 512) for ResNet18
     b = classifier.bias.data if classifier.bias is not None else torch.zeros(W.shape[0])
 
     # Build fused weight: repeat each channel weight over spatial positions and normalize
@@ -68,15 +68,14 @@ def fuse_avgpool_linear(
 def main():
     # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print("Device:", device)
 
-    # 1. Load ResNet20 pretrained on CIFAR-100 from torchcv
-    model = get_model("resnet20_cifar100", pretrained=True)
-
+    # 1. Load ResNet18 pretrained on ImageNet from torchvision.models
+    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
     model = model.to(device).eval()
 
     # 2. Fuse linear layers Save to CSV
     W_fused, b_fused = fuse_avgpool_linear(model)
-
 
     # Convert to homogeneous form by appending bias as an extra column
     # Resulting shape: (num_classes, channels*H*W + 1)
