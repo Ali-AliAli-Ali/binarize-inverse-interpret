@@ -7,30 +7,35 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader, Subset
-from torchvision import datasets, transforms, utils
-from pytorchcv.model_provider import get_model
+from torchvision import models, datasets, transforms, utils
 
 
-def replace_relu_with_softplus(module: nn.Module, beta: float = 1.0, threshold: float = 20.0):
+def replace_relu_with_softplus(model: nn.Module, beta: float = 1.0, threshold: float = 20.0):
     """
     Recursively replace all nn.ReLU in `module` (and its children)
-    with nn.Softplus(beta=beta, threshold=threshold).
+    with `nn.Softplus(beta=beta, threshold=threshold)`.
     """
-    for name, child in module.named_children():
+    for name, child in model.named_children():
         if isinstance(child, nn.ReLU):
             # replace in-place
-            setattr(module, name, nn.Softplus(beta=beta, threshold=threshold))
+            setattr(model, name, nn.Softplus(beta=beta, threshold=threshold))
         else:
             # recurse into child modules
             replace_relu_with_softplus(child, beta=beta, threshold=threshold)
 
 def tv_loss(f):
+    """
+    Calculate sum of neighbouring pixels absolute difference over height and width of picture (`L_1` gradient norm)
+    """
     # f: (B, C, H, W)
-    dh = f[:, :, 1:, :]   - f[:, :, :-1, :]   # shape (B,C,H-1,W)
-    dw = f[:, :, :, 1:]   - f[:, :, :, :-1]   # shape (B,C,H,W-1)
+    dh = f[:, :, 1:, :] - f[:, :, :-1, :]   # shape (B,C,H-1,W)
+    dw = f[:, :, :, 1:] - f[:, :, :, :-1]   # shape (B,C,H,W-1)
     return dh.abs().sum() + dw.abs().sum()
 
 def tv_feature_loss(f):
+    """
+    Calculate sum of neighbouring pixels absolute difference over height and width of picture (`L_1` gradient norm)
+    """
     # f: (B, C, H, W)
     # whiten
     f = (f - f.mean(dim=[0,2,3], keepdim=True)) / (f.std(dim=[0,2,3], keepdim=True) + 1e-5)
@@ -61,32 +66,33 @@ def normalize_batch_to_unit_range(batch: torch.Tensor) -> torch.Tensor:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('class_id', help='cifar100 fine class id', type=int, default=0)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('class_id', help='ImageNet class id', type=int, default=0)
+    # args = parser.parse_args()
 
     # Device configuration
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     # Hyperparameters
-    class_id = args.class_id
-    batch_size = 484
-    num_steps = 1000
-    sigma = 1e-2
-    lr = 0.02
+    class_id = 0 # args.class_id
+    batch_size = 256
+    num_steps = 1000  # 2000-5000
+    sigma = 1e-2      # 1e-3
+    lr = 0.1
     beta = 10.
-    l_tv = 1e-6
-    l_tv_f = 1e-7
+    l_tv = 1e-5
+    l_tv_f = 1e-6
     output_dir = 'output'
     os.makedirs(output_dir, exist_ok=True)
 
-    # 1. Load ResNet20 pretrained on CIFAR-100 from torchcv
-    model = get_model("resnet20_cifar100", pretrained=True)
+    # 1. Load ResNet18 pretrained on ImageNet from torchvision.models
+    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
     layers = {
-        'target': model,
-        'feature1': model.features.stage1,
-        'feature2': model.features.stage2,
-        'feature3': model.features.stage3,
+        'target': model,          # fc output
+        'layer1': model.layer1,   # activations after layer1
+        'layer2': model.layer2,   # activations after layer2
+        'layer3': model.layer3,   # activations after layer3
+        'layer4': model.layer4,   # activations after layer4
     }
 
     # before
@@ -110,26 +116,31 @@ def main():
             lambda module, inp, out, name=name: activation.__setitem__(name, out)
         )
 
-    # 2. Load CIFAR-100 dataset and DataLoader
-    transform = transforms.ToTensor()
-    cifar100 = datasets.CIFAR100(root='./data', train=True, download=True, transform=transform)
+    # 2. Load ImageNet dataset and DataLoader
+    transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+    ])
+    imagenet = datasets.ImageFolder(root='./imagenet', train=True, transform=transform)
+    # imagenet = datasets.ImageNet(root='./imagenet', train=True, transform=transform)
 
     # Filter dataset for chosen class_id
-    indices = [i for i, (_, y) in enumerate(cifar100) if y == class_id]
-    if len(indices) == 0:
-        raise ValueError(f"No images found for class_id={class_id}")
-    subset = Subset(cifar100, indices)
+    indices = [i for i, (_, y) in enumerate(imagenet) if y == class_id]
+    if not len(indices):
+        raise ValueError(f"No images found for class_id={class_id}!")
+    subset = Subset(imagenet, indices)
     loader = DataLoader(subset, batch_size=batch_size, shuffle=False)
 
     # 3. Take first batch from the dataset
     img_raw_batch, _ = next(iter(loader))
-    img_raw_batch = img_raw_batch.to(device)  # shape: [B, 3, 32, 32]
+    img_raw_batch = img_raw_batch.to(device)  # shape: [B, 3, 224, 224]
 
-    utils.save_image(img_raw_batch, f'{output_dir}/ortig_{class_id:04d}.png', nrow=int(sqrt(batch_size)))
+    utils.save_image(img_raw_batch, f'{output_dir}/orig_{class_id:04d}.png', nrow=int(sqrt(batch_size)))
 
-    # 4. Normalize using CIFAR-100 stats
-    mean = torch.tensor([0.5071, 0.4867, 0.4408], device=device).view(1, 3, 1, 1)
-    std = torch.tensor([0.2675, 0.2565, 0.2761], device=device).view(1, 3, 1, 1)
+    # 4. Normalize using ImageNet stats
+    mean = torch.tensor([0.485, 0.456, 0.406], device=device).view(1, 3, 1, 1)
+    std = torch.tensor([0.229, 0.224, 0.225], device=device).view(1, 3, 1, 1)
     img_norm = (img_raw_batch - mean) / std
 
     # 5. Compute and fix the target activation via hook
@@ -137,14 +148,14 @@ def main():
     #    _ = model(img_norm)
     #    target_act = activation['target'].detach()
     # 5b. Prepare constant target_act as one-hot true-label logits
-    num_classes = model.num_classes
+    num_classes = model.fc.out_features 
     target_act = torch.zeros(batch_size, num_classes, device=device)
     target_act[:, class_id] = 1.
 
     # 6. Invert the network for the whole batch via SGD + regularization + jitter
     #x0 = torch.randint_like(img_norm, 2).mul_(2.).sub_(1.)
     x0 = torch.randn_like(img_norm)
-    x = (sigma * x0).requires_grad_(True)
+    x = (sigma * x0).requires_grad_()
 
     optimizer = optim.Adam([x], lr=lr)
 
@@ -153,21 +164,24 @@ def main():
 
         # Forward through full model to populate hook
         _ = model(x)
-        f1 = activation['feature1']
-        f2 = activation['feature2']
-        f3 = activation['feature3']
+        f1 = activation['layer1']
+        f2 = activation['layer2']
+        f3 = activation['layer3']
+        f4 = activation['layer4']
         act = activation['target']
 
         # Compute losses
         loss = F.mse_loss(act, target_act)
-        total_loss = loss + l_tv * tv_loss(x) + l_tv_f * (tv_feature_loss(f1) + tv_feature_loss(f2) + tv_feature_loss(f3))
+        total_loss = loss + \
+            l_tv * tv_loss(x) + \
+            l_tv_f * (tv_feature_loss(f1) + tv_feature_loss(f2) + tv_feature_loss(f3) + tv_feature_loss(f4))
 
         # Backpropagation and update
         total_loss.backward()
         optimizer.step()
 
         if step % 50 == 0:
-            print(f"Step {step}/{num_steps}, Loss: {loss.item():.4f}")
+            print(f"Step {step}/{num_steps}, loss: {loss.item():.4f}")
             # 7. Denormalize and save reconstructed batch as a grid
             x_denorm = normalize_batch_to_unit_range(x)
             utils.save_image(x_denorm, f'{output_dir}/batch_iter_{step:04d}.png', nrow=int(sqrt(batch_size)))
