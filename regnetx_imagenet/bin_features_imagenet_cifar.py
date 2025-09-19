@@ -136,7 +136,7 @@ def validate(model: torch.nn.Module,
 
 def val_top1_top5(model: torch.nn.Module,
                   val_loader: DataLoader, 
-                  device: torch.device = "cpu"):
+                  device: torch.device = torch.device("cpu")):
     top1, top5 = validate(model, val_loader, device)
     print("Top-1 Accuracy:", top1)
     print("Top-5 Accuracy:", top5)
@@ -171,9 +171,9 @@ def fuse_avgpool_linear(model):
 def finetuning(model: torch.nn.Module,
                train_loader: DataLoader, 
                test_loader: DataLoader,
-               device: torch.device = "cpu",
-               batch_size: int = 256,
+               device: torch.device = torch.device("cpu"),
                epochs: int = 150):
+    model.to(device)
     
     max_lr = 0.01 # 0.001
     weight_decay = 0.001 # 5e-4
@@ -254,7 +254,7 @@ def finetuning(model: torch.nn.Module,
 
 def pipeline(model: torch.nn.Module,
              val_loader: DataLoader, 
-             device: torch.device = "cpu"):
+             device: torch.device = torch.device("cpu")):
     model.to(device)
 
     print("\n3. Validating model before binarizing...")
