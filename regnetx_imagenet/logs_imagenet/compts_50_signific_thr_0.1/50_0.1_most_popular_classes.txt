@@ -1,0 +1,3 @@
+The following classes are chosen by maximum number of features - 5:
+
+[ 68 729 807 874 877] choose 978 ('seashore', 'coast', 'seacoast', 'sea-coast')

@@ -1,0 +1,4 @@
+The following classes are chosen by maximum number of features - 3:
+
+[492 952 963] choose 378 ('capuchin', 'ringtail', 'Cebus capucinus')
+[492 952 963] choose 381 ('spider monkey', 'Ateles geoffroyi')

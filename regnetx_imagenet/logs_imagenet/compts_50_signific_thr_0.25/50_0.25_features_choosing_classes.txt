@@ -1,0 +1,446 @@
+The following classes are chosen by the following features:
+
+Class
+    10, ('brambling', 'Fringilla montifringilla')
+    is activated by 1 features: [564]
+Class
+    15, ('robin', 'American robin', 'Turdus migratorius')
+    is activated by 1 features: [564]
+Class
+    21, ('kite',)
+    is activated by 1 features: [132]
+Class
+    54, ('hognose snake', 'puff adder', 'sand viper')
+    is activated by 1 features: [766]
+Class
+    56, ('king snake', 'kingsnake')
+    is activated by 1 features: [766]
+Class
+    60, ('night snake', 'Hypsiglena torquata')
+    is activated by 1 features: [766]
+Class
+    62, ('rock python', 'rock snake', 'Python sebae')
+    is activated by 1 features: [766]
+Class
+    63, ('Indian cobra', 'Naja naja')
+    is activated by 1 features: [766]
+Class
+    66, ('horned viper', 'cerastes', 'sand viper', 'horned asp', 'Cerastes cornutus')
+    is activated by 1 features: [766]
+Class
+    67, ('diamondback', 'diamondback rattlesnake', 'Crotalus adamanteus')
+    is activated by 1 features: [766]
+Class
+    68, ('sidewinder', 'horned rattlesnake', 'Crotalus cerastes')
+    is activated by 1 features: [766]
+Class
+    153, ('Maltese dog', 'Maltese terrier', 'Maltese')
+    is activated by 1 features: [662]
+Class
+    168, ('redbone',)
+    is activated by 1 features: [516]
+Class
+    179, ('Staffordshire bullterrier', 'Staffordshire bull terrier')
+    is activated by 2 features: [195 905]
+Class
+    180, ('American Staffordshire terrier', 'Staffordshire terrier', 'American pit bull terrier', 'pit bull terrier')
+    is activated by 1 features: [195]
+Class
+    192, ('cairn', 'cairn terrier')
+    is activated by 1 features: [195]
+Class
+    193, ('Australian terrier',)
+    is activated by 1 features: [195]
+Class
+    195, ('Boston bull', 'Boston terrier')
+    is activated by 1 features: [195]
+Class
+    196, ('miniature schnauzer',)
+    is activated by 1 features: [195]
+Class
+    197, ('giant schnauzer',)
+    is activated by 1 features: [394]
+Class
+    202, ('soft-coated wheaten terrier',)
+    is activated by 1 features: [195]
+Class
+    203, ('West Highland white terrier',)
+    is activated by 2 features: [195 662]
+Class
+    217, ('English springer', 'English springer spaniel')
+    is activated by 1 features: [195]
+Class
+    219, ('cocker spaniel', 'English cocker spaniel', 'cocker')
+    is activated by 1 features: [195]
+Class
+    224, ('groenendael',)
+    is activated by 1 features: [394]
+Class
+    226, ('briard',)
+    is activated by 1 features: [724]
+Class
+    229, ('Old English sheepdog', 'bobtail')
+    is activated by 1 features: [195]
+Class
+    232, ('Border collie',)
+    is activated by 1 features: [195]
+Class
+    242, ('boxer',)
+    is activated by 1 features: [195]
+Class
+    245, ('French bulldog',)
+    is activated by 1 features: [195]
+Class
+    254, ('pug', 'pug-dog')
+    is activated by 1 features: [195]
+Class
+    256, ('Newfoundland', 'Newfoundland dog')
+    is activated by 1 features: [394]
+Class
+    257, ('Great Pyrenees',)
+    is activated by 1 features: [662]
+Class
+    264, ('Cardigan', 'Cardigan Welsh corgi')
+    is activated by 1 features: [195]
+Class
+    269, ('timber wolf', 'grey wolf', 'gray wolf', 'Canis lupus')
+    is activated by 1 features: [365]
+Class
+    271, ('red wolf', 'maned wolf', 'Canis rufus', 'Canis niger')
+    is activated by 1 features: [365]
+Class
+    272, ('coyote', 'prairie wolf', 'brush wolf', 'Canis latrans')
+    is activated by 1 features: [365]
+Class
+    274, ('dhole', 'Cuon alpinus')
+    is activated by 1 features: [365]
+Class
+    276, ('hyena', 'hyaena')
+    is activated by 1 features: [365]
+Class
+    277, ('red fox', 'Vulpes vulpes')
+    is activated by 1 features: [365]
+Class
+    278, ('kit fox', 'Vulpes macrotis')
+    is activated by 1 features: [365]
+Class
+    280, ('grey fox', 'gray fox', 'Urocyon cinereoargenteus')
+    is activated by 1 features: [365]
+Class
+    286, ('cougar', 'puma', 'catamount', 'mountain lion', 'painter', 'panther', 'Felis concolor')
+    is activated by 1 features: [365]
+Class
+    287, ('lynx', 'catamount')
+    is activated by 1 features: [365]
+Class
+    301, ('ladybug', 'ladybeetle', 'lady beetle', 'ladybird', 'ladybird beetle')
+    is activated by 1 features: [981]
+Class
+    303, ('long-horned beetle', 'longicorn', 'longicorn beetle')
+    is activated by 1 features: [981]
+Class
+    307, ('weevil',)
+    is activated by 1 features: [981]
+Class
+    310, ('ant', 'emmet', 'pismire')
+    is activated by 1 features: [981]
+Class
+    312, ('cricket',)
+    is activated by 1 features: [981]
+Class
+    329, ('sea cucumber', 'holothurian')
+    is activated by 1 features: [45]
+Class
+    366, ('gorilla', 'Gorilla gorilla')
+    is activated by 1 features: [963]
+Class
+    367, ('chimpanzee', 'chimp', 'Pan troglodytes')
+    is activated by 1 features: [963]
+Class
+    368, ('gibbon', 'Hylobates lar')
+    is activated by 1 features: [963]
+Class
+    369, ('siamang', 'Hylobates syndactylus', 'Symphalangus syndactylus')
+    is activated by 1 features: [963]
+Class
+    370, ('guenon', 'guenon monkey')
+    is activated by 1 features: [963]
+Class
+    371, ('patas', 'hussar monkey', 'Erythrocebus patas')
+    is activated by 1 features: [963]
+Class
+    372, ('baboon',)
+    is activated by 1 features: [963]
+Class
+    373, ('macaque',)
+    is activated by 1 features: [963]
+Class
+    374, ('langur',)
+    is activated by 1 features: [963]
+Class
+    378, ('capuchin', 'ringtail', 'Cebus capucinus')
+    is activated by 3 features: [492 952 963]
+Class
+    379, ('howler monkey', 'howler')
+    is activated by 2 features: [952 963]
+Class
+    380, ('titi', 'titi monkey')
+    is activated by 1 features: [963]
+Class
+    381, ('spider monkey', 'Ateles geoffroyi')
+    is activated by 3 features: [492 952 963]
+Class
+    390, ('eel',)
+    is activated by 1 features: [45]
+Class
+    397, ('puffer', 'pufferfish', 'blowfish', 'globefish')
+    is activated by 1 features: [45]
+Class
+    401, ('accordion', 'piano accordion', 'squeeze box')
+    is activated by 1 features: [594]
+Class
+    412, ('ashcan', 'trash can', 'garbage can', 'wastebin', 'ash bin', 'ash-bin', 'ashbin', 'dustbin', 'trash barrel', 'trash bin')
+    is activated by 1 features: [5]
+Class
+    415, ('bakery', 'bakeshop', 'bakehouse')
+    is activated by 1 features: [12]
+Class
+    424, ('barbershop',)
+    is activated by 1 features: [12]
+Class
+    432, ('bassoon',)
+    is activated by 1 features: [594]
+Class
+    435, ('bathtub', 'bathing tub', 'bath', 'tub')
+    is activated by 2 features: [295 325]
+Class
+    436, ('beach wagon', 'station wagon', 'wagon', 'estate car', 'beach waggon', 'station waggon', 'waggon')
+    is activated by 1 features: [999]
+Class
+    445, ('bikini', 'two-piece')
+    is activated by 1 features: [552]
+Class
+    453, ('bookcase',)
+    is activated by 1 features: [937]
+Class
+    454, ('bookshop', 'bookstore', 'bookstall')
+    is activated by 1 features: [12]
+Class
+    486, ('cello', 'violoncello')
+    is activated by 1 features: [594]
+Class
+    495, ('china cabinet', 'china closet')
+    is activated by 1 features: [937]
+Class
+    497, ('church', 'church building')
+    is activated by 1 features: [359]
+Class
+    509, ('confectionery', 'confectionary', 'candy store')
+    is activated by 1 features: [12]
+Class
+    511, ('convertible',)
+    is activated by 1 features: [999]
+Class
+    513, ('cornet', 'horn', 'trumpet', 'trump')
+    is activated by 1 features: [594]
+Class
+    527, ('desktop computer',)
+    is activated by 1 features: [179]
+Class
+    532, ('dining table', 'board')
+    is activated by 1 features: [937]
+Class
+    548, ('entertainment center',)
+    is activated by 1 features: [937]
+Class
+    558, ('flute', 'transverse flute')
+    is activated by 2 features: [143 594]
+Class
+    566, ('French horn', 'horn')
+    is activated by 1 features: [594]
+Class
+    569, ('garbage truck', 'dustcart')
+    is activated by 1 features: [54]
+Class
+    572, ('goblet',)
+    is activated by 1 features: [826]
+Class
+    578, ('gown',)
+    is activated by 1 features: [104]
+Class
+    582, ('grocery store', 'grocery', 'food market', 'market')
+    is activated by 1 features: [12]
+Class
+    585, ('hair spray',)
+    is activated by 1 features: [423]
+Class
+    598, ('home theater', 'home theatre')
+    is activated by 1 features: [937]
+Class
+    620, ('laptop', 'laptop computer')
+    is activated by 1 features: [754]
+Class
+    632, ('loudspeaker', 'speaker', 'speaker unit', 'loudspeaker system', 'speaker system')
+    is activated by 1 features: [179]
+Class
+    638, ('maillot',)
+    is activated by 2 features: [104 552]
+Class
+    654, ('minibus',)
+    is activated by 1 features: [999]
+Class
+    655, ('miniskirt', 'mini')
+    is activated by 1 features: [104]
+Class
+    656, ('minivan',)
+    is activated by 1 features: [999]
+Class
+    681, ('notebook', 'notebook computer')
+    is activated by 2 features: [179 754]
+Class
+    683, ('oboe', 'hautboy', 'hautbois')
+    is activated by 1 features: [594]
+Class
+    725, ('pitcher', 'ewer')
+    is activated by 1 features: [560]
+Class
+    734, ('police van', 'police wagon', 'paddy wagon', 'patrol wagon', 'wagon', 'black Maria')
+    is activated by 1 features: [999]
+Class
+    760, ('refrigerator', 'icebox')
+    is activated by 1 features: [87]
+Class
+    762, ('restaurant', 'eating house', 'eating place', 'eatery')
+    is activated by 1 features: [12]
+Class
+    767, ('rubber eraser', 'rubber', 'pencil eraser')
+    is activated by 1 features: [142]
+Class
+    776, ('sax', 'saxophone')
+    is activated by 1 features: [594]
+Class
+    778, ('scale', 'weighing machine')
+    is activated by 1 features: [475]
+Class
+    809, ('soup bowl',)
+    is activated by 1 features: [889]
+Class
+    831, ('studio couch', 'day bed')
+    is activated by 1 features: [937]
+Class
+    836, ('sunglass',)
+    is activated by 2 features: [385 907]
+Class
+    837, ('sunglasses', 'dark glasses', 'shades')
+    is activated by 2 features: [385 907]
+Class
+    860, ('tobacco shop', 'tobacconist shop', 'tobacconist')
+    is activated by 1 features: [12]
+Class
+    864, ('tow truck', 'tow car', 'wrecker')
+    is activated by 1 features: [54]
+Class
+    875, ('trombone',)
+    is activated by 1 features: [594]
+Class
+    876, ('tub', 'vat')
+    is activated by 2 features: [295 325]
+Class
+    883, ('vase',)
+    is activated by 1 features: [560]
+Class
+    889, ('violin', 'fiddle')
+    is activated by 1 features: [594]
+Class
+    893, ('wallet', 'billfold', 'notecase', 'pocketbook')
+    is activated by 1 features: [513]
+Class
+    894, ('wardrobe', 'closet', 'press')
+    is activated by 1 features: [937]
+Class
+    905, ('window shade',)
+    is activated by 1 features: [937]
+Class
+    923, ('plate',)
+    is activated by 1 features: [889]
+Class
+    924, ('guacamole',)
+    is activated by 1 features: [889]
+Class
+    925, ('consomme',)
+    is activated by 1 features: [889]
+Class
+    926, ('hot pot', 'hotpot')
+    is activated by 1 features: [889]
+Class
+    927, ('trifle',)
+    is activated by 1 features: [889]
+Class
+    928, ('ice cream', 'icecream')
+    is activated by 1 features: [889]
+Class
+    930, ('French loaf',)
+    is activated by 1 features: [889]
+Class
+    931, ('bagel', 'beigel')
+    is activated by 1 features: [889]
+Class
+    933, ('cheeseburger',)
+    is activated by 1 features: [889]
+Class
+    934, ('hotdog', 'hot dog', 'red hot')
+    is activated by 1 features: [889]
+Class
+    935, ('mashed potato',)
+    is activated by 1 features: [889]
+Class
+    938, ('cauliflower',)
+    is activated by 1 features: [889]
+Class
+    940, ('spaghetti squash',)
+    is activated by 1 features: [889]
+Class
+    941, ('acorn squash',)
+    is activated by 1 features: [889]
+Class
+    942, ('butternut squash',)
+    is activated by 1 features: [889]
+Class
+    943, ('cucumber', 'cuke')
+    is activated by 1 features: [889]
+Class
+    959, ('carbonara',)
+    is activated by 1 features: [889]
+Class
+    960, ('chocolate sauce', 'chocolate syrup')
+    is activated by 1 features: [889]
+Class
+    961, ('dough',)
+    is activated by 1 features: [889]
+Class
+    962, ('meat loaf', 'meatloaf')
+    is activated by 1 features: [889]
+Class
+    963, ('pizza', 'pizza pie')
+    is activated by 1 features: [889]
+Class
+    964, ('potpie',)
+    is activated by 1 features: [889]
+Class
+    965, ('burrito',)
+    is activated by 1 features: [889]
+Class
+    975, ('lakeside', 'lakeshore')
+    is activated by 1 features: [877]
+Class
+    976, ('promontory', 'headland', 'head', 'foreland')
+    is activated by 1 features: [877]
+Class
+    978, ('seashore', 'coast', 'seacoast', 'sea-coast')
+    is activated by 1 features: [729]
+Class
+    979, ('valley', 'vale')
+    is activated by 1 features: [729]
+Class
+    987, ('corn',)
+    is activated by 1 features: [889]

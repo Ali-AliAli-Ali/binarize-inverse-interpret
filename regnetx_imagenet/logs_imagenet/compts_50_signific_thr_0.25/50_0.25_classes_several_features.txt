@@ -1,0 +1,17 @@
+The following classes are chosen by 2 features:
+
+[195 905] choose 179 ('Staffordshire bullterrier', 'Staffordshire bull terrier')
+[195 662] choose 203 ('West Highland white terrier',)
+[952 963] choose 379 ('howler monkey', 'howler')
+[295 325] choose 435 ('bathtub', 'bathing tub', 'bath', 'tub')
+[143 594] choose 558 ('flute', 'transverse flute')
+[104 552] choose 638 ('maillot',)
+[179 754] choose 681 ('notebook', 'notebook computer')
+[385 907] choose 836 ('sunglass',)
+[385 907] choose 837 ('sunglasses', 'dark glasses', 'shades')
+[295 325] choose 876 ('tub', 'vat')
+
+The following classes are chosen by 3 features:
+
+[492 952 963] choose 378 ('capuchin', 'ringtail', 'Cebus capucinus')
+[492 952 963] choose 381 ('spider monkey', 'Ateles geoffroyi')
