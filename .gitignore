@@ -120,3 +120,8 @@ dmypy.json
 
 #Pycharm IDE
 .idea
+
+# Local files: checkpoints, logs, graphs
+regnetx_imagenet/checkpoints
+regnetx_imagenet/graphs*
+regnetx_imagenet/logs*
