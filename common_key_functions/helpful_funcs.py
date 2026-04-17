@@ -1,11 +1,22 @@
 from time import time
-from typing import Optional
 import torch
 from torch.utils.data import DataLoader
+
+from constants_configs import MODEL_CONFIGS
 
 
 seed = 42
 torch.manual_seed(seed)
+
+
+def get_model_and_features(model_name: str) -> tuple:
+    if model_name not in MODEL_CONFIGS:
+        raise ValueError(f"Unsupported network name: {model_name}. Available networks: {list(MODEL_CONFIGS.keys())}")
+
+    config = MODEL_CONFIGS[model_name]
+    model = config["builder"](weights=config["weights"])
+    return model, getattr(model, config["feature_attr"])
+
 
 @torch.inference_mode()
 def validate_top1_top5_time(model, 
@@ -36,11 +47,12 @@ def validate_top1_top5_time(model,
     return (top1_correct / total * 100,
             top5_correct / total * 100,
             val_time)
-    
+
+
 def pretty_print_top1_top5_time(model, 
                                 loader: DataLoader, 
-                                top1_orig: Optional[float] = 0,
-                                top5_orig: Optional[float] = 0):    
+                                top1_orig: float | None = 0,
+                                top5_orig: float | None = 0):    
     top1_new, top5_new, val_time = validate_top1_top5_time(model, loader)
     
     if top1_orig:

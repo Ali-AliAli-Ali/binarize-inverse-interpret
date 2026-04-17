@@ -1,18 +1,17 @@
 import os
 import numpy as np
-from typing import Optional, List, Tuple
 from matplotlib import pyplot as plt, colors, cm
 
 
-def plot_metric(trains: List, 
-                tests: List, 
+def plot_metric(trains: list, 
+                tests: list, 
                 epochs: int, 
-                model_name: Optional[str] = "model",
-                dataset_name: Optional[str] = "dataset",
-                metric_name: Optional[str] = "metric",
-                figsize: Optional[Tuple] = (25, 3),
-                save_graph: Optional[bool] = True,
-                graph_dir: Optional[str] = "graphs"):
+                model_name: str | None = "model",
+                dataset_name: str | None = "dataset",
+                metric_name: str | None = "metric",
+                figsize: tuple[int, int] | None | None = (25, 3),
+                save_graph: bool | None = True,
+                graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(
         [i+1 for i in range(epochs)],
@@ -39,7 +38,7 @@ def plot_metric(trains: List,
     
 
 def centralize_colormap(values, 
-                        center: Optional[float] = 0):
+                        center: float | None = 0):
     values_min = np.min(values)
     values_max = np.max(values)
     border = max(abs(values_min), abs(values_max))
@@ -52,11 +51,11 @@ def centralize_colormap(values,
 
 
 def plot_heatmap(values,
-                 cmap_name: Optional[str] = "seismic",
-                 title: Optional[str] = "Weights heatmap",
-                 figsize: Optional[Tuple] = (25, 3),
-                 save_graph: Optional[bool] = True,
-                 graph_dir: Optional[str] = "graphs"):
+                 cmap_name: str | None = "seismic",
+                 title: str | None = "Weights heatmap",
+                 figsize: tuple[int, int] | None = (25, 3),
+                 save_graph: bool | None = True,
+                 graph_dir: str | None = "graphs"):
     plt.figure(figsize=figsize)
     plt.imshow(
         values, 
@@ -75,16 +74,16 @@ def plot_heatmap(values,
 def plot_colored_barplot(values,
                          values_color,
                          values_color_name: str,
-                         cmap_name: Optional[str] = "seismic",
-                         edge_color: Optional[str] = "black",
-                         title: Optional[str] = "Values barplot",
-                         xlabel: Optional[str] = "values",
-                         ylabel: Optional[str] = "values number",
-                         xticks: Optional[List] = [],
-                         xticklabels: Optional[List] = [],   
-                         figsize: Optional[Tuple] = (25, 3),
-                         save_graph: Optional[bool] = True,
-                         graph_dir: Optional[str] = "graphs"):
+                         cmap_name: str | None = "seismic",
+                         edge_color: str | None = "black",
+                         title: str | None = "Values barplot",
+                         xlabel: str | None = "values",
+                         ylabel: str | None = "values number",
+                         xticks: list | None = [],
+                         xticklabels: list | None = [],   
+                         figsize: tuple[int, int] | None = (25, 3),
+                         save_graph: bool | None = True,
+                         graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     
     values_cmap = plt.get_cmap(cmap_name)

@@ -145,10 +145,10 @@ def normalize_contrast_saturation(batch: torch.Tensor) -> torch.Tensor:
     h, s, v = hsv[:, 0], hsv[:, 1], hsv[:, 2]
     
     # Helper function to normalize a channel using quantiles
-    def normalize_channel(channel, l, h):
+    def normalize_channel(channel, q_low, q_high):
         channel_flat = channel.view(batch.size(0), -1)
-        q01 = torch.quantile(channel_flat, l, dim=1, keepdim=True).view(batch.size(0), 1, 1)
-        q99 = torch.quantile(channel_flat, h, dim=1, keepdim=True).view(batch.size(0), 1, 1)
+        q01 = torch.quantile(channel_flat, q_low,  dim=1, keepdim=True).view(batch.size(0), 1, 1)
+        q99 = torch.quantile(channel_flat, q_high, dim=1, keepdim=True).view(batch.size(0), 1, 1)
         channel_range = (q99 - q01).clamp(min=5e-2)
         return ((channel - q01) / channel_range).clamp_(0., 1.)
     
