@@ -5,8 +5,8 @@ Invert ImageNet-1K samples from regnet_x_3_2gf trunk-output features via gradien
 Uses only conv/ReLU/skip/pool/linear layers. Saves original and reconstructed batches.
 """
 import os
-import sys 
-import argparse
+import sys
+import time 
 import random
 from math import sqrt, pi, erf
 
@@ -15,17 +15,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import DataLoader, Subset
-from torchvision import transforms, utils, models
+from torchvision import transforms, utils
 from torchvision.datasets import ImageNet
-
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 module_dir = os.path.abspath( os.path.join(script_dir, '..', 'common_key_functions') )
 if module_dir not in sys.path:
     sys.path.insert(0, module_dir)
     
-from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1  # noqa: E402
-
+from constants_configs import IMAGENET_CONSTANTS   # noqa: E402
+from helpful_funcs import get_model_and_features                                    # noqa: E402
+from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1   # noqa: E402
 
 
 def replace_relu_with_softplus(module: nn.Module, 
@@ -81,7 +81,7 @@ def sym_kl_div(x, y, per_sample: bool = False):
 
 def compute_all_losses(feat, target_feat, x, tv_weight, l2_weight=0.0, l1_weight=0.0, tv_loss_orig=None, per_sample=False):
     """
-    Compute all loss components for feature matching and image regularisation.
+    Compute all loss components for feature matching and image regularization.
 
     The loss includes:
         - Symmetric KL divergence between feat and target_feat.
@@ -120,7 +120,7 @@ def compute_all_losses(feat, target_feat, x, tv_weight, l2_weight=0.0, l1_weight
         tv_x = torch.maximum(tv_x - 0.4 * tv_loss_orig, torch.tensor(0.0, device=x.device, dtype=tv_x.dtype))
     loss_tv = tv_weight * tv_x
     
-    loss_l1 = l1_weight * gray_edge_l1(x, per_sample)
+    loss_l1 = l1_weight * gray_edge_l1(x)
 
     centering_loss, border_loss = centering_losses(x)
 
@@ -311,7 +311,7 @@ def centering_losses(x: torch.Tensor,
     return L_ctr, L_bord
 
 
-def filter_and_sort_by_confidence(dataset, indices, model, device, batch_size, mean, std, subset_size=5000):
+def filter_and_sort_by_confidence(dataset, indices, model, device, batch_size, num_workers, mean, std, subset_size=5000):
     """
     Filter correctly classified images and sort by logit confidence difference.
     
@@ -343,7 +343,7 @@ def filter_and_sort_by_confidence(dataset, indices, model, device, batch_size, m
     print("Filtering correctly classified images and computing logit differences...")
     
     subset_temp = Subset(dataset, indices_list)
-    loader_temp = DataLoader(subset_temp, batch_size=batch_size, shuffle=False, num_workers=16)
+    loader_temp = DataLoader(subset_temp, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     
     correct_indices = []
     logit_diffs = []
@@ -542,69 +542,91 @@ def ab_for_threshold(t: float):
     return a, b, p
 
 
-def main():
-    p = argparse.ArgumentParser(description='Invert regnet_y_3_2gf features on ImageNet1K')
-    p.add_argument('--data-dir', default='./data/imagenet', help='ImageNet val root folder')
-    p.add_argument('--class-id', default='-1', type=str, help='ImageNet class index(es) - single int or comma-separated list (e.g., "0" or "0,1,2" or "-1" for all)')
-    p.add_argument('--batch-size', type=int, default=25, help='Batch size')
-    p.add_argument('--steps', type=int, default=4000, help='Optimization steps')
-    p.add_argument('--lr', type=float, default=0.1, help='Learning rate')
-    p.add_argument('--sigma', type=float, default=0.01, help='Init noise scale')
-    p.add_argument('--beta', type=float, default=4., help='Softplus beta')
-    p.add_argument('--tv-weight', type=float, default=5e-5, help='TV regularization weight')
-    p.add_argument('--l2-weight', type=float, default=10.0, help='L2 (MSE) loss weight')
-    p.add_argument('--l1-weight', type=float, default=0.0, help='L1 (Lasso) regularization weight')
-    p.add_argument('--subset-size', type=int, default=5000, help='Number of samples to take before filtering and sorting')
-    p.add_argument('--threshold', type=float, default=None, help='Threshold for binarizing target_feat (values >= threshold become 1, else 0)')
-    p.add_argument('--select-best-n', type=int, default=9, help='Select N samples with minimal total_loss to save at the end (default: save all)')
-    p.add_argument('--nrow', type=int, default=None, help='Grid row size for saved images (0=auto)')
-    p.add_argument('--out', default='output', help='Output directory')
-    args = p.parse_args()
+def main_pipeline(args: dict[str : int|float|str]):
+    """
+    Run feature inversion for ImageNet classes using specified hyperparameters.
+
+    Args
+    ----------
+    args : Dictionary containing configuration parameters (see keys below).
+
+    Keys in ``args``:
+    ----------------
+    data_dir : str, default './data/imagenet'
+        Path to the ImageNet validation set root folder.
+    class_ids : str, default '-1'
+        ImageNet class index(es). Can be:
+            - a single integer as string, e.g. '42'
+            - comma-separated list, e.g. '0,1,2'
+            - '-1' to process all classes.
+    network : str, default 'regnet_x_3_2'
+        Name of the neural network architecture to invert.
+    batch_size : int, default 25
+        Number of samples per batch during optimisation.
+    steps : int, default 4000
+        Number of optimisation iterations (gradient steps) per image.
+    lr : float, default 0.1
+        Learning rate for the optimiser.
+    sigma : float, default 0.01
+        Standard deviation of Gaussian noise used for initial image guess.
+    beta : float, default 4.0
+        Beta parameter of the Softplus activation (replaces ReLU).
+    tv_weight : float, default 5e-5
+        Weight of the total variation (TV) regularization term.
+    l2_weight : float, default 10.0
+        Weight of the L2 (MSE) loss between the target and predicted features.
+    l1_weight : float, default 0.0
+        Weight of the L1 (Lasso) regularization term on the reconstructed image.
+    subset_size : int, default 5000
+        Number of samples to load from the dataset before filtering/sorting.
+    threshold : float, default None
+        If not None, binarises the target feature map: values >= threshold become 1,
+        others become 0. This is applied before computing losses.
+    select_best_n : int, default 9
+        Number of best samples (with lowest total loss) to save at the end.
+        If set to 0, saves all samples.
+    nrow : int, default None
+        Number of images per row in the output grid. If None or 0, automatically
+        determined as sqrt(batch_size).
+    out : str, default 'output'
+        Directory where all results (reconstructed images, logs, etc.) will be saved.
+    """
+    
+    print(f"\nStart inversion of {args["network"]} network on ImageNet dataset...\n")
 
     # Parse comma-separated class IDs
     try:
-        class_ids = [int(cid.strip()) for cid in args.class_id.split(',')]
+        class_ids = [ int(cid.strip()) for cid in args["class_ids"].split(',') ]
     except ValueError:
-        raise ValueError(f"Invalid class-id format: '{args.class_id}'. Expected comma-separated integers or '-1' for all classes.")
+        raise ValueError(f"Invalid class id format: '{args["class_ids"]}'. Expected comma-separated integers or '-1' for all classes.")
 
 
-    os.makedirs(args.out, exist_ok=True)
+    os.makedirs(args["out_dir"], exist_ok=True)
+    
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    # ImageNet normalization constants
-    mean = torch.tensor([0.485, 0.456, 0.406], device=device).view(1, 3, 1, 1)
-    std = torch.tensor([0.229, 0.224, 0.225], device=device).view(1, 3, 1, 1)
-    mean_awb = mean.mean(dim=1, keepdim=True) #force white balance output
-
-    # 1. Load regnet_x_3_2gf
-    model = models.regnet_x_3_2gf(weights=models.RegNet_X_3_2GF_Weights.DEFAULT)
-    features = model.trunk_output
-    #model = models.regnet_x_16gf(weights=models.RegNet_X_16GF_Weights.DEFAULT)
-    #features = model.trunk_output
-    #model = models.regnet_x_32gf(weights=models.RegNet_X_32GF_Weights.DEFAULT)
-    #features = model.trunk_output
-    #model = models.resnet50(weights = models.ResNet50_Weights.DEFAULT)
-    #features = model.layer4
-    #model = models.resnet18(weights=models.ResNet18_Weights.DEFAULT)
-    #features = model.layer4
-    #tv-weight = 1e-6
+    IMAGENET_CONSTANTS["mean"] = IMAGENET_CONSTANTS["mean"].to(device)
+    IMAGENET_CONSTANTS["std"] = IMAGENET_CONSTANTS["std"].to(device)
+    IMAGENET_CONSTANTS["mean_awb"] = IMAGENET_CONSTANTS["mean_awb"].to(device)
 
 
-    # before
+    # 1. Load network 
+    
+    model, features = get_model_and_features(args["network"])
+
+    # replacing ReLU with SoftPlus  
     print("ReLUs:   ", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
     print("Softplus:", sum(1 for m in model.modules() if isinstance(m, nn.Softplus)))
 
-    # swap them all, setting beta=2.0 (for instance)
-    replace_relu_with_softplus(model, beta=args.beta)
+    replace_relu_with_softplus(model, beta=args["beta"])
 
-    # after
-    print("ReLUs:", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
+    print("ReLUs:   ", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
     print("Softplus:", sum(1 for m in model.modules() if isinstance(m, nn.Softplus)))
 
     model = model.to(device).eval()
 
-
     # 1b. Register hooks: target, features, and all BatchNorm outputs
+    
     activation = {}
     hooks = {}
 
@@ -613,25 +635,27 @@ def main():
         activation['feat'] = output
     hooks['feat'] = features.register_forward_hook(hook_fn)
 
+
     # 2. Prepare ImageNet validation subset for given class
+
     # standard ImageNet val preprocessing
     transform_raw = transforms.Compose([
-        transforms.Resize(256),          # shorter side → 256
-        transforms.CenterCrop(224),      # then take 224×224 center crop
-        transforms.ToTensor(),           # [0..1] float tensor
+        transforms.Resize(IMAGENET_CONSTANTS["size_resize"]),
+        transforms.CenterCrop(IMAGENET_CONSTANTS["size_center_crop"]), 
+        transforms.ToTensor(),    # [0..1] float tensor
     ])
     
-    imgset = ImageNet(root=args.data_dir, split='val', transform=transform_raw)
+    imgset = ImageNet(root=args["data_dir"], split='val', transform=transform_raw)
     # Create string representation for file naming
     # imgset.targets is a plain Python list of length N with the class idx for each sample
     if len(class_ids) == 1 and class_ids[0] == -1:
         class_id_str = 'all'
-        indices = list(range(len(imgset.targets)))  # All classes
+        indices = list(range(len(imgset.targets)))
     else:
         class_id_str = '_'.join(f'{cid:04d}' for cid in sorted(class_ids))
         indices = [i for i, t in enumerate(imgset.targets) if t in class_ids]
     
-    # Debug: print class distribution
+    # DEBUG: print class distribution
     class_counts = {}
     for idx in indices:
         class_label = imgset.targets[idx]
@@ -640,12 +664,24 @@ def main():
     for cid in sorted(class_ids):
         print(f"  Class {cid}: {class_counts.get(cid, 0)} images")
 
+    
     # 2a. Filter correctly classified images and sort by softmax confidence
     # Load a clean model for classification (before Softplus replacement)
-    model_cls = models.regnet_x_3_2gf(weights=models.RegNet_X_3_2GF_Weights.DEFAULT).to(device).eval()
-    sorted_indices = filter_and_sort_by_confidence(imgset, indices, model_cls, device, args.batch_size, mean, std, args.subset_size)
+    model_cls, _ = get_model_and_features(args["network"])
+    model_cls.to(device).eval()
+    sorted_indices = filter_and_sort_by_confidence(
+        imgset, 
+        indices, 
+        model_cls, 
+        device, 
+        args["batch_size"], 
+        args["num_workers"],
+        IMAGENET_CONSTANTS["mean"], 
+        IMAGENET_CONSTANTS["std"], 
+        args["subset_size"]
+    )
     
-    # Debug: print class distribution after filtering
+    # DEBUG: print class distribution after filtering
     if len(class_ids) > 1 or (len(class_ids) == 1 and class_ids[0] != -1):
         class_counts_after = {}
         for idx in sorted_indices:
@@ -654,61 +690,94 @@ def main():
         print(f"After filtering: {len(sorted_indices)} correctly classified images")
         for cid in sorted(class_ids):
             print(f"  Class {cid}: {class_counts_after.get(cid, 0)} correctly classified images")
-    
-    #sorted_indices = indices
 
-    # Balance sampling across classes if multiple classes requested
+    # Balance sampling across classes if multiple classes are requested
     if len(class_ids) > 1 and class_ids[0] != -1:
-        sorted_indices = balance_classes(sorted_indices, imgset.targets, class_ids, max_count=args.batch_size)
+        sorted_indices = balance_classes(sorted_indices, imgset.targets, class_ids, max_count=args["batch_size"])
         print(f"Balanced sampling: selected {len(sorted_indices)} images across classes {sorted(class_ids)}")
     
     # Create new loader from sorted images without shuffle
     subset = Subset(imgset, sorted_indices)
-    loader = DataLoader(subset, batch_size=args.batch_size, shuffle=False, num_workers=16)
+    loader = DataLoader(subset, batch_size=args["batch_size"], shuffle=False, num_workers=args["num_workers"])
 
     imgs, _ = next(iter(loader))  # (B,3,224,224)
     imgs = imgs.to(device)
-    utils.save_image(imgs, os.path.join(args.out, f'orig_{class_id_str}.png'), nrow=int(sqrt(len(imgs))))
+    utils.save_image(imgs, os.path.join(args["out_dir"], f'orig_{class_id_str}.png'), nrow=int(sqrt(len(imgs))))
 
+    
     # 3. Normalize for model input
-    imgs_mean = imgs.mean(dim=[1,2,3], keepdim=True)    
-    imgs_norm = (imgs - mean) / std
-
+    
+    imgs_norm = (imgs - IMAGENET_CONSTANTS["mean"]) / IMAGENET_CONSTANTS["std"]  # batch normalization with global constants
+    
+    
     # 4. Extract and fix target features
+    
     tv_loss_orig = tv_loss(imgs_norm)  # TV loss of original images for threshold
     with torch.no_grad():
         _ = model(imgs_norm)
         target_feat = activation['feat'].detach()
-        if args.threshold is not None:
-            a, b, _ = ab_for_threshold(args.threshold)
-            target_feat = b + a * (target_feat >= args.threshold).float()
+        if args["threshold"] is not None:
+            a, b, _ = ab_for_threshold(args["threshold"])
+            target_feat = b + a * (target_feat >= args["threshold"]).float()
 
+    
     # 5. Initialize reconstruction
-    noise = torch.randn_like(imgs_norm) * args.sigma
+    
+    noise = torch.randn_like(imgs_norm) * args["sigma"]
     x = noise.requires_grad_(True)
 
-    opt = optim.Adam([x], lr=args.lr, betas=(0.9, 0.999))
-    #opt = optim.SGD([x], lr=args.lr, momentum=0.9)
-    #scheduler = optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda step: 1 - step / float(args.steps))
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args.steps)
+    opt = optim.Adam([x], lr=args["lr"], betas=(0.9, 0.999))
+    #opt = optim.SGD([x], lr=args["lr"], momentum=0.9)
+    #scheduler = optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda step: 1 - step / float(args["steps"]))
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args["steps"])
 
+    
     # 6. Reconstruction loop
-    for step in range(args.steps+1):
-        l2_weight = args.l2_weight# * scheduler.get_last_lr()[0] / args.lr
+    
+    recon_start = time.perf_counter()
+    n_steps_log = 100
+    
+    for step in range(args["steps"]+1):
+        recon_step_start = time.perf_counter()
+
+        l2_weight = args["l2_weight"]# * scheduler.get_last_lr()[0] / args["lr"]
         opt.zero_grad()
+        
         feat = forward_and_get_feat(model, x, activation)
         loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss = compute_all_losses(
-            feat, target_feat, x, args.tv_weight, l2_weight=l2_weight, l1_weight=args.l1_weight, tv_loss_orig=tv_loss_orig, per_sample=False
+            feat, 
+            target_feat, 
+            x, 
+            args["tv_weight"], 
+            l2_weight=l2_weight, 
+            l1_weight=args["l1_weight"], 
+            tv_loss_orig=tv_loss_orig
         )
         
-        if step % 50 == 0:
+        recon_step_time = time.perf_counter() - recon_step_start
+        
+        if not step % n_steps_log:
             current_lr = opt.param_groups[0]['lr']
-            print(f"Step {step}/{args.steps}, MSE: {loss_mse.item():.4f}, KL: {loss_kl.item():.4f}, TV: {loss_tv.item():.4f}, L1: {loss_l1.item():.4f}, Centering: {centering_loss.item():.4f}, Border: {border_loss.item():.4f}, Total: {total_loss.item():.4f}, LR: {current_lr:.6f}")
-            save_reconstructed_images(x, mean_awb, std, os.path.join(args.out, f'recon_{step:04d}.png'), nrow=args.nrow)
+            print(
+                f"Step {step:<5}/{args["steps"]} | "
+                f"MSE: {loss_mse.item():<12.6f} "
+                f"KL: {loss_kl.item():<12.6f} "
+                f"TV: {loss_tv.item():<12.6f} "
+                f"L1: {loss_l1.item():<12.6f} "
+                f"Centering: {centering_loss.item():<12.6f} "
+                f"Border: {border_loss.item():<12.6f} "
+                f"Total: {total_loss.item():<12.6f} "
+                f"LR: {current_lr:<10.6f} "
+                f"Step time: {recon_step_time:<10.3f} s"
+            )
+            save_reconstructed_images(x, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], os.path.join(args["out_dir"], f'recon_{step:04d}.png'), nrow=args["nrow"])
 
         total_loss.backward()
         opt.step()
         scheduler.step()
+        
+    recon_time = time.perf_counter() - recon_start
+    print(f"Reconstruction done in {recon_time:.3f} s. Average time for step: {recon_time / args["steps"]:.3f} s")
 
     # Check classification of all reconstructed images with original model
     with torch.no_grad():
@@ -722,7 +791,7 @@ def main():
         preds_recon = logits_recon.argmax(dim=1)
         correct_mask = (preds_recon == all_true_labels)
         correct_recon = correct_mask.sum().item()
-        correct_indices = torch.where(correct_mask)[0].cpu().tolist()
+        # correct_indices = torch.where(correct_mask)[0].cpu().tolist()
         
     
     # Print classification statistics
@@ -739,7 +808,9 @@ def main():
                 class_total = class_mask.sum().item()
                 print(f"  Class {cid}: {class_correct}/{class_total} ({100*class_correct/class_total:.1f}%)")
 
+    
     # 7. Select best samples and save (only from correctly classified)
+    
     with torch.no_grad():
         feat = forward_and_get_feat(model, x, activation)
         
@@ -747,7 +818,7 @@ def main():
         # Calculate per-sample TV loss for originals
         tv_loss_orig_per_sample = tv_loss(imgs_norm, per_sample=True)
         loss_kl_per_sample, _, _, _, _, _, _ = compute_all_losses(
-            feat, target_feat, x, args.tv_weight, l2_weight=args.l2_weight, l1_weight=args.l1_weight, tv_loss_orig=tv_loss_orig_per_sample, per_sample=True
+            feat, target_feat, x, args["tv_weight"], l2_weight=args["l2_weight"], l1_weight=args["l1_weight"], tv_loss_orig=tv_loss_orig_per_sample, per_sample=True
         )
         
         loss_per_sample = loss_kl_per_sample
@@ -755,7 +826,7 @@ def main():
         # Use all samples (do not drop misclassified)
         loss_per_sample_correct = loss_per_sample
         num_correct = loss_per_sample_correct.size(0)
-        select_n = min(args.select_best_n, num_correct) if args.select_best_n is not None else num_correct
+        select_n = min(args["select_best_n"], num_correct) if args["select_best_n"] is not None else num_correct
         
         # Get class labels for all batch indices
         batch_targets_correct = [imgset.targets[sorted_indices[i]] for i in range(num_correct)]
@@ -787,16 +858,13 @@ def main():
         #imgs_mean_best = imgs_mean[best_indices]
         
         # Save reconstructed and original images for the best subset
-        save_best_images(x_best, imgs_best, mean_awb, std, args.out, class_id_str, nrow=args.nrow)
+        save_best_images(x_best, imgs_best, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], args["out_dir"], class_id_str, nrow=args["nrow"])
         
         # Print loss statistics
-        print(f"\nBest samples total_loss range: [{loss_per_sample[best_indices].min().item():.4f}, {loss_per_sample[best_indices].max().item():.4f}]")
-        print(f"Mean total_loss for best samples: {loss_per_sample[best_indices].mean().item():.4f}")
+        print(f"\nBest samples total_loss range: [{loss_per_sample[best_indices].min().item():<12.6f}, {loss_per_sample[best_indices].max().item():<12.6f}]")
+        print(f"Mean total_loss for best samples: {loss_per_sample[best_indices].mean().item():<12.6f}")
 
     for h in hooks.values():
         h.remove()
 
-    print('Done.')
-
-if __name__ == '__main__':
-    main()
+    print("\nDone!\n")
