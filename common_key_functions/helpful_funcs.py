@@ -1,5 +1,4 @@
 from time import time
-from typing import Optional
 import torch
 from torch.utils.data import DataLoader
 
@@ -39,8 +38,8 @@ def validate_top1_top5_time(model,
     
 def pretty_print_top1_top5_time(model, 
                                 loader: DataLoader, 
-                                top1_orig: Optional[float] = 0,
-                                top5_orig: Optional[float] = 0):    
+                                top1_orig: float | None = 0,
+                                top5_orig: float | None = 0):    
     top1_new, top5_new, val_time = validate_top1_top5_time(model, loader)
     
     if top1_orig:
