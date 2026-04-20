@@ -58,3 +58,15 @@ def pretty_print_top1_top5_time(model,
     print(f"    Top-5 Accuracy:  {top5_new:.4f}{drop5_report}")
     print(f"    Validation time: {val_time:.4f} s")
     return top1_new, top5_new, val_time, drop1, drop5
+
+
+def calc_ljust_spaces(signific_thresholds: list[float]):
+    n = 3
+    
+    thresholds_str = []
+    for thr in signific_thresholds:
+        thr_str = f"{thr:.{n}f}"
+        thresholds_str.append(
+            thr_str.rstrip('0').rstrip('.') if ('.' in thr_str) else thr_str
+        )
+    return thresholds_str, max(len(thr_str) for thr_str in thresholds_str) 
