@@ -125,3 +125,4 @@ dmypy.json
 regnetx_imagenet/checkpoints
 regnetx_imagenet/graphs*
 regnetx_imagenet/logs*
+network_inversion/inversion_images_logs

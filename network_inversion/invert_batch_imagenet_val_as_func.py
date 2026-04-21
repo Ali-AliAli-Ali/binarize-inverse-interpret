@@ -552,44 +552,46 @@ def main_pipeline(args: dict[str : int|float|str]):
 
     Keys in ``args``:
     ----------------
-    data_dir : str, default './data/imagenet'
+    data_dir : `str`, default `'./data/imagenet'`
         Path to the ImageNet validation set root folder.
-    class_ids : str, default '-1'
+    class_ids : `str`, default '-1'
         ImageNet class index(es). Can be:
             - a single integer as string, e.g. '42'
             - comma-separated list, e.g. '0,1,2'
             - '-1' to process all classes.
-    network : str, default 'regnet_x_3_2'
+    network : `str`, default `'regnet_x_3_2'`
         Name of the neural network architecture to invert.
-    batch_size : int, default 25
+    batch_size : `int`, default `25`
         Number of samples per batch during optimisation.
-    steps : int, default 4000
+    steps : `int`, default `4000`
         Number of optimisation iterations (gradient steps) per image.
-    lr : float, default 0.1
+    lr : `float`, default `0.1`
         Learning rate for the optimiser.
-    sigma : float, default 0.01
+    sigma : `float`, default `0.01`
         Standard deviation of Gaussian noise used for initial image guess.
-    beta : float, default 4.0
+    beta : `float`, default `4.0`
         Beta parameter of the Softplus activation (replaces ReLU).
-    tv_weight : float, default 5e-5
+    tv_weight : `float`, default `5e-5`
         Weight of the total variation (TV) regularization term.
-    l2_weight : float, default 10.0
+    l2_weight : `float`, default `10.0`
         Weight of the L2 (MSE) loss between the target and predicted features.
-    l1_weight : float, default 0.0
+    l1_weight : `float`, default `0.0`
         Weight of the L1 (Lasso) regularization term on the reconstructed image.
-    subset_size : int, default 5000
+    subset_size : `int`, default `5000`
         Number of samples to load from the dataset before filtering/sorting.
-    threshold : float, default None
-        If not None, binarises the target feature map: values >= threshold become 1,
+    threshold : `float`, default `None`
+        If not `None`, binarises the target feature map: values >= threshold become 1,
         others become 0. This is applied before computing losses.
-    select_best_n : int, default 9
+    select_best_n : `int`, default 9
         Number of best samples (with lowest total loss) to save at the end.
         If set to 0, saves all samples.
-    nrow : int, default None
-        Number of images per row in the output grid. If None or 0, automatically
-        determined as sqrt(batch_size).
-    out : str, default 'output'
+    nrow : `int`, default `None`
+        Number of images per row in the output grid. If `None` or `0`, automatically
+        determined as `sqrt(batch_size)`.
+    out : `str`, default 'output'
         Directory where all results (reconstructed images, logs, etc.) will be saved.
+    run_mode : `Literal["debug", "run"]`, default `"run"`
+        Mode to run inversion training: `"debug"` adds debugging print statements
     """
     
     print(f"\nStart inversion of {args["network"]} network on ImageNet dataset...\n")
@@ -656,15 +658,16 @@ def main_pipeline(args: dict[str : int|float|str]):
         indices = [i for i, t in enumerate(imgset.targets) if t in class_ids]
     
     # DEBUG: print class distribution
-    class_counts = {}
-    for idx in indices:
-        class_label = imgset.targets[idx]
-        class_counts[class_label] = class_counts.get(class_label, 0) + 1
-    print(f"Found {len(indices)} images from classes {sorted(class_ids)}")
-    for cid in sorted(class_ids):
-        print(f"  Class {cid}: {class_counts.get(cid, 0)} images")
+    if args["run_mode"] == "debug":
+        print("    [debug] Class distribution before filtering: ")
+        class_counts = {}
+        for idx in indices:
+            class_label = imgset.targets[idx]
+            class_counts[class_label] = class_counts.get(class_label, 0) + 1
+        print(f"    Found {len(indices)} images from classes {sorted(class_ids)}")
+        for cid in sorted(class_ids):
+            print(f"        Class {cid}: {class_counts.get(cid, 0)} images")
 
-    
     # 2a. Filter correctly classified images and sort by softmax confidence
     # Load a clean model for classification (before Softplus replacement)
     model_cls, _ = get_model_and_features(args["network"])
@@ -682,14 +685,16 @@ def main_pipeline(args: dict[str : int|float|str]):
     )
     
     # DEBUG: print class distribution after filtering
-    if len(class_ids) > 1 or (len(class_ids) == 1 and class_ids[0] != -1):
-        class_counts_after = {}
-        for idx in sorted_indices:
-            class_label = imgset.targets[idx]
-            class_counts_after[class_label] = class_counts_after.get(class_label, 0) + 1
-        print(f"After filtering: {len(sorted_indices)} correctly classified images")
-        for cid in sorted(class_ids):
-            print(f"  Class {cid}: {class_counts_after.get(cid, 0)} correctly classified images")
+    if args["run_mode"] == "debug":
+        print("    [debug] Class distribution before filtering: ")
+        if len(class_ids) > 1 or (len(class_ids) == 1 and class_ids[0] != -1):
+            class_counts_after = {}
+            for idx in sorted_indices:
+                class_label = imgset.targets[idx]
+                class_counts_after[class_label] = class_counts_after.get(class_label, 0) + 1
+            print(f"    After filtering: {len(sorted_indices)} correctly classified images")
+            for cid in sorted(class_ids):
+                print(f"        Class {cid}: {class_counts_after.get(cid, 0)} correctly classified images")
 
     # Balance sampling across classes if multiple classes are requested
     if len(class_ids) > 1 and class_ids[0] != -1:
@@ -726,10 +731,10 @@ def main_pipeline(args: dict[str : int|float|str]):
     noise = torch.randn_like(imgs_norm) * args["sigma"]
     x = noise.requires_grad_(True)
 
-    opt = optim.Adam([x], lr=args["lr"], betas=(0.9, 0.999))
-    #opt = optim.SGD([x], lr=args["lr"], momentum=0.9)
+    #optimizer = optim.SGD([x], lr=args["lr"], momentum=0.9)
+    optimizer = optim.Adam([x], lr=args["lr"], betas=(0.9, 0.999))
     #scheduler = optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda step: 1 - step / float(args["steps"]))
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(opt, T_max=args["steps"])
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args["steps"])
 
     
     # 6. Reconstruction loop
@@ -741,7 +746,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         recon_step_start = time.perf_counter()
 
         l2_weight = args["l2_weight"]# * scheduler.get_last_lr()[0] / args["lr"]
-        opt.zero_grad()
+        optimizer.zero_grad()
         
         feat = forward_and_get_feat(model, x, activation)
         loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss = compute_all_losses(
@@ -757,7 +762,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         recon_step_time = time.perf_counter() - recon_step_start
         
         if not step % n_steps_log:
-            current_lr = opt.param_groups[0]['lr']
+            current_lr = optimizer.param_groups[0]['lr']
             print(
                 f"Step {step:<5}/{args["steps"]} | "
                 f"MSE: {loss_mse.item():<12.6f} "
@@ -770,10 +775,16 @@ def main_pipeline(args: dict[str : int|float|str]):
                 f"LR: {current_lr:<10.6f} "
                 f"Step time: {recon_step_time:<10.3f} s"
             )
-            save_reconstructed_images(x, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], os.path.join(args["out_dir"], f'recon_{step:04d}.png'), nrow=args["nrow"])
+            save_reconstructed_images(
+                x, 
+                IMAGENET_CONSTANTS["mean_awb"], 
+                IMAGENET_CONSTANTS["std"], 
+                os.path.join(args["out_dir"], f"recon_{step:04d}.png"), 
+                nrow=args["nrow"]
+            )
 
         total_loss.backward()
-        opt.step()
+        optimizer.step()
         scheduler.step()
         
     recon_time = time.perf_counter() - recon_start
@@ -818,7 +829,14 @@ def main_pipeline(args: dict[str : int|float|str]):
         # Calculate per-sample TV loss for originals
         tv_loss_orig_per_sample = tv_loss(imgs_norm, per_sample=True)
         loss_kl_per_sample, _, _, _, _, _, _ = compute_all_losses(
-            feat, target_feat, x, args["tv_weight"], l2_weight=args["l2_weight"], l1_weight=args["l1_weight"], tv_loss_orig=tv_loss_orig_per_sample, per_sample=True
+            feat, 
+            target_feat, 
+            x,
+            args["tv_weight"], 
+            l2_weight=args["l2_weight"], 
+            l1_weight=args["l1_weight"], 
+            tv_loss_orig=tv_loss_orig_per_sample, 
+            per_sample=True
         )
         
         loss_per_sample = loss_kl_per_sample
@@ -864,6 +882,9 @@ def main_pipeline(args: dict[str : int|float|str]):
         print(f"\nBest samples total_loss range: [{loss_per_sample[best_indices].min().item():<12.6f}, {loss_per_sample[best_indices].max().item():<12.6f}]")
         print(f"Mean total_loss for best samples: {loss_per_sample[best_indices].mean().item():<12.6f}")
 
+    
+    # 8. Clean model from hooks
+    
     for h in hooks.values():
         h.remove()
 
