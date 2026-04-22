@@ -9,12 +9,13 @@ import sys
 import time 
 import random
 from math import sqrt, pi, erf
+from PIL import Image
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import DataLoader, Dataset, Subset
 from torchvision import transforms, utils
 from torchvision.datasets import ImageNet
 
@@ -542,6 +543,114 @@ def ab_for_threshold(t: float):
     return a, b, p
 
 
+class ImageFolderDataset(Dataset):
+    """
+    Dataset for loading images from a folder, extracting labels from file names or provided list.
+    """
+    def __init__(self, 
+                 image_paths: list[str], 
+                 labels: list[int], 
+                 transform: None):
+        """
+        Args:
+            image_paths: List of paths (absolute or relative) to images.
+            labels:      Ground truth class indices corresponding to each image.
+            transform:   `torchvision transform` to apply to each image.
+        """
+        self.image_paths = image_paths
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
+        img = Image.open(self.image_paths[idx]).convert('RGB')
+        if self.transform:
+            img = self.transform(img)
+        label = self.labels[idx]
+        return img, label
+    
+
+def val_model_on_files(network_name: str,
+                       images_dir: str,
+                       labels_true: list,
+                       batch_size: int | None = 32,
+                       num_workers: int | None = 8,
+                       print_details: bool | None = True,
+                       top_k: int | None = 5) -> dict:
+    """
+    Load saved images from disk and evaluate classification accuracy
+
+    Args:
+        network_name:  Name of PyTorch model to be evaluated.
+        images_dir:    Directory containing images as files.
+        labels_true:   List or array of true class indices, aligned with the sorted image file list.
+        file_pattern:  Glob pattern to match image files (e.g., "recon_*.png").
+        batch_size:    Batch size for inference.
+        num_workers:   Number of subprocesses for data loading.
+        print_details: If `True`, print file name, true class, and `top_k` predictions with probabilities
+                       for every image.
+        top_k:         Number of top predictions to display when `print_details=True`.
+
+    Returns:
+        Tuple(accuracy, correct samples, total samples)
+    """    
+    images_paths = os.listdir(images_dir)
+    images_paths.sort()
+    images_paths = [ os.path.join(images_dir, image_path) for image_path in images_paths ]
+    
+    transform = transforms.Compose([
+        transforms.Resize(IMAGENET_CONSTANTS["size_resize"]),
+        transforms.CenterCrop(IMAGENET_CONSTANTS["size_center_crop"]),
+        transforms.ToTensor()
+    ])
+    dataset = ImageFolderDataset(images_paths, labels_true, transform=transform)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    model, _ = get_model_and_features(network_name)
+    model = model.to(device)
+    model.eval()
+
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for imgs, labels in loader:
+            imgs = imgs.to(device)
+            labels = labels.to(device)
+            
+            logits = model(imgs)
+            probs = F.softmax(logits, dim=1)
+            topk_probs, topk_indices = torch.topk(probs, k=top_k, dim=1)
+            
+            preds = logits.argmax(dim=1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+            
+            if print_details:
+                # paths_cpu = list(paths)
+                # labels_cpu = labels.cpu().tolist()
+                # topk_probs_cpu = topk_probs.cpu().tolist()
+                # topk_indices_cpu = topk_indices.cpu().tolist()
+
+                for i in range(len(images_paths)):
+                    image_name = os.path.basename(images_paths[i])
+                    print(
+                        f"File: {image_name}\n" 
+                        f"    True class: {labels_true[i]}\n"
+                        f"    Top-{top_k} predictions: {[ \
+                            f'class {idx} ({prob:.8f})' for idx, prob in zip(topk_indices[i], topk_probs[i]) \
+                        ]}"
+                    )
+                    
+    accuracy = correct / total
+    print(f"Classification accuracy: {correct}/{total} ({accuracy:.2%})")
+
+    return accuracy, correct, total
+
+
 def main_pipeline(args: dict[str : int|float|str]):
     """
     Run feature inversion for ImageNet classes using specified hyperparameters.
@@ -582,7 +691,7 @@ def main_pipeline(args: dict[str : int|float|str]):
     threshold : `float`, default `None`
         If not `None`, binarises the target feature map: values >= threshold become 1,
         others become 0. This is applied before computing losses.
-    select_best_n : `int`, default 9
+    select_best_n : `int`, default `None`
         Number of best samples (with lowest total loss) to save at the end.
         If set to 0, saves all samples.
     nrow : `int`, default `None`
@@ -795,27 +904,26 @@ def main_pipeline(args: dict[str : int|float|str]):
         feat = forward_and_get_feat(model, x, activation)
         
         # Get true class labels for all samples
-        all_true_labels = torch.tensor([imgset.targets[sorted_indices[i]] for i in range(len(x))], device=device)
+        all_labels_true = torch.tensor([imgset.targets[sorted_indices[i]] for i in range(len(x))], device=device)
         
         # x is already in normalized space, classify directly
         logits_recon = model_cls(x)
         preds_recon = logits_recon.argmax(dim=1)
-        correct_mask = (preds_recon == all_true_labels)
+        correct_mask = (preds_recon == all_labels_true)
         correct_recon = correct_mask.sum().item()
         # correct_indices = torch.where(correct_mask)[0].cpu().tolist()
-        
     
     # Print classification statistics
     print("\nClassification accuracy (all samples):")
-    print(f"  Reconstructed images: {correct_recon}/{len(all_true_labels)} ({100*correct_recon/len(all_true_labels):.1f}%)")
+    print(f"    Reconstructed images: {correct_recon}/{len(all_labels_true)} ({100*correct_recon/len(all_labels_true):.1f}%)")
     
     # Print per-class accuracy if multiple classes
     if len(class_ids) > 1 and class_ids[0] != -1:
         print("\nPer-class accuracy (reconstructed, all samples):")
         for cid in sorted(class_ids):
-            class_mask = (all_true_labels == cid)
+            class_mask = (all_labels_true == cid)
             if class_mask.sum() > 0:
-                class_correct = (preds_recon[class_mask] == all_true_labels[class_mask]).sum().item()
+                class_correct = (preds_recon[class_mask] == all_labels_true[class_mask]).sum().item()
                 class_total = class_mask.sum().item()
                 print(f"  Class {cid}: {class_correct}/{class_total} ({100*class_correct/class_total:.1f}%)")
 
