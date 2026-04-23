@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Invert ImageNet-1K samples from regnet_x_3_2gf trunk-output features via gradient-based optimization.
+Invert ImageNet-1K samples from chosen network trunk-output features via gradient-based optimization.
 Uses only conv/ReLU/skip/pool/linear layers. Saves original and reconstructed batches.
 """
 import os
@@ -10,6 +10,7 @@ import time
 import random
 from math import sqrt, pi, erf
 from PIL import Image
+from typing import Literal
 
 import torch
 import torch.nn as nn
@@ -25,20 +26,19 @@ if module_dir not in sys.path:
     sys.path.insert(0, module_dir)
     
 from constants_configs import IMAGENET_CONSTANTS, MODEL_CONFIGS   # noqa: E402
-from helpful_funcs import get_model_and_features                                    # noqa: E402
+from helpful_funcs import get_model_and_features, format_classes_ids_str            # noqa: E402
 from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1   # noqa: E402
 
 
 # INVERSION TRAINING
 
-def format_classes_ids_str(classes_ids_list: list) -> str:
-    """Format list of class IDs into underscore-separated string with zero-padded 4-digit numbers"""
-    return '_'.join(f'{class_id:04d}' for class_id in sorted(classes_ids_list))
+
+# Operations with network & features
 
 
 def replace_relu_with_softplus(module: nn.Module, 
                                beta: float = 1.0, 
-                               threshold: float = 20.0) -> None:
+                               threshold: float = 20.0):
     """
     Recursively replace ReLU with Softplus inplace
     
@@ -54,7 +54,279 @@ def replace_relu_with_softplus(module: nn.Module,
             replace_relu_with_softplus(child, beta=beta, threshold=threshold)
 
 
-def sym_kl_div(x, y, per_sample: bool = False):
+def forward_and_get_feat(model, 
+                         x: torch.Tensor, 
+                         activation: dict) -> torch.Tensor:
+    """
+    Perform a forward pass through the model and extract a stored feature.
+
+    Args:
+        model:      PyTorch model that writes its intermediate feature into `activation['feat']`.
+        x:          Input tensor to the model.
+        activation: Dictionary that must contain the key 'feat' after the forward pass.
+
+    Returns:
+        The feature tensor stored in `activation['feat']`.
+    """
+    _ = model(x)
+    return activation['feat']
+
+
+def filter_and_sort_by_confidence(dataset: ImageNet, 
+                                  indices: list, 
+                                  model, 
+                                  device: str, 
+                                  batch_size: int, 
+                                  mean: torch.Tensor,
+                                  std: torch.Tensor, 
+                                  subset_size: int | None = 5000,
+                                  num_workers: int | None = 8, 
+                                  random_seed: int = 42) -> list:
+    """
+    Filter correctly classified images and sort by logit confidence difference.
+    
+    Args:
+        dataset:     ImageNet dataset.
+        indices:     List of dataset indices to process.
+        model:       Classification model.
+        device:      Device to run model inference on.
+        batch_size:  Batch size for processing.
+        mean:        Mean tensor for normalization.
+        std:         Standart deviation tensor for normalization.
+        subset_size: Number of samples to take from indices before filtering (default: 5000).
+        num_workers: Number of subprocesses for data loading.
+        
+    Returns:
+        List of sorted indices (descending by top-1 vs top-2 logit difference)
+    """
+    # Fix random seed for reproducibility
+    random.seed(random_seed)
+    print("Random seed:", random.getstate()[1][0])
+    
+    original_len = len(indices)
+    # Shuffle indices and limit to subset_size if specified
+    indices_list = list(indices)
+    random.shuffle(indices_list)
+    if subset_size > 0 and original_len > subset_size:
+        indices_list = indices_list[:subset_size]
+        print(f"Processing shuffled subset of {subset_size} images from {original_len} total indices")
+    
+    print("Filtering correctly classified images and computing logit differences...")
+    
+    subset_temp = Subset(dataset, indices_list)
+    loader_temp = DataLoader(subset_temp, batch_size=batch_size, shuffle=False, num_workers=num_workers)
+    
+    correct_indices = []
+    logit_diffs = []
+    
+    model = model.to(device)
+    model.eval()
+    
+    with torch.no_grad():
+        for batch_idx, (imgs, targets) in enumerate(loader_temp):
+            imgs = imgs.to(device)
+            imgs_norm = (imgs - mean) / std
+            logits = model(imgs_norm)
+            
+            # Get top-2 logits
+            top2_logits, top2_indices = torch.topk(logits, k=2, dim=1)
+            top1_logits = top2_logits[:, 0]
+            top2_logits = top2_logits[:, 1]
+            diff = top1_logits - top2_logits  # difference between top-1 and top-2 logits
+            
+            # Check which are correctly classified
+            preds = top2_indices[:, 0]
+            correct_mask = (preds == targets.to(device))
+            
+            # Store indices and differences for correctly classified images
+            batch_start_idx = batch_idx * batch_size
+            for i in range(len(targets)):
+                if correct_mask[i]:
+                    global_idx = indices_list[batch_start_idx + i]
+                    correct_indices.append(global_idx)
+                    logit_diffs.append(diff[i].item())
+    
+    # Sort by logit difference (descending)
+    sorted_pairs = sorted(zip(correct_indices, logit_diffs), key=lambda x: x[1], reverse=True)
+    sorted_indices = [idx for idx, _ in sorted_pairs]
+    
+    print(f"Found {len(sorted_indices)} correctly classified images out of {len(indices_list)} total")
+    
+    return sorted_indices
+
+
+def balance_classes(indices: list, 
+                    targets: list, 
+                    class_ids: list, 
+                    max_count: int | None = None):
+    """
+    Balance indices across multiple classes by interleaving.
+    
+    Args:
+        indices:   List of dataset indices
+        targets:   List of class labels for each index (e.g., imgset.targets)
+        class_ids: List of class IDs to balance across
+        max_count: Maximum number of indices to return (None for all)
+        
+    Returns:
+        Balanced list of indices interleaved across classes
+    """
+    if len(class_ids) <= 1 or (len(class_ids) == 1 and class_ids[0] == -1):
+        # No balancing needed for single class or all classes
+        result = indices[:max_count] if max_count else indices
+        return result
+    
+    # Group indices by class
+    indices_by_class = {class_id: [] for class_id in class_ids}
+    for idx in indices:
+        class_label = targets[idx]
+        if class_label in indices_by_class:
+            indices_by_class[class_label].append(idx)
+    
+    # Interleave indices to balance classes
+    balanced_indices = []
+    max_per_class = max(len(indices_by_class[class_id]) for class_id in class_ids)
+    for i in range(max_per_class):
+        for class_id in sorted(class_ids):
+            if i < len(indices_by_class[class_id]):
+                balanced_indices.append(indices_by_class[class_id][i])
+    
+    # Limit to max_count if specified
+    if max_count and len(balanced_indices) > max_count:
+        balanced_indices = balanced_indices[:max_count]
+    
+    return balanced_indices
+
+
+def select_best_per_class(batch_indices: list[int], 
+                          loss_per_sample: torch.Tensor, 
+                          targets: list, 
+                          class_ids: list, 
+                          select_n: int):
+    """
+    Select best samples per class, then balance across classes.
+    
+    Args:
+        batch_indices:   List of batch indices (0 to batch_size-1)
+        loss_per_sample: Tensor of per-sample losses (shape: [batch_size])
+        targets:         List of class labels for each batch index (from dataset)
+        class_ids:       List of class IDs to balance across
+        select_n:        Total number of samples to select
+        
+    Returns:
+        List of balanced batch indices
+    """
+    if len(class_ids) <= 1 or (len(class_ids) == 1 and class_ids[0] == -1):
+        # No balancing needed, just select top N
+        if select_n < len(batch_indices):
+            _, best = torch.topk(-loss_per_sample, k=select_n)
+            return best.cpu().tolist()
+        return list(range(len(batch_indices)))
+    
+    # Group batch indices by class
+    batch_indices_by_class = {class_id: [] for class_id in class_ids}
+    for batch_idx in batch_indices:
+        class_label = targets[batch_idx]
+        if class_label in batch_indices_by_class:
+            batch_indices_by_class[class_label].append(batch_idx)
+    
+    # Select best samples per class
+    samples_per_class = select_n // len(class_ids)
+    remainder = select_n % len(class_ids)
+    
+    selected_indices = []
+    for i, class_id in enumerate(sorted(class_ids)):
+        class_indices = batch_indices_by_class[class_id]
+        if not len(class_indices):
+            continue
+        
+        # Get losses for this class
+        class_losses = loss_per_sample[class_indices]
+        # Select best samples from this class
+        n_select = min(
+            samples_per_class + int(i < remainder), 
+            len(class_indices)
+        )
+        
+        if n_select:
+            _, best_class = torch.topk(-class_losses, k=n_select)
+            selected_indices.extend([class_indices[idx] for idx in best_class.cpu().tolist()])
+    
+    # Interleave to balance (in case we have more than needed)
+    if len(selected_indices) > select_n:
+        # Group by class again and interleave
+        selected_by_class = {class_id: [] for class_id in class_ids}
+        for idx in selected_indices:
+            class_label = targets[idx]
+            if class_label in selected_by_class:
+                selected_by_class[class_label].append(idx)
+        
+        balanced = []
+        max_per_class = max(len(selected_by_class[class_id]) for class_id in class_ids)
+        for i in range(max_per_class):
+            for class_id in sorted(class_ids):
+                if i < len(selected_by_class[class_id]):
+                    balanced.append(selected_by_class[class_id][i])
+                    if len(balanced) >= select_n:
+                        break
+            if len(balanced) >= select_n:
+                break
+        selected_indices = balanced[:select_n]
+    
+    return selected_indices
+
+
+def Phi(x: float) -> float:
+    # Standard normal CDF
+    return 0.5 * (1.0 + erf(x / sqrt(2.0)))
+
+def relu_normal_mean_std():
+    # v = max(0,s), s~N(0,1)
+    mu = 1.0 / sqrt(2.0 * pi)
+    var = 0.5 - mu * mu
+    return mu, sqrt(var)
+
+
+def ab_for_threshold(t: float):
+    """
+    Compute parameters `a`, `b` and probability `p` for a 2-level binariser:
+    
+    $ v_hat = b + a * 1{v > t}
+    
+    where `v = max(0,s)` and `s ~ N(0,1)`.
+    The parameters are chosen so that `E[v_hat] = E[v]` and `Std[v_hat] = Std[v]`.
+
+    Args:
+        t: Threshold (must be >= 0). If `t == 0`, `p = 0.5`. 
+           For `t<0`, `P(v>t)=1` degenerates (can't match nonzero std)
+
+    Returns:
+        a: Scaling factor
+        b: Shift
+        p: Probability P(v > t) = 1 - Phi(t) for t>0, else 0.5
+
+    Raises:
+        ValueError: If t < 0 or if p is not in (0,1) (e.g., t too large leading to p=0).
+    """
+    mu, sigma = relu_normal_mean_std()
+
+    if t < 0:
+        raise ValueError("t < 0 => P(v>t)=1 (degenerate). Use t >= 0.")
+
+    p = 0.5 if not t else 1.0 - Phi(t)   # P(v>t) = P(s>t) for t>0
+
+    if not (0.0 < p < 1.0):
+        raise ValueError(f"Need 0<p<1, got p={p}. Pick t>0 (or t=0 gives p=0.5).")
+
+    a = sigma / sqrt(p * (1.0 - p))
+    b = mu - a * p
+    return a, b, p
+
+
+# Losses calculations
+
+
+def sym_kl_div(x, y, per_sample: bool = False) -> float:
     """
     Symmetric Kullback–Leibler divergence between two logit tensors.
 
@@ -85,9 +357,109 @@ def sym_kl_div(x, y, per_sample: bool = False):
         kl2 = F.kl_div(y, x, log_target=True, reduction='batchmean')
 
     return 0.5 * (kl1 + kl2)
-    
 
-def compute_all_losses(feat, target_feat, x, tv_weight, l2_weight=0.0, l1_weight=0.0, tv_loss_orig=None, per_sample=False):
+
+def tv_feature_loss(f):
+    """
+    Compute isotropic total variation loss on a whitened feature map.
+
+    Steps:
+        1. Whiten the feature map per channel (subtract mean, divide by std).
+        2. Compute forward differences (horizontal and vertical) on the (H-1,W-1) grid.
+        3. Sum the absolute values of all differences.
+
+    Args:
+        f: Feature tensor of shape (B, C, H, W).
+
+    Returns:
+        Scalar TV loss (sum over batch, channels, and spatial positions).
+    """
+    # f: (B, C, H, W)
+    # whiten
+    f = (f - f.mean(dim=[0,2,3], keepdim=True)) / (f.std(dim=[0,2,3], keepdim=True) + 1e-5)
+    # compute spatial diffs
+    dh = f[:, :, 1:, :-1] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
+    dw = f[:, :, :-1, 1:] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
+    # squared magnitude of the C-dimensional gradient vector
+    grad2 = dh.abs().sum() + dw.abs().sum()  # (B, H-1, W-1)
+    # isotropic vector-TV
+    return grad2
+
+def gradient_edginess(x: torch.Tensor, 
+                      eps: float = 1e-8) -> torch.Tensor:
+    """
+    Compute edge strength (gradient magnitude) per pixel.
+
+    Uses simple forward differences along height and width, then sums over channels
+    and takes square root. The result is a 2D map per sample.
+
+    Args:
+        x:   Input tensor of shape (B, C, H, W), in float32, normalized as in inversion.
+        eps: Small constant for numerical stability.
+
+    Returns:
+        Edge strength tensor of shape (B, H, W) >= 0.
+    """
+    # simple forward differences (cheap + stable)
+    du = x[..., 1:, :] - x[..., :-1, :]
+    dv = x[..., :, 1:] - x[..., :, :-1]
+
+    # pad back to (H,W)
+    du = F.pad(du, (0, 0, 0, 1))  # pad last row
+    dv = F.pad(dv, (0, 1, 0, 0))  # pad last col
+
+    return torch.sqrt((du * du + dv * dv).sum(dim=1) + eps)  # sum over channels
+
+
+def centering_losses(x: torch.Tensor, 
+                     eps: float = 1e-8):
+    """
+    Compute centering and border losses based on the edge strength map.
+
+    The centering loss encourages the centre of mass of edges to be close to the image centre.
+    The border loss penalises edges near the image border.
+
+    Args:
+        x:   Input image tensor of shape (B, 3, H, W).
+        eps: Small constant for numerical stability.
+
+    Returns:
+        A tuple (L_ctr, L_bord) where both are scalar tensors (mean over batch).
+    """
+    B, C, H, W = x.shape
+    s = gradient_edginess(x, eps=eps)  # (B,H,W)
+
+    # coordinates
+    ii = torch.arange(H, device=x.device, dtype=x.dtype).view(1, H, 1).expand(B, H, W)
+    jj = torch.arange(W, device=x.device, dtype=x.dtype).view(1, 1, W).expand(B, H, W)
+
+    denom = s.sum(dim=(1,2)) + eps
+    mu_i = (s * ii).sum(dim=(1,2)) / denom
+    mu_j = (s * jj).sum(dim=(1,2)) / denom
+
+    c_i = (H - 1) / 2.0
+    c_j = (W - 1) / 2.0
+
+    L_ctr = ((mu_i - c_i) ** 2 + (mu_j - c_j) ** 2).mean()
+
+    # soft border penalty (radius^2)
+    di = (ii - c_i) / float(H)
+    dj = (jj - c_j) / float(W)
+    d2 = di * di + dj * dj
+    L_bord = (s * d2).sum(dim=(1,2)).mean() / (s.sum(dim=(1,2)).mean() + eps)
+
+    return L_ctr, L_bord
+  
+
+AllLosses = tuple[float, float, float, float, float, float, float]
+def compute_all_losses(feat, 
+                       target_feat, 
+                       x, 
+                       tv_weight=0.0, 
+                       l2_weight=0.0, 
+                       l1_weight=0.0, 
+                       tv_loss_orig=None, 
+                       per_sample=False) -> AllLosses:
     """
     Compute all loss components for feature matching and image regularization.
 
@@ -136,6 +508,9 @@ def compute_all_losses(feat, target_feat, x, tv_weight, l2_weight=0.0, l1_weight
     return loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss
 
 
+# Images processing
+
+
 def denormalize_and_process(x, mean, std):
     """
     Denormalize a tensor and apply contrast/saturation normalization.
@@ -149,22 +524,6 @@ def denormalize_and_process(x, mean, std):
         Denormalised tensor clamped to [0,1] and processed by `normalize_contrast_saturation`.
     """
     return normalize_contrast_saturation( (x * std + mean).clamp_(0., 1.) )
-
-
-def forward_and_get_feat(model, x, activation):
-    """
-    Perform a forward pass through the model and extract a stored feature.
-
-    Args:
-        model:      PyTorch model that writes its intermediate feature into `activation['feat']`.
-        x:          Input tensor to the model.
-        activation: Dictionary that must contain the key 'feat' after the forward pass.
-
-    Returns:
-        The feature tensor stored in `activation['feat']`.
-    """
-    _ = model(x)
-    return activation['feat']
 
 
 def save_reconstructed_images(x, mean, std, output_path, nrow=None):
@@ -223,332 +582,6 @@ def save_best_images(x_best, imgs_best, mean, std, out_dir, class_id_str, nrow=N
         os.path.join(out_dir, f'best_orig_{class_id_str}.png'),
         nrow=nrow,
     )
-
-
-def tv_feature_loss(f):
-    """
-    Compute isotropic total variation loss on a whitened feature map.
-
-    Steps:
-        1. Whiten the feature map per channel (subtract mean, divide by std).
-        2. Compute forward differences (horizontal and vertical) on the (H-1,W-1) grid.
-        3. Sum the absolute values of all differences.
-
-    Args:
-        f: Feature tensor of shape (B, C, H, W).
-
-    Returns:
-        Scalar TV loss (sum over batch, channels, and spatial positions).
-    """
-    # f: (B, C, H, W)
-    # whiten
-    f = (f - f.mean(dim=[0,2,3], keepdim=True)) / (f.std(dim=[0,2,3], keepdim=True) + 1e-5)
-    # compute spatial diffs
-    dh = f[:, :, 1:, :-1] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
-    dw = f[:, :, :-1, 1:] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
-    # squared magnitude of the C-dimensional gradient vector
-    grad2 = dh.abs().sum() + dw.abs().sum()  # (B, H-1, W-1)
-    # isotropic vector-TV
-    return grad2
-
-
-def gradient_edginess(x: torch.Tensor, 
-                      eps: float = 1e-8) -> torch.Tensor:
-    """
-    Compute edge strength (gradient magnitude) per pixel.
-
-    Uses simple forward differences along height and width, then sums over channels
-    and takes square root. The result is a 2D map per sample.
-
-    Args:
-        x:   Input tensor of shape (B, C, H, W), in float32, normalized as in inversion.
-        eps: Small constant for numerical stability.
-
-    Returns:
-        Edge strength tensor of shape (B, H, W) >= 0.
-    """
-    # simple forward differences (cheap + stable)
-    du = x[..., 1:, :] - x[..., :-1, :]
-    dv = x[..., :, 1:] - x[..., :, :-1]
-
-    # pad back to (H,W)
-    du = F.pad(du, (0, 0, 0, 1))  # pad last row
-    dv = F.pad(dv, (0, 1, 0, 0))  # pad last col
-
-    s = torch.sqrt((du * du + dv * dv).sum(dim=1) + eps)  # sum over channels
-    return s
-
-
-def centering_losses(x: torch.Tensor, 
-                     eps: float = 1e-8):
-    """
-    Compute centering and border losses based on the edge strength map.
-
-    The centering loss encourages the centre of mass of edges to be close to the image centre.
-    The border loss penalises edges near the image border.
-
-    Args:
-        x:   Input image tensor of shape (B, 3, H, W).
-        eps: Small constant for numerical stability.
-
-    Returns:
-        A tuple (L_ctr, L_bord) where both are scalar tensors (mean over batch).
-    """
-    B, C, H, W = x.shape
-    s = gradient_edginess(x, eps=eps)  # (B,H,W)
-
-    # coordinates
-    ii = torch.arange(H, device=x.device, dtype=x.dtype).view(1, H, 1).expand(B, H, W)
-    jj = torch.arange(W, device=x.device, dtype=x.dtype).view(1, 1, W).expand(B, H, W)
-
-    denom = s.sum(dim=(1,2)) + eps
-    mu_i = (s * ii).sum(dim=(1,2)) / denom
-    mu_j = (s * jj).sum(dim=(1,2)) / denom
-
-    c_i = (H - 1) / 2.0
-    c_j = (W - 1) / 2.0
-
-    L_ctr = ((mu_i - c_i) ** 2 + (mu_j - c_j) ** 2).mean()
-
-    # soft border penalty (radius^2)
-    di = (ii - c_i) / float(H)
-    dj = (jj - c_j) / float(W)
-    d2 = di * di + dj * dj
-    L_bord = (s * d2).sum(dim=(1,2)).mean() / (s.sum(dim=(1,2)).mean() + eps)
-
-    return L_ctr, L_bord
-
-
-def filter_and_sort_by_confidence(dataset, indices, model, device, batch_size, num_workers, mean, std, subset_size=5000):
-    """
-    Filter correctly classified images and sort by logit confidence difference.
-    
-    Args:
-        dataset: ImageNet dataset
-        indices: List of dataset indices to process
-        model: Classification model (should be in eval mode)
-        device: Device to run inference on
-        batch_size: Batch size for processing
-        mean: Mean tensor for normalization
-        std: Std tensor for normalization
-        subset_size: Number of samples to take from indices before filtering (default: 5000)
-        
-    Returns:
-        List of sorted indices (descending by top-1 vs top-2 logit difference)
-    """
-    # Fix random seed for reproducibility
-    random.seed(2147483648)
-    print("Random seed:", random.getstate()[1][0])
-    
-    original_len = len(indices)
-    # Shuffle indices and limit to subset_size if specified
-    indices_list = list(indices)
-    random.shuffle(indices_list)
-    if subset_size > 0 and original_len > subset_size:
-        indices_list = indices_list[:subset_size]
-        print(f"Processing shuffled subset of {subset_size} images from {original_len} total indices")
-    
-    print("Filtering correctly classified images and computing logit differences...")
-    
-    subset_temp = Subset(dataset, indices_list)
-    loader_temp = DataLoader(subset_temp, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-    
-    correct_indices = []
-    logit_diffs = []
-    
-    with torch.no_grad():
-        for batch_idx, (imgs, targets) in enumerate(loader_temp):
-            imgs = imgs.to(device)
-            imgs_norm = (imgs - mean) / std
-            logits = model(imgs_norm)
-            
-            # Get top-2 logits
-            top2_logits, top2_indices = torch.topk(logits, k=2, dim=1)
-            top1_logits = top2_logits[:, 0]
-            top2_logits = top2_logits[:, 1]
-            diff = top1_logits - top2_logits  # difference between top-1 and top-2 logits
-            
-            # Check which are correctly classified
-            preds = top2_indices[:, 0]
-            correct_mask = (preds == targets.to(device))
-            
-            # Store indices and differences for correctly classified images
-            batch_start_idx = batch_idx * batch_size
-            for i in range(len(targets)):
-                if correct_mask[i]:
-                    global_idx = indices_list[batch_start_idx + i]
-                    correct_indices.append(global_idx)
-                    logit_diffs.append(diff[i].item())
-    
-    # Sort by logit difference (descending)
-    sorted_pairs = sorted(zip(correct_indices, logit_diffs), key=lambda x: x[1], reverse=True)
-    sorted_indices = [idx for idx, _ in sorted_pairs]
-    
-    print(f"Found {len(sorted_indices)} correctly classified images out of {len(indices_list)} total")
-    
-    return sorted_indices
-
-
-def balance_classes(indices, 
-                    targets, 
-                    class_ids, 
-                    max_count=None):
-    """
-    Balance indices across multiple classes by interleaving.
-    
-    Args:
-        indices: List of dataset indices
-        targets: List of class labels for each index (e.g., imgset.targets)
-        class_ids: List of class IDs to balance across
-        max_count: Maximum number of indices to return (None for all)
-        
-    Returns:
-        Balanced list of indices interleaved across classes
-    """
-    if len(class_ids) <= 1 or (len(class_ids) == 1 and class_ids[0] == -1):
-        # No balancing needed for single class or all classes
-        result = indices[:max_count] if max_count else indices
-        return result
-    
-    # Group indices by class
-    indices_by_class = {cid: [] for cid in class_ids}
-    for idx in indices:
-        class_label = targets[idx]
-        if class_label in indices_by_class:
-            indices_by_class[class_label].append(idx)
-    
-    # Interleave indices to balance classes
-    balanced_indices = []
-    max_per_class = max(len(indices_by_class[cid]) for cid in class_ids)
-    for i in range(max_per_class):
-        for cid in sorted(class_ids):
-            if i < len(indices_by_class[cid]):
-                balanced_indices.append(indices_by_class[cid][i])
-    
-    # Limit to max_count if specified
-    if max_count and len(balanced_indices) > max_count:
-        balanced_indices = balanced_indices[:max_count]
-    
-    return balanced_indices
-
-
-def select_best_per_class(batch_indices, loss_per_sample, targets, class_ids, select_n):
-    """
-    Select best samples per class, then balance across classes.
-    
-    Args:
-        batch_indices: List of batch indices (0 to batch_size-1)
-        loss_per_sample: Tensor of per-sample losses (shape: [batch_size])
-        targets: List of class labels for each batch index (from dataset)
-        class_ids: List of class IDs to balance across
-        select_n: Total number of samples to select
-        
-    Returns:
-        List of balanced batch indices
-    """
-    if len(class_ids) <= 1 or (len(class_ids) == 1 and class_ids[0] == -1):
-        # No balancing needed, just select top N
-        if select_n < len(batch_indices):
-            _, best = torch.topk(-loss_per_sample, k=select_n)
-            return best.cpu().tolist()
-        return list(range(len(batch_indices)))
-    
-    # Group batch indices by class
-    batch_indices_by_class = {cid: [] for cid in class_ids}
-    for batch_idx in batch_indices:
-        class_label = targets[batch_idx]
-        if class_label in batch_indices_by_class:
-            batch_indices_by_class[class_label].append(batch_idx)
-    
-    # Select best samples per class
-    samples_per_class = select_n // len(class_ids)
-    remainder = select_n % len(class_ids)
-    
-    selected_indices = []
-    for i, cid in enumerate(sorted(class_ids)):
-        class_indices = batch_indices_by_class[cid]
-        if len(class_indices) == 0:
-            continue
-        
-        # Get losses for this class
-        class_losses = loss_per_sample[class_indices]
-        # Select best samples from this class
-        n_select = samples_per_class + (1 if i < remainder else 0)
-        n_select = min(n_select, len(class_indices))
-        
-        if n_select > 0:
-            _, best_class = torch.topk(-class_losses, k=n_select)
-            selected_indices.extend([class_indices[idx] for idx in best_class.cpu().tolist()])
-    
-    # Interleave to balance (in case we have more than needed)
-    if len(selected_indices) > select_n:
-        # Group by class again and interleave
-        selected_by_class = {cid: [] for cid in class_ids}
-        for idx in selected_indices:
-            class_label = targets[idx]
-            if class_label in selected_by_class:
-                selected_by_class[class_label].append(idx)
-        
-        balanced = []
-        max_per_class = max(len(selected_by_class[cid]) for cid in class_ids)
-        for i in range(max_per_class):
-            for cid in sorted(class_ids):
-                if i < len(selected_by_class[cid]):
-                    balanced.append(selected_by_class[cid][i])
-                    if len(balanced) >= select_n:
-                        break
-            if len(balanced) >= select_n:
-                break
-        selected_indices = balanced[:select_n]
-    
-    return selected_indices
-
-
-def Phi(x: float) -> float:
-    # Standard normal CDF
-    return 0.5 * (1.0 + erf(x / sqrt(2.0)))
-
-def relu_normal_mean_std():
-    # v = max(0,s), s~N(0,1)
-    mu = 1.0 / sqrt(2.0 * pi)
-    var = 0.5 - mu * mu
-    return mu, sqrt(var)
-
-
-def ab_for_threshold(t: float):
-    """
-    Compute parameters `a`, `b` and probability `p` for a 2-level binariser:
-    
-    $ v_hat = b + a * 1{v > t}
-    
-    where `v = max(0,s)` and `s ~ N(0,1)`.
-    The parameters are chosen so that `E[v_hat] = E[v]` and `Std[v_hat] = Std[v]`.
-
-    Args:
-        t: Threshold (must be >= 0). If `t == 0`, `p = 0.5`. For `t<0`, `P(v>t)=1` degenerates (can't match nonzero std)
-
-    Returns:
-        a: Scaling factor
-        b: Shift
-        p: Probability P(v > t) = 1 - Phi(t) for t>0, else 0.5
-
-    Raises:
-        ValueError: If t < 0 or if p is not in (0,1) (e.g., t too large leading to p=0).
-    """
-    mu, sigma = relu_normal_mean_std()
-
-    if t < 0:
-        raise ValueError("t < 0 => P(v>t)=1 (degenerate). Use t >= 0.")
-
-    p = 0.5 if not t else 1.0 - Phi(t)   # P(v>t) = P(s>t) for t>0
-
-    if not (0.0 < p < 1.0):
-        raise ValueError(f"Need 0<p<1, got p={p}. Pick t>0 (or t=0 gives p=0.5).")
-
-    a = sigma / sqrt(p * (1.0 - p))
-    b = mu - a * p
-    return a, b, p
-
 
 class ImageFolderDataset(Dataset):
     """
@@ -658,68 +691,64 @@ def val_model_on_files(network_name: str,
     return accuracy, correct, total
 
 
-def main_pipeline(args: dict[str : int|float|str]):
+def main_pipeline(data_dir: str | None = './data/imagenet',
+                  class_ids_str: str | None = "-1",
+                  network_name: str | None = "regnet_x_3_2",
+                  batch_size: int | None = 25,
+                  num_workers: int | None = 8,
+                  steps: int | None = 4000,
+                  lr: float | None = 0.1,
+                  sigma: float | None = 0.01,
+                  beta: float | None = 4.0,
+                  tv_weight: float | None = 5e-5,
+                  l2_weight: float | None = 10.0,
+                  l1_weight: float | None = 0.0,
+                  subset_size: int | None = 5000,
+                  threshold: float | None = None,
+                  select_best_n: int | None = None,
+                  nrow: int | None = None,
+                  out_dir: str | None = "./output",
+                  run_mode: Literal["debug", "run"] | None = "run"):
     """
     Run feature inversion for ImageNet classes using specified hyperparameters.
 
-    Args
-    ----------
-    args : Dictionary containing configuration parameters (see keys below).
-
-    Keys in ``args``:
-    ----------------
-    data_dir : `str`, default `'./data/imagenet'`
-        Path to the ImageNet validation set root folder.
-    class_ids : `str`, default '-1'
-        ImageNet class index(es). Can be:
-            - a single integer as string, e.g. '42'
-            - comma-separated list, e.g. '0,1,2'
-            - '-1' to process all classes.
-    network : `str`, default `'regnet_x_3_2'`
-        Name of the neural network architecture to invert.
-    batch_size : `int`, default `25`
-        Number of samples per batch during optimisation.
-    steps : `int`, default `4000`
-        Number of optimisation iterations (gradient steps) per image.
-    lr : `float`, default `0.1`
-        Learning rate for the optimiser.
-    sigma : `float`, default `0.01`
-        Standard deviation of Gaussian noise used for initial image guess.
-    beta : `float`, default `4.0`
-        Beta parameter of the Softplus activation (replaces ReLU).
-    tv_weight : `float`, default `5e-5`
-        Weight of the total variation (TV) regularization term.
-    l2_weight : `float`, default `10.0`
-        Weight of the L2 (MSE) loss between the target and predicted features.
-    l1_weight : `float`, default `0.0`
-        Weight of the L1 (Lasso) regularization term on the reconstructed image.
-    subset_size : `int`, default `5000`
-        Number of samples to load from the dataset before filtering/sorting.
-    threshold : `float`, default `None`
-        If not `None`, binarises the target feature map: values >= threshold become 1,
-        others become 0. This is applied before computing losses.
-    select_best_n : `int`, default `None`
-        Number of best samples (with lowest total loss) to save at the end.
-        If set to 0, saves all samples.
-    nrow : `int`, default `None`
-        Number of images per row in the output grid. If `None` or `0`, automatically
-        determined as `sqrt(batch_size)`.
-    out : `str`, default 'output'
-        Directory where all results (reconstructed images, logs, etc.) will be saved.
-    run_mode : `Literal["debug", "run"]`, default `"run"`
-        Mode to run inversion training: `"debug"` adds debugging print statements
+    Args:
+        data_dir:      Path to the ImageNet validation set root folder.
+        class_ids:     ImageNet class index(es). Can be:
+                           - a single integer as string, e.g. '42'
+                           - comma-separated list, e.g. '0,1,2'
+                           - '-1' to process all classes.
+        network_name:  Name of the neural network architecture to invert.
+        batch_size:    Number of samples per batch during optimization.
+        num_workers:   Number of subprocesses for data loading.
+        steps:         Number of optimization iterations (gradient steps) per image.
+        lr:            Learning rate for the optimiser.
+        sigma:         Standard deviation of Gaussian noise used for initial image guess.
+        beta:          Beta parameter of the Softplus activation (replaces ReLU).
+        tv_weight:     Weight of the total variation (TV) regularization term.
+        l2_weight:     Weight of the L2 (MSE) loss between the target and predicted features.
+        l1_weight:     Weight of the L1 (Lasso) regularization term on the reconstructed image.
+        subset_size:   Number of samples to load from the dataset before filtering/sorting.
+        threshold:     If not `None`, binarises the target feature map: values >= threshold become 1,
+                       others become 0. This is applied before computing losses.
+        select_best_n: Number of best samples (with lowest total loss) to save at the end.
+                       If None or 0, saves all samples.
+        nrow:          Number of images per row in the output grid. If `None` or `0`, automatically
+                       determined as `sqrt(batch_size)`.
+        out_dir:       Directory to save all results (reconstructed images, logs, etc.).
+        run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
     """
     
-    print(f"\nStart inversion of {args["network"]} network on ImageNet dataset...\n")
+    print(f"\nStart inversion of {network_name} network on ImageNet dataset...\n")
 
     # Parse comma-separated class IDs
     try:
-        class_ids = [ int(cid.strip()) for cid in args["class_ids"].split(',') ]
+        class_ids = [ int(class_id.strip()) for class_id in class_ids_str.split(',') ]
     except ValueError:
-        raise ValueError(f"Invalid class id format: '{args["class_ids"]}'. Expected comma-separated integers or '-1' for all classes.")
+        raise ValueError(f"Invalid class id format: '{class_ids_str}'. Expected comma-separated integers or '-1' for all classes.")
 
 
-    os.makedirs(args["out_dir"], exist_ok=True)
+    os.makedirs(out_dir, exist_ok=True)
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
@@ -730,13 +759,13 @@ def main_pipeline(args: dict[str : int|float|str]):
 
     # 1. Load network 
     
-    model, features = get_model_and_features(args["network"])
+    model, features = get_model_and_features(network_name)
 
     # replacing ReLU with SoftPlus  
     print("ReLUs:   ", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
     print("Softplus:", sum(1 for m in model.modules() if isinstance(m, nn.Softplus)))
 
-    replace_relu_with_softplus(model, beta=args["beta"])
+    replace_relu_with_softplus(model, beta=beta)
 
     print("ReLUs:   ", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
     print("Softplus:", sum(1 for m in model.modules() if isinstance(m, nn.Softplus)))
@@ -763,7 +792,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         transforms.ToTensor(),    # [0..1] float tensor
     ])
     
-    imgset = ImageNet(root=args["data_dir"], split='val', transform=transform_raw)
+    imgset = ImageNet(root=data_dir, split='val', transform=transform_raw)
     # Create string representation for file naming
     # imgset.targets is a plain Python list of length N with the class idx for each sample
     if len(class_ids) == 1 and class_ids[0] == -1:
@@ -774,34 +803,34 @@ def main_pipeline(args: dict[str : int|float|str]):
         indices = [i for i, t in enumerate(imgset.targets) if t in class_ids]
     
     # DEBUG: print class distribution
-    if args["run_mode"] == "debug":
+    if run_mode == "debug":
         print("    [debug] Class distribution before filtering: ")
         class_counts = {}
         for idx in indices:
             class_label = imgset.targets[idx]
             class_counts[class_label] = class_counts.get(class_label, 0) + 1
         print(f"    Found {len(indices)} images from classes {sorted(class_ids)}")
-        for cid in sorted(class_ids):
-            print(f"        Class {cid}: {class_counts.get(cid, 0)} images")
+        for class_id in sorted(class_ids):
+            print(f"        Class {class_id}: {class_counts.get(class_id, 0)} images")
 
     # 2a. Filter correctly classified images and sort by softmax confidence
     # Load a clean model for classification (before Softplus replacement)
-    model_cls, _ = get_model_and_features(args["network"])
+    model_cls, _ = get_model_and_features(network_name)
     model_cls.to(device).eval()
     sorted_indices = filter_and_sort_by_confidence(
         imgset, 
         indices, 
         model_cls, 
         device, 
-        args["batch_size"], 
-        args["num_workers"],
+        batch_size, 
         IMAGENET_CONSTANTS["mean"], 
         IMAGENET_CONSTANTS["std"], 
-        args["subset_size"]
+        subset_size,
+        num_workers
     )
     
     # DEBUG: print class distribution after filtering
-    if args["run_mode"] == "debug":
+    if run_mode == "debug":
         print("    [debug] Class distribution before filtering: ")
         if len(class_ids) > 1 or (len(class_ids) == 1 and class_ids[0] != -1):
             class_counts_after = {}
@@ -809,24 +838,24 @@ def main_pipeline(args: dict[str : int|float|str]):
                 class_label = imgset.targets[idx]
                 class_counts_after[class_label] = class_counts_after.get(class_label, 0) + 1
             print(f"    After filtering: {len(sorted_indices)} correctly classified images")
-            for cid in sorted(class_ids):
-                print(f"        Class {cid}: {class_counts_after.get(cid, 0)} correctly classified images")
+            for class_id in sorted(class_ids):
+                print(f"        Class {class_id}: {class_counts_after.get(class_id, 0)} correctly classified images")
 
     # Balance sampling across classes if multiple classes are requested
     if len(class_ids) > 1 and class_ids[0] != -1:
-        sorted_indices = balance_classes(sorted_indices, imgset.targets, class_ids, max_count=args["batch_size"])
+        sorted_indices = balance_classes(sorted_indices, imgset.targets, class_ids, max_count=batch_size)
         print(f"Balanced sampling: selected {len(sorted_indices)} images across classes {sorted(class_ids)}")
     
     # Create new loader from sorted images without shuffle
     subset = Subset(imgset, sorted_indices)
-    loader = DataLoader(subset, batch_size=args["batch_size"], shuffle=False, num_workers=args["num_workers"])
+    loader = DataLoader(subset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     imgs, _ = next(iter(loader))  # (B,3,224,224)
     imgs = imgs.to(device)
-    utils.save_image(imgs, os.path.join(args["out_dir"], f'orig_{class_id_str}.png'), nrow=int(sqrt(len(imgs))))
+    utils.save_image(imgs, os.path.join(out_dir, f'orig_{class_id_str}.png'), nrow=int(sqrt(len(imgs))))
 
     
-    # 3. Normalize for model input
+    # 3. Normalize images for model input
     
     imgs_norm = (imgs - IMAGENET_CONSTANTS["mean"]) / IMAGENET_CONSTANTS["std"]  # batch normalization with global constants
     
@@ -837,20 +866,20 @@ def main_pipeline(args: dict[str : int|float|str]):
     with torch.no_grad():
         _ = model(imgs_norm)
         target_feat = activation['feat'].detach()
-        if args["threshold"] is not None:
-            a, b, _ = ab_for_threshold(args["threshold"])
-            target_feat = b + a * (target_feat >= args["threshold"]).float()
+        if threshold is not None:
+            a, b, _ = ab_for_threshold(threshold)
+            target_feat = b + a * (target_feat >= threshold).float()
 
     
     # 5. Initialize reconstruction
     
-    noise = torch.randn_like(imgs_norm) * args["sigma"]
+    noise = torch.randn_like(imgs_norm) * sigma
     x = noise.requires_grad_(True)
 
-    #optimizer = optim.SGD([x], lr=args["lr"], momentum=0.9)
-    optimizer = optim.Adam([x], lr=args["lr"], betas=(0.9, 0.999))
-    #scheduler = optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda step: 1 - step / float(args["steps"]))
-    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args["steps"])
+    #optimizer = optim.SGD([x], lr=lr, momentum=0.9)
+    optimizer = optim.Adam([x], lr=lr, betas=(0.9, 0.999))
+    #scheduler = optim.lr_scheduler.LambdaLR(opt, lr_lambda=lambda step: 1 - step / float(steps))
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=steps)
 
     
     # 6. Reconstruction loop
@@ -858,10 +887,9 @@ def main_pipeline(args: dict[str : int|float|str]):
     recon_start = time.perf_counter()
     n_steps_log = 100
     
-    for step in range(args["steps"]+1):
+    for step in range(steps+1):
         recon_step_start = time.perf_counter()
 
-        l2_weight = args["l2_weight"]# * scheduler.get_last_lr()[0] / args["lr"]
         optimizer.zero_grad()
         
         feat = forward_and_get_feat(model, x, activation)
@@ -869,18 +897,17 @@ def main_pipeline(args: dict[str : int|float|str]):
             feat, 
             target_feat, 
             x, 
-            args["tv_weight"], 
+            tv_weight, 
             l2_weight=l2_weight, 
-            l1_weight=args["l1_weight"], 
+            l1_weight=l1_weight, 
             tv_loss_orig=tv_loss_orig
         )
         
         recon_step_time = time.perf_counter() - recon_step_start
         
         if not step % n_steps_log:
-            current_lr = optimizer.param_groups[0]['lr']
             print(
-                f"Step {step:<5}/{args["steps"]} | "
+                f"Step {step:<5}/{steps} | "
                 f"MSE: {loss_mse.item():<12.6f} "
                 f"KL: {loss_kl.item():<12.6f} "
                 f"TV: {loss_tv.item():<12.6f} "
@@ -888,15 +915,15 @@ def main_pipeline(args: dict[str : int|float|str]):
                 f"Centering: {centering_loss.item():<12.6f} "
                 f"Border: {border_loss.item():<12.6f} "
                 f"Total: {total_loss.item():<12.6f} "
-                f"LR: {current_lr:<10.6f} "
+                f"LR: {optimizer.param_groups[0]['lr']:<10.6f} "
                 f"Step time: {recon_step_time:<10.3f} s"
             )
             save_reconstructed_images(
                 x, 
                 IMAGENET_CONSTANTS["mean_awb"], 
                 IMAGENET_CONSTANTS["std"], 
-                os.path.join(args["out_dir"], f"recon_{step:04d}.png"), 
-                nrow=args["nrow"]
+                os.path.join(out_dir, f"recon_{step:04d}.png"), 
+                nrow=nrow
             )
 
         total_loss.backward()
@@ -904,7 +931,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         scheduler.step()
         
     recon_time = time.perf_counter() - recon_start
-    print(f"Reconstruction done in {recon_time:.3f} s. Average time for step: {recon_time / args["steps"]:.3f} s")
+    print(f"Reconstruction done in {recon_time:.3f} s. Average time for step: {recon_time / steps:.3f} s")
 
     # Check classification of all reconstructed images with original model
     with torch.no_grad():
@@ -927,12 +954,12 @@ def main_pipeline(args: dict[str : int|float|str]):
     # Print per-class accuracy if multiple classes
     if len(class_ids) > 1 and class_ids[0] != -1:
         print("\nPer-class accuracy (reconstructed, all samples):")
-        for cid in sorted(class_ids):
-            class_mask = (all_labels_true == cid)
+        for class_id in sorted(class_ids):
+            class_mask = (all_labels_true == class_id)
             if class_mask.sum() > 0:
                 class_correct = (preds_recon[class_mask] == all_labels_true[class_mask]).sum().item()
                 class_total = class_mask.sum().item()
-                print(f"  Class {cid}: {class_correct}/{class_total} ({100*class_correct/class_total:.1f}%)")
+                print(f"  Class {class_id}: {class_correct}/{class_total} ({100*class_correct/class_total:.1f}%)")
 
     
     # 7. Select best samples and save (only from correctly classified)
@@ -947,9 +974,9 @@ def main_pipeline(args: dict[str : int|float|str]):
             feat, 
             target_feat, 
             x,
-            args["tv_weight"], 
-            l2_weight=args["l2_weight"], 
-            l1_weight=args["l1_weight"], 
+            tv_weight, 
+            l2_weight=l2_weight, 
+            l1_weight=l1_weight, 
             tv_loss_orig=tv_loss_orig_per_sample, 
             per_sample=True
         )
@@ -959,7 +986,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         # Use all samples (do not drop misclassified)
         loss_per_sample_correct = loss_per_sample
         num_correct = loss_per_sample_correct.size(0)
-        select_n = min(args["select_best_n"], num_correct) if args["select_best_n"] is not None else num_correct
+        select_n = min(select_best_n, num_correct) if select_best_n else num_correct
         
         # Get class labels for all batch indices
         batch_targets_correct = [imgset.targets[sorted_indices[i]] for i in range(num_correct)]
@@ -991,7 +1018,7 @@ def main_pipeline(args: dict[str : int|float|str]):
         #imgs_mean_best = imgs_mean[best_indices]
         
         # Save reconstructed and original images for the best subset
-        save_best_images(x_best, imgs_best, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], args["out_dir"], class_id_str, nrow=args["nrow"])
+        save_best_images(x_best, imgs_best, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], out_dir, class_id_str, nrow=nrow)
         
         # Print loss statistics
         print(f"\nBest samples total_loss range: [{loss_per_sample[best_indices].min().item():<12.6f}, {loss_per_sample[best_indices].max().item():<12.6f}]")
@@ -1015,6 +1042,23 @@ def get_grid_images_paths(networks_names: list[str],
                           classes_ids_list: list[int],
                           grid_images_prefix: str | None = "best_orig_vs_recon_",
                           grid_images_ext: str | None = "png"):
+    """
+    Return a dictionary mapping each network name to a list of grid image paths.
+
+    If the network's batch size is at least the number of classes, a single path
+    constructed with the formatted class IDs is returned. Otherwise, all files
+    with the given extension in the network's subdirectory are returned.
+    
+    Args:
+        networks_names:     List of network names.
+        val_images_dir:     Path to directory with grid image(s).
+        classes_ids_list:   List of integer class IDs.
+        grid_images_prefix: Prefix for the grid image filename when a single path is generated.
+        grid_images_ext:    File extension for the grid images (without dot).
+
+    Returns:
+        Dictionary mapping network name to a list of absolute file paths to grid images.
+    """
     return {
         network_name :  [ 
                             os.path.join(
@@ -1097,6 +1141,18 @@ def split_comparison_val_image(grid_path: str,
 def get_labels_for_val(classes_ids_list: list,
                        batch_size: int,
                        select_best_n: int | None = 10) -> list:
+    """
+    Generate ground truth labels for validation based on the balanced selection logic 
+    of `main_pipeline`.
+
+    Args:
+        classes_ids_list: List of class IDs to balance.
+        batch_size:       Total number of images in the batch (capped by `select_best_n`).
+        select_best_n:    Number of best sample pairs selected.
+
+    Returns:
+        List of integer class labels in the order they appear in the split grid.
+    """
     labels = []
     select_best_n = min(batch_size, select_best_n)
     n_samples_base = select_best_n // len(classes_ids_list)

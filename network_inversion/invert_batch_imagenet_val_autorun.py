@@ -13,8 +13,8 @@ from invert_batch_imagenet_val_as_func import main_pipeline, val_model_on_files,
 
 
 def train_inversion(networks_names: list[str],
-                    dataset_dir: str | None = './data/imagenet',
-                    dataset_name: str |  None = "dataset",
+                    dataset_dir: str | None = "./data/imagenet",
+                    dataset_name: str | None = "dataset",
                     classes_ids: str | None = "-1",
                     num_workers: int | None = 8,
                     n_training_steps: int | None = 4000, 
@@ -30,30 +30,63 @@ def train_inversion(networks_names: list[str],
                     n_images_per_row: int | None = 2,
                     out_dir: str | None = None,
                     run_mode: Literal["debug", "run"] | None = "run"):
+    """
+    Run feature inversion training for ImageNet classes on a list of neural networks.
+
+    Iterates over the given network names and calls the main inversion pipeline
+    with the provided hyperparameters, automatically constructing the output
+    directory based on network name, dataset name, number of steps, and class IDs.
+    
+    Args:
+        data_dir:      Path to the ImageNet validation set root folder.
+        class_ids:     ImageNet class index(es). Can be:
+                           - a single integer as string, e.g. '42'
+                           - comma-separated list, e.g. '0,1,2'
+                           - '-1' to process all classes.
+        network_name:  Name of the neural network architecture to invert.
+        batch_size:    Number of samples per batch during optimization.
+        num_workers:   Number of subprocesses for data loading.
+        steps:         Number of optimization iterations (gradient steps) per image.
+        lr:            Learning rate for the optimiser.
+        sigma:         Standard deviation of Gaussian noise used for initial image guess.
+        beta:          Beta parameter of the Softplus activation (replaces ReLU).
+        tv_weight:     Weight of the total variation (TV) regularization term.
+        l2_weight:     Weight of the L2 (MSE) loss between the target and predicted features.
+        l1_weight:     Weight of the L1 (Lasso) regularization term on the reconstructed image.
+        subset_size:   Number of samples to load from the dataset before filtering/sorting.
+        threshold:     If not `None`, binarises the target feature map: values >= threshold become 1,
+                       others become 0. This is applied before computing losses.
+        select_best_n: Number of best samples (with lowest total loss) to save at the end.
+                       If None or 0, saves all samples.
+        nrow:          Number of images per row in the output grid. If `None` or `0`, automatically
+                       determined as `sqrt(batch_size)`.
+        out_dir:       Directory to save all results (reconstructed images, logs, etc.).
+        run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
+    """
     for network_name in networks_names:
-        main_pipeline({
-            "data_dir":      dataset_dir,
-            "class_ids":     classes_ids,
-            "network":       network_name,
-            "batch_size":    MODEL_CONFIGS[network_name]["batch_size"],
-            "num_workers":   num_workers,
-            "steps":         n_training_steps,
-            "lr":            learning_rate_start,
-            "sigma":         gaussian_noise_sigma,
-            "beta":          softplus_beta,
-            "tv_weight":     total_variance_weight,
-            "l2_weight":     l2_reg_weight,
-            "l1_weight":     l1_reg_weight,
-            "subset_size":   subset_size,
-            "threshold":     threshold,
-            "select_best_n": select_best_n,
-            "nrow":          n_images_per_row,
-            "out_dir":       out_dir or f"network_inversion/"
-                                        f"inversion_images_logs/"
-                                        f"inversion_{network_name}_{dataset_name}/"
-                                        f"steps_{n_training_steps}_classes_{classes_ids}",
-            "run_mode":      run_mode
-        })
+        main_pipeline(
+            dataset_dir,
+            classes_ids,
+            network_name,
+            MODEL_CONFIGS[network_name]["batch_size"],
+            num_workers,
+            n_training_steps,
+            learning_rate_start,
+            gaussian_noise_sigma,
+            softplus_beta,
+            total_variance_weight,
+            l2_reg_weight,
+            l1_reg_weight,
+            subset_size,
+            threshold,
+            select_best_n,
+            n_images_per_row,
+            out_dir or f"network_inversion/"
+                       f"inversion_images_logs/"
+                       f"inversion_{network_name}_{dataset_name}/"
+                       f"steps_{n_training_steps}_classes_{classes_ids}",
+            run_mode
+        )
 
 
 def val_inversion(networks_names: list[str],
@@ -63,6 +96,22 @@ def val_inversion(networks_names: list[str],
                   num_workers: int | None = 8,
                   print_details: bool | None = True,
                   top_k_preds: int | None = 1):
+    """
+    Run validation on original and reconstructed images for a list of networks.
+
+    For each network, validates both the original images and the corresponding
+    reconstructions, printing classification accuracy and optional top-k predictions.
+
+    Args:
+        networks_names:    List of network architecture names.
+        orig_images_dirs:  List of directories containing original images (one per network).
+        recon_images_dirs: List of directories containing reconstructed images (one per network).
+        labels_true_all:   List of ground truth label lists (one per network).
+        num_workers:       Number of DataLoader workers.
+        print_details:     Whether to print per-image prediction details.
+        top_k_preds:       Number of top predictions to display when `print_details` is True.
+    """
+    
     for network_name, orig_images_dir, recon_images_dir, labels_true in zip(networks_names, 
                                                                             orig_images_dirs, 
                                                                             recon_images_dirs,
@@ -95,7 +144,7 @@ def val_inversion(networks_names: list[str],
 
 if __name__ == '__main__':
     
-    networks_names = MODEL_CONFIGS.keys()
+    networks_names = ["convnext_l", "swin_v2_b"]# MODEL_CONFIGS.keys()
     
     classes_ids = "1, 10, 100, 999"
     classes_ids_int = [ int(class_id.strip()) for class_id in classes_ids.split(",") ]
@@ -109,15 +158,16 @@ if __name__ == '__main__':
     n_training_steps = 10_000
     select_best_n = 10
     
-    train_inversion(
-        networks_names, 
-        dataset_dir_imagenet, 
-        dataset_name, 
-        n_training_steps=n_training_steps,
-        classes_ids=classes_ids,
-        select_best_n=select_best_n,
-        run_mode="debug"
-    )
+    for class_id in classes_ids_int:
+        train_inversion(
+            networks_names, 
+            dataset_dir_imagenet, 
+            dataset_name, 
+            n_training_steps=n_training_steps,
+            classes_ids=str(class_id),
+            select_best_n=select_best_n,
+            run_mode="debug"
+        )
     
     # inversion validation
     
