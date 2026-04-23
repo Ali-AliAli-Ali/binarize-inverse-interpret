@@ -1,12 +1,16 @@
 from time import time
+from itertools import islice
 import torch
 from torch.utils.data import DataLoader
 
-from constants_configs import MODEL_CONFIGS
+from constants_configs import MODELS_CONFIGS
 
 
 seed = 42
 torch.manual_seed(seed)
+
+
+# Auxiliaries
 
 
 def format_classes_ids_str(classes_ids_list: list) -> str:
@@ -14,13 +18,44 @@ def format_classes_ids_str(classes_ids_list: list) -> str:
     return '_'.join(f'{class_id:04d}' for class_id in sorted(classes_ids_list))
 
 
-def get_model_and_features(model_name: str) -> tuple:
-    if model_name not in MODEL_CONFIGS:
-        raise ValueError(f"Unsupported network name: {model_name}. Available networks: {list(MODEL_CONFIGS.keys())}")
+def iterate_by_batch(lst, batch_size: int | None = 1):
+    """ 
+    Iterate over `lst` by batches of `batch_size` (or less if batch is the last).
+    
+    Args:
+        lst:        Iterable object
+        batch_size: Batch size
+        
+    Yields:
+        List of `batch_size` elements from `lst`
+    """
+    iterator = iter(lst)
+    while True:
+        batch = list(islice(iterator, batch_size))
+        if not batch:
+            break
+        yield batch
 
-    config = MODEL_CONFIGS[model_name]
+
+def get_model_and_features(model_name: str) -> tuple:
+    """
+    Load a model and its feature extraction module.
+
+    Args:
+        model_name:   Name of the model to load (e.g., 'resnet18', 'regnet_x_3_2').
+        model_family: Model family to fasten the search. If `None`, search across all families.
+
+    Returns:
+        tuple: (model, feature_extractor_module)
+    """ 
+    if model_name not in MODELS_CONFIGS:
+        raise ValueError(f"Unsupported network name: {model_name}. Available networks: {list(MODELS_CONFIGS.keys())}")
+
+    config = MODELS_CONFIGS[model_name]
     model = config["builder"](weights=config["weights"])
     return model, getattr(model, config["feature_attr"])
+
+# Models inference & pretty print
 
 
 @torch.inference_mode()

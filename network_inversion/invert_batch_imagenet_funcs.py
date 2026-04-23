@@ -25,7 +25,7 @@ module_dir = os.path.abspath( os.path.join(script_dir, '..', 'common_key_functio
 if module_dir not in sys.path:
     sys.path.insert(0, module_dir)
     
-from constants_configs import IMAGENET_CONSTANTS, MODEL_CONFIGS   # noqa: E402
+from constants_configs import IMAGENET_CONSTANTS, MODELS_CONFIGS   # noqa: E402
 from helpful_funcs import get_model_and_features, format_classes_ids_str            # noqa: E402
 from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1   # noqa: E402
 
@@ -1033,7 +1033,6 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     print("\nDone!\n")
 
 
-
 # INVERSION VALIDATION
 
 
@@ -1067,7 +1066,7 @@ def get_grid_images_paths(networks_names: list[str],
                                 f"{grid_images_prefix}{format_classes_ids_str(classes_ids_list)}.{grid_images_ext}"
                             ) 
                         ]
-            if MODEL_CONFIGS[network_name]["batch_size"] >= len(classes_ids_list) else
+            if MODELS_CONFIGS[network_name]["batch_size"] >= len(classes_ids_list) else
                         [
                            os.path.join(val_images_dir, network_name, image_name)
                            for image_name in os.listdir( os.path.join(val_images_dir, network_name) ) 

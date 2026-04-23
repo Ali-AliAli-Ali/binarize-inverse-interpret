@@ -2,7 +2,10 @@ import torch
 from torchvision import models
 
 
-MODEL_CONFIGS = {
+MODELS_CONFIGS = {
+    
+    # RegNets
+    
     "regnet_x_3_2": {
         "batch_size": 16,
         "builder": models.regnet_x_3_2gf,
@@ -21,6 +24,9 @@ MODEL_CONFIGS = {
         "weights": models.RegNet_X_32GF_Weights.DEFAULT,
         "feature_attr": "trunk_output"
     },
+    
+    # ResNets
+    
     "resnet50": {
         "batch_size": 12,
         "builder": models.resnet50,
@@ -39,6 +45,9 @@ MODEL_CONFIGS = {
         "weights": models.Wide_ResNet101_2_Weights.IMAGENET1K_V1,
         "feature_attr": "layer4"
     },
+    
+    # Other CNNS
+    
     "efficientnet_v2_l": {
         "batch_size": 3,
         "builder": models.efficientnet_v2_l,
@@ -51,6 +60,9 @@ MODEL_CONFIGS = {
         "weights": models.ConvNeXt_Large_Weights.IMAGENET1K_V1,
         "feature_attr": "features"
     },
+    
+    # Transformers
+    
     "swin_v2_b": {
         "batch_size": 3,
         "builder": models.swin_v2_b,
