@@ -9,6 +9,11 @@ seed = 42
 torch.manual_seed(seed)
 
 
+def format_classes_ids_str(classes_ids_list: list) -> str:
+    """Format list of class IDs into underscore-separated string with zero-padded 4-digit numbers"""
+    return '_'.join(f'{class_id:04d}' for class_id in sorted(classes_ids_list))
+
+
 def get_model_and_features(model_name: str) -> tuple:
     if model_name not in MODEL_CONFIGS:
         raise ValueError(f"Unsupported network name: {model_name}. Available networks: {list(MODEL_CONFIGS.keys())}")

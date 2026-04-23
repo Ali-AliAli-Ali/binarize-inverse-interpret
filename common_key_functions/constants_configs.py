@@ -32,8 +32,39 @@ MODEL_CONFIGS = {
         "builder": models.resnet18,
         "weights": models.ResNet18_Weights.DEFAULT,
         "feature_attr": "layer4"
-    }
+    },
+    "wide_resnet101_2": {
+        "batch_size": 3,
+        "builder": models.wide_resnet101_2,
+        "weights": models.Wide_ResNet101_2_Weights.IMAGENET1K_V1,
+        "feature_attr": "layer4"
+    },
+    "efficientnet_v2_l": {
+        "batch_size": 3,
+        "builder": models.efficientnet_v2_l,
+        "weights": models.EfficientNet_V2_L_Weights.IMAGENET1K_V1,
+        "feature_attr": "features"
+    },
+    "convnext_l": {
+        "batch_size": 1,
+        "builder": models.convnext_large,
+        "weights": models.ConvNeXt_Large_Weights.IMAGENET1K_V1,
+        "feature_attr": "features"
+    },
+    "swin_v2_b": {
+        "batch_size": 3,
+        "builder": models.swin_v2_b,
+        "weights": models.Swin_V2_B_Weights.IMAGENET1K_V1,
+        "feature_attr": "features"
+    },
+    "vit_l_16": {
+        "batch_size": 1,
+        "builder": models.vit_l_16,
+        "weights": models.ViT_L_16_Weights.IMAGENET1K_V1,
+        "feature_attr": "encoder"       # output: (B, n_tokens, hidden_dim)
+    },
 }
+
 
 MEAN_IMAGENET = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
 IMAGENET_CONSTANTS = {
