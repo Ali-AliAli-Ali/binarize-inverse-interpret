@@ -28,6 +28,7 @@ if module_dir not in sys.path:
 from constants_configs import IMAGENET_CONSTANTS, MODELS_CONFIGS   # noqa: E402
 from helpful_funcs import get_model_and_features, format_classes_ids_str            # noqa: E402
 from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1   # noqa: E402
+from training_logger import TrainingLogger    # noqa: E402
 
 
 # INVERSION TRAINING
@@ -312,9 +313,7 @@ def ab_for_threshold(t: float):
 
     if t < 0:
         raise ValueError("t < 0 => P(v>t)=1 (degenerate). Use t >= 0.")
-
     p = 0.5 if not t else 1.0 - Phi(t)   # P(v>t) = P(s>t) for t>0
-
     if not (0.0 < p < 1.0):
         raise ValueError(f"Need 0<p<1, got p={p}. Pick t>0 (or t=0 gives p=0.5).")
 
@@ -384,6 +383,7 @@ def tv_feature_loss(f):
     grad2 = dh.abs().sum() + dw.abs().sum()  # (B, H-1, W-1)
     # isotropic vector-TV
     return grad2
+
 
 def gradient_edginess(x: torch.Tensor, 
                       eps: float = 1e-8) -> torch.Tensor:
@@ -736,7 +736,8 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         nrow:          Number of images per row in the output grid. If `None` or `0`, automatically
                        determined as `sqrt(batch_size)`.
         out_dir:       Directory to save all results (reconstructed images, logs, etc.).
-        run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
+        run_mode:      Mode to run inversion training. Mode `"debug"` adds debugging print statements and
+                       saves intermediate inversion images
     """
     
     print(f"\nStart inversion of {network_name} network on ImageNet dataset...\n")
@@ -761,7 +762,6 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     
     model, features = get_model_and_features(network_name)
 
-    # replacing ReLU with SoftPlus  
     print("ReLUs:   ", sum(1 for m in model.modules() if isinstance(m, nn.ReLU)))
     print("Softplus:", sum(1 for m in model.modules() if isinstance(m, nn.Softplus)))
 
@@ -777,10 +777,30 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     activation = {}
     hooks = {}
 
-    # Hook trunk_output (pre-pool) features
+
+    # hook getting trunk_output (pre-pool) features
     def hook_fn(module, input, output):
         activation['feat'] = output
-    hooks['feat'] = features.register_forward_hook(hook_fn)
+        
+    # hook reshaping ViT encoder output to 4D feature map
+    def vit_encoder_hook(module, input, output):
+        # Remove CLS token (assumed to be the first token)
+        patch_tokens = output[:, 1:, :]                     # (B, num_patches, D)
+        B, N, D = patch_tokens.shape
+        
+        # Calculate grid size (square root of num_patches)
+        grid_size = int(N ** 0.5)
+        assert grid_size * grid_size == N, \
+            f"Number of ViT patches {N} is not a perfect square, " \
+            f"check input image size and patch size."
+        
+        # Reshape: (B, grid, grid, D) -> (B, D, grid, grid)
+        activation['feat'] = patch_tokens.transpose(1, 2).reshape(B, D, grid_size, grid_size)    
+        
+    if "vit_" in network_name:
+        hooks['feat'] = model.encoder.register_forward_hook(vit_encoder_hook)
+    else:
+        hooks['feat'] = features.register_forward_hook(hook_fn)    
 
 
     # 2. Prepare ImageNet validation subset for given class
@@ -884,6 +904,12 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     
     # 6. Reconstruction loop
     
+    logger = TrainingLogger(
+        metric_names=["kl_loss", "mse_loss", "tv_loss", "l1_loss", "centering_loss", "border_loss", "total_loss"],
+        log_file=os.path.join(out_dir, "training_log.npz"),
+        max_steps=steps
+    )
+    
     recon_start = time.perf_counter()
     n_steps_log = 100
     
@@ -905,26 +931,29 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
         recon_step_time = time.perf_counter() - recon_step_start
         
+        logger.log(step, loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss)
+        
         if not step % n_steps_log:
             print(
                 f"Step {step:<5}/{steps} | "
-                f"MSE: {loss_mse.item():<12.6f} "
                 f"KL: {loss_kl.item():<12.6f} "
+                f"MSE: {loss_mse.item():<12.6f} "
                 f"TV: {loss_tv.item():<12.6f} "
                 f"L1: {loss_l1.item():<12.6f} "
                 f"Centering: {centering_loss.item():<12.6f} "
                 f"Border: {border_loss.item():<12.6f} "
                 f"Total: {total_loss.item():<12.6f} "
                 f"LR: {optimizer.param_groups[0]['lr']:<10.6f} "
-                f"Step time: {recon_step_time:<10.3f} s"
+                f"Step time: {recon_step_time:<6.3f} s"
             )
-            save_reconstructed_images(
-                x, 
-                IMAGENET_CONSTANTS["mean_awb"], 
-                IMAGENET_CONSTANTS["std"], 
-                os.path.join(out_dir, f"recon_{step:04d}.png"), 
-                nrow=nrow
-            )
+            if run_mode == "debug":
+                save_reconstructed_images(
+                    x, 
+                    IMAGENET_CONSTANTS["mean_awb"], 
+                    IMAGENET_CONSTANTS["std"], 
+                    os.path.join(out_dir, f"recon_{step:04d}.png"), 
+                    nrow=nrow
+                )
 
         total_loss.backward()
         optimizer.step()
@@ -932,6 +961,8 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
     recon_time = time.perf_counter() - recon_start
     print(f"Reconstruction done in {recon_time:.3f} s. Average time for step: {recon_time / steps:.3f} s")
+
+    logger.close()
 
     # Check classification of all reconstructed images with original model
     with torch.no_grad():

@@ -7,9 +7,9 @@ module_dir = os.path.abspath( os.path.join(script_dir, '..', 'common_key_functio
 if module_dir not in sys.path:
     sys.path.insert(0, module_dir)
     
-from constants_configs import MODELS_CONFIGS                              # noqa: E402
-from network_inversion.invert_batch_imagenet_funcs import main_pipeline   # noqa: E402
-from helpful_funcs import iterate_by_batch                                # noqa: E402
+from constants_configs import MODELS_CONFIGS            # noqa: E402
+from invert_batch_imagenet_funcs import main_pipeline   # noqa: E402
+from helpful_funcs import iterate_by_batch              # noqa: E402
 
 
 def train_inversion(networks_names: list[str],
@@ -63,7 +63,7 @@ def train_inversion(networks_names: list[str],
         out_dir:       Directory to save all results (reconstructed images, logs, etc.).
         run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
     """
-    classes_ids_list = sorted(classes_ids.split(","))
+    classes_ids_list = sorted([ class_id.strip() for class_id in classes_ids.split(',') ])
     
     for network_name in networks_names:
         batch_size = MODELS_CONFIGS[network_name]["batch_size"]
@@ -95,6 +95,7 @@ def train_inversion(networks_names: list[str],
         else:            
             for classes_ids_batch in iterate_by_batch(classes_ids_list, batch_size):
                 classes_ids_batch_str = str(classes_ids_batch)[1:-1].replace("'", "").replace('"', "")
+                
                 main_pipeline(
                     dataset_dir,
                     classes_ids_batch_str,
@@ -122,16 +123,14 @@ def train_inversion(networks_names: list[str],
 
 if __name__ == '__main__':
     
-    networks_names = ["convnext_l", "swin_v2_b"]# MODELS_CONFIGS.keys()
+    dataset_dir_imagenet = "/media/user/Hitachi/ILSVRC/Data/CLS-LOC"
+    dataset_name = "ImageNet"
     
     classes_ids = "1, 10, 100, 999"
     classes_ids_int = [ int(class_id.strip()) for class_id in classes_ids.split(",") ]
     classes_ids_n = len(classes_ids_int)
-
-    # inversion training
     
-    dataset_dir_imagenet = "/media/user/Hitachi/ILSVRC/Data/CLS-LOC"
-    dataset_name = "ImageNet"
+    networks_names = MODELS_CONFIGS.keys()
     n_training_steps = 10_000
     select_best_n = 10
     

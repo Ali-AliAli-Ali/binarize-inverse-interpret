@@ -69,11 +69,11 @@ MODELS_CONFIGS = {
         "weights": models.Swin_V2_B_Weights.IMAGENET1K_V1,
         "feature_attr": "features"
     },
-    "vit_l_16": {
-        "batch_size": 1,
-        "builder": models.vit_l_16,
-        "weights": models.ViT_L_16_Weights.IMAGENET1K_V1,
-        "feature_attr": "encoder"       # output: (B, n_tokens, hidden_dim)
+    "vit_b_16": {
+        "batch_size": 4,
+        "builder": models.vit_b_16,
+        "weights": models.ViT_B_16_Weights.IMAGENET1K_V1,
+        "feature_attr": "encoder"
     },
 }
 
