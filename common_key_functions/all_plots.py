@@ -3,6 +3,12 @@ import numpy as np
 from matplotlib import pyplot as plt, colors, cm
 
 
+def ax_set_grid(axis, 
+                alpha: float | None = 0.3, 
+                zorder: int | None = 0):
+    axis.grid(True, alpha=alpha, zorder=zorder)
+
+
 def plot_metric(trains: list, 
                 tests: list, 
                 epochs: int, 
@@ -10,7 +16,7 @@ def plot_metric(trains: list,
                 dataset_name: str | None = "dataset",
                 metric_name: str | None = "metric",
                 figsize: tuple[int, int] | None | None = (25, 3),
-                save_graph: bool | None = True,
+                save_graph: bool | None = False,
                 graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(
@@ -30,7 +36,7 @@ def plot_metric(trains: list,
         xlabel="epochs", xlim=(-1, epochs+1), xticks=[i for i in range(0, epochs+1, 5)],
         ylabel=metric_name
     )
-    ax.grid(True, alpha=0.3, zorder=0)
+    ax_set_grid(ax)
     ax.legend()
 
     if save_graph:
@@ -82,7 +88,7 @@ def plot_colored_barplot(values,
                          xticks: list | None = [],
                          xticklabels: list | None = [],   
                          figsize: tuple[int, int] | None = (25, 3),
-                         save_graph: bool | None = True,
+                         save_graph: bool | None = False,
                          graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     
@@ -117,8 +123,73 @@ def plot_colored_barplot(values,
             xlabel=xlabel,
             ylabel=ylabel
         )
-    plt.grid(True, alpha=0.3, zorder=0)
+    ax_set_grid(ax)
     plt.tight_layout()
 
     if save_graph:
         plt.savefig(os.path.join(graph_dir, f"regnet_{title}.png"))
+
+
+def plot_log_from_npz(npz_path: str,
+                      model_name: str | None = "model",
+                      dataset_name: str | None = "dataset",
+                      metric_ids_to_plot: list[int] | None = None,
+                      start_step: int | None = 0,
+                      are_one_plot: bool | None = False,
+                      figsize: tuple[int, int] | None = (10, 30),
+                      alpha: float | None = 0.8,
+                      linewidth: float | None = 1,
+                      cmap_name: str | None = "jet",
+                      save_graph: bool | None = False,
+                      graph_dir: str | None = "graphs"):
+    metrics_log = np.load(npz_path, allow_pickle=True)
+    
+    metrics = metrics_log["metrics"][start_step:]
+    metric_names = metrics_log["metric_names"]
+    n_metrics = len(metric_names)
+    metric_ids = metric_ids_to_plot or range(metrics.shape[1])
+
+    start_step_comment = f"(from step {start_step})" if start_step else ""
+    if are_one_plot:
+        fig, ax = plt.subplots(figsize=figsize)
+        colors = plt.get_cmap(cmap_name)
+        
+        for metric_i in metric_ids:
+            ax.plot(
+                metrics_log["steps"][start_step:], 
+                metrics[:, metric_i], 
+                lw=linewidth, alpha=alpha,
+                color=colors(metric_i / n_metrics),
+                label=metric_names[metric_i]
+            )
+        ax.set(
+            title=f"Inversion training losses of {model_name} "\
+                  f"on {dataset_name} {start_step_comment}",
+            xlabel="steps",
+            ylabel="loss"
+        )
+        ax_set_grid(ax)
+        ax.legend()
+        
+    else:
+        fig, axs = plt.subplots(n_metrics, 1, figsize=figsize)
+        for metric_i in metric_ids:
+            axs[metric_i].plot(
+                metrics_log["steps"][start_step:], 
+                metrics[:, metric_i], 
+                lw=linewidth, alpha=alpha
+            )
+            axs[metric_i].set(
+                title=f"Inversion training loss {metric_names[metric_i]} of {model_name} "\
+                      f"on {dataset_name} {start_step_comment}",
+                xlabel="steps",
+                ylabel=metric_names[metric_i]
+            )
+            
+            ax_set_grid(axs[metric_i])
+            axs[metric_i].legend()
+
+    plt.tight_layout()
+    if save_graph:
+        plt.savefig(os.path.join(graph_dir, f"npz_log_{model_name}_{dataset_name}.png"))
+  
