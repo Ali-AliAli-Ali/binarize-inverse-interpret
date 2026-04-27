@@ -133,8 +133,10 @@ def plot_colored_barplot(values,
 def plot_log_from_npz(npz_path: str,
                       model_name: str | None = "model",
                       dataset_name: str | None = "dataset",
-                      metric_ids_to_plot: list[int] | None = None,
+                      metric_ids_to_plot: list[int] | None = [],
+                      metric_ids_to_skip: list[int] | None = [],
                       start_step: int | None = 0,
+                      classes_ids: str | list | None = None,
                       are_one_plot: bool | None = False,
                       figsize: tuple[int, int] | None = (10, 30),
                       alpha: float | None = 0.8,
@@ -146,25 +148,30 @@ def plot_log_from_npz(npz_path: str,
     
     metrics = metrics_log["metrics"][start_step:]
     metric_names = metrics_log["metric_names"]
-    n_metrics = len(metric_names)
-    metric_ids = metric_ids_to_plot or range(metrics.shape[1])
+    
+    metric_ids = metric_ids_to_plot or [ metric_id for metric_id in range(metrics.shape[1]) ]
+    for metric_id_to_skip in metric_ids_to_skip:
+        if metric_id_to_skip in metric_ids:
+            metric_ids.remove(metric_id_to_skip)
+    n_metrics = len(metric_ids)
 
     start_step_comment = f"(from step {start_step})" if start_step else ""
+    classes_ids_comment = f"[classes: {classes_ids}]" if classes_ids else ""
     if are_one_plot:
         fig, ax = plt.subplots(figsize=figsize)
         colors = plt.get_cmap(cmap_name)
         
-        for metric_i in metric_ids:
+        for metric_i, metric_id in enumerate(metric_ids):
             ax.plot(
                 metrics_log["steps"][start_step:], 
-                metrics[:, metric_i], 
+                metrics[:, metric_id], 
                 lw=linewidth, alpha=alpha,
                 color=colors(metric_i / n_metrics),
-                label=metric_names[metric_i]
+                label=metric_names[metric_id]
             )
         ax.set(
             title=f"Inversion training losses of {model_name} "\
-                  f"on {dataset_name} {start_step_comment}",
+                  f"on {dataset_name} {classes_ids_comment} {start_step_comment}",
             xlabel="steps",
             ylabel="loss"
         )
@@ -173,17 +180,17 @@ def plot_log_from_npz(npz_path: str,
         
     else:
         fig, axs = plt.subplots(n_metrics, 1, figsize=figsize)
-        for metric_i in metric_ids:
+        for metric_i, metric_id in enumerate(metric_ids):
             axs[metric_i].plot(
                 metrics_log["steps"][start_step:], 
-                metrics[:, metric_i], 
+                metrics[:, metric_id], 
                 lw=linewidth, alpha=alpha
             )
             axs[metric_i].set(
-                title=f"Inversion training loss {metric_names[metric_i]} of {model_name} "\
-                      f"on {dataset_name} {start_step_comment}",
+                title=f"Inversion training loss {metric_names[metric_id]} of {model_name} "\
+                      f"on {dataset_name} {classes_ids_comment} {start_step_comment}",
                 xlabel="steps",
-                ylabel=metric_names[metric_i]
+                ylabel=metric_names[metric_id]
             )
             
             ax_set_grid(axs[metric_i])
