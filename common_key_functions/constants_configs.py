@@ -27,16 +27,16 @@ MODELS_CONFIGS = {
     
     # ResNets
     
-    "resnet50": {
-        "batch_size": 12,
-        "builder": models.resnet50,
-        "weights": models.ResNet50_Weights.DEFAULT,
-        "feature_attr": "layer4"
-    },
     "resnet18": {
         "batch_size": 24,
         "builder": models.resnet18,
         "weights": models.ResNet18_Weights.DEFAULT,
+        "feature_attr": "layer4"
+    },
+    "resnet50": {
+        "batch_size": 12,
+        "builder": models.resnet50,
+        "weights": models.ResNet50_Weights.DEFAULT,
         "feature_attr": "layer4"
     },
     "wide_resnet101_2": {
@@ -62,18 +62,18 @@ MODELS_CONFIGS = {
     },
     
     # Transformers
-    
-    "swin_v2_b": {
-        "batch_size": 3,
-        "builder": models.swin_v2_b,
-        "weights": models.Swin_V2_B_Weights.IMAGENET1K_V1,
-        "feature_attr": "features"
-    },
+
     "vit_b_16": {
         "batch_size": 4,
         "builder": models.vit_b_16,
         "weights": models.ViT_B_16_Weights.IMAGENET1K_V1,
         "feature_attr": "encoder"
+    },   
+    "swin_v2_b": {
+        "batch_size": 3,
+        "builder": models.swin_v2_b,
+        "weights": models.Swin_V2_B_Weights.IMAGENET1K_V1,
+        "feature_attr": "features"
     },
 }
 
@@ -86,5 +86,3 @@ IMAGENET_CONSTANTS = {
     "size_resize": 256,
     "size_center_crop": 224
 }
-
-

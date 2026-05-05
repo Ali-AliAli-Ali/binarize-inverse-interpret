@@ -10,7 +10,7 @@ import time
 import random
 from math import sqrt, pi, erf
 from PIL import Image
-from typing import Literal
+from typing import Literal, Callable
 
 import torch
 import torch.nn as nn
@@ -140,10 +140,10 @@ def filter_and_sort_by_confidence(dataset: ImageNet,
             correct_mask = (preds == targets.to(device))
             
             # Store indices and differences for correctly classified images
-            batch_start_idx = batch_idx * batch_size
+            batch_start_i = batch_idx * batch_size
             for i in range(len(targets)):
                 if correct_mask[i]:
-                    global_idx = indices_list[batch_start_idx + i]
+                    global_idx = indices_list[batch_start_i + i]
                     correct_indices.append(global_idx)
                     logit_diffs.append(diff[i].item())
     
@@ -358,7 +358,7 @@ def sym_kl_div(x, y, per_sample: bool = False) -> float:
     return 0.5 * (kl1 + kl2)
 
 
-def tv_feature_loss(f):
+def tv_feature_loss(x):
     """
     Compute isotropic total variation loss on a whitened feature map.
 
@@ -375,10 +375,10 @@ def tv_feature_loss(f):
     """
     # f: (B, C, H, W)
     # whiten
-    f = (f - f.mean(dim=[0,2,3], keepdim=True)) / (f.std(dim=[0,2,3], keepdim=True) + 1e-5)
+    x = (x - x.mean(dim=[0,2,3], keepdim=True)) / (x.std(dim=[0,2,3], keepdim=True) + 1e-5)
     # compute spatial diffs
-    dh = f[:, :, 1:, :-1] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
-    dw = f[:, :, :-1, 1:] - f[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
+    dh = x[:, :, 1:, :-1] - x[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
+    dw = x[:, :, :-1, 1:] - x[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
     # squared magnitude of the C-dimensional gradient vector
     grad2 = dh.abs().sum() + dw.abs().sum()  # (B, H-1, W-1)
     # isotropic vector-TV
@@ -484,16 +484,16 @@ def compute_all_losses(feat,
         Tuple(loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss).
     """
     loss_kl = sym_kl_div(feat, target_feat, per_sample=per_sample)
-    loss_mse = l2_weight * F.mse_loss(
-        feat.mean(dim=[1,2,3], keepdim=True), 
-        target_feat.mean(dim=[1,2,3], keepdim=True), 
-        reduction='none'
-    ).sum(dim=[1,2,3]) \
+    loss_mse =  l2_weight * F.mse_loss(
+                    feat.mean(dim=[1,2,3], keepdim=True), 
+                    target_feat.mean(dim=[1,2,3], keepdim=True), 
+                    reduction='none'
+                ).sum(dim=[1,2,3]) \
         if per_sample else \
-               l2_weight * F.mse_loss(
-        feat.mean(dim=[1,2,3], keepdim=True), 
-        target_feat.mean(dim=[1,2,3], keepdim=True)
-    )
+                l2_weight * F.mse_loss(
+                    feat.mean(dim=[1,2,3], keepdim=True), 
+                    target_feat.mean(dim=[1,2,3], keepdim=True)
+                )
     
     tv_x = tv_loss(x, per_sample=per_sample) # TV loss with threshold: max(tv_loss(x) - 0.1*tv_loss_orig, 0)
     if tv_loss_orig is not None:
@@ -637,15 +637,19 @@ def val_model_on_files(network_name: str,
         Tuple(accuracy, correct samples, total samples)
     """    
     images_paths = os.listdir(images_dir)
-    images_paths.sort()
-    images_paths = [ os.path.join(images_dir, image_path) for image_path in images_paths ]
+    
+    sorted_images_ids = sorted(range(len(images_paths)), key=lambda i: images_paths[i])
+    images_paths_sorted = [images_paths[i] for i in sorted_images_ids]
+    labels_true_sorted = [labels_true[i] for i in sorted_images_ids]    
+    
+    images_paths_sorted = [ os.path.join(images_dir, image_path) for image_path in images_paths_sorted ]
     
     transform = transforms.Compose([
         transforms.Resize(IMAGENET_CONSTANTS["size_resize"]),
         transforms.CenterCrop(IMAGENET_CONSTANTS["size_center_crop"]),
         transforms.ToTensor()
     ])
-    dataset = ImageFolderDataset(images_paths, labels_true, transform=transform)
+    dataset = ImageFolderDataset(images_paths_sorted, labels_true_sorted, transform=transform)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -656,6 +660,7 @@ def val_model_on_files(network_name: str,
 
     correct = 0
     total = 0
+    batch_start_i = 0
     with torch.no_grad():
         for imgs, labels in loader:
             imgs = imgs.to(device)
@@ -670,20 +675,18 @@ def val_model_on_files(network_name: str,
             total += labels.size(0)
             
             if print_details:
-                # paths_cpu = list(paths)
-                # labels_cpu = labels.cpu().tolist()
-                # topk_probs_cpu = topk_probs.cpu().tolist()
-                # topk_indices_cpu = topk_indices.cpu().tolist()
-
-                for i in range(len(images_paths)):
-                    image_name = os.path.basename(images_paths[i])
+                for i in range(len(imgs)):
+                    global_idx = batch_start_i + i
+                    image_name = os.path.basename(images_paths_sorted[global_idx])
                     print(
                         f"File: {image_name}\n" 
-                        f"    True class: {labels_true[i]}\n"
+                        f"    True class: {labels_true_sorted[global_idx]}\n"
                         f"    Top-{top_k} predictions: {[ \
                             f'class {idx} ({prob:.8f})' for idx, prob in zip(topk_indices[i], topk_probs[i]) \
                         ]}"
                     )
+            
+            batch_start_i += len(imgs)
                     
     accuracy = correct / total
     print(f"Classification accuracy: {correct}/{total} ({accuracy:.2%})")
@@ -790,9 +793,11 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
         # Calculate grid size (square root of num_patches)
         grid_size = int(N ** 0.5)
-        assert grid_size * grid_size == N, \
-            f"Number of ViT patches {N} is not a perfect square, " \
-            f"check input image size and patch size."
+        if grid_size * grid_size != N:
+            raise ValueError(
+                f"Number of ViT patches {N} is not a perfect square, " \
+                f"check input image size and patch size."
+            )
         
         # Reshape: (B, grid, grid, D) -> (B, D, grid, grid)
         activation['feat'] = patch_tokens.transpose(1, 2).reshape(B, D, grid_size, grid_size)    
@@ -1070,8 +1075,9 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
 def get_grid_images_paths(networks_names: list[str],
                           val_images_dir: str,
                           classes_ids_list: list[int],
+                          batch_sizes: dict[int] | None = None,
                           grid_images_prefix: str | None = "best_orig_vs_recon_",
-                          grid_images_ext: str | None = "png"):
+                          grid_images_ext: str | None = "png") -> dict:
     """
     Return a dictionary mapping each network name to a list of grid image paths.
 
@@ -1083,12 +1089,19 @@ def get_grid_images_paths(networks_names: list[str],
         networks_names:     List of network names.
         val_images_dir:     Path to directory with grid image(s).
         classes_ids_list:   List of integer class IDs.
+        batch_sizes:        Dict `{ network_name : batch_size }` for every network name in `networks_names`.
+                            If `None`, default batch sizes from config are taken.
         grid_images_prefix: Prefix for the grid image filename when a single path is generated.
         grid_images_ext:    File extension for the grid images (without dot).
 
     Returns:
         Dictionary mapping network name to a list of absolute file paths to grid images.
     """
+    batch_sizes = batch_sizes or { 
+        network_name : MODELS_CONFIGS[network_name]["batch_size"]
+        for network_name in networks_names
+    }
+    
     return {
         network_name :  [ 
                             os.path.join(
@@ -1097,7 +1110,7 @@ def get_grid_images_paths(networks_names: list[str],
                                 f"{grid_images_prefix}{format_classes_ids_str(classes_ids_list)}.{grid_images_ext}"
                             ) 
                         ]
-            if MODELS_CONFIGS[network_name]["batch_size"] >= len(classes_ids_list) else
+            if batch_sizes[network_name] >= len(classes_ids_list) else
                         [
                            os.path.join(val_images_dir, network_name, image_name)
                            for image_name in os.listdir( os.path.join(val_images_dir, network_name) ) 
@@ -1111,11 +1124,10 @@ def split_comparison_val_image(grid_path: str,
                                output_dir: str,
                                img_size: tuple[int, int],
                                batch_size: int,
-                               select_best_n: int | None = 10,
+                               select_best_n: int | None = None,
                                n_images_per_row: int | None = 2,
                                origs_dirname: str | None = "origs",
-                               recons_dirname: str | None = "recons",
-                               sample_number_shift: int | None = 0):
+                               recons_dirname: str | None = "recons"):
     """
     Split a comparison grid image (original / reconstructed interleaved) into individual samples.
 
@@ -1139,8 +1151,9 @@ def split_comparison_val_image(grid_path: str,
     os.makedirs(recons_dir, exist_ok=True)
 
     grid_img = Image.open(grid_path)
+    grid_filename = os.path.splitext(os.path.basename(grid_path))[0]
 
-    for i in range(min(select_best_n, batch_size)):
+    for i in range(min(select_best_n, batch_size) if select_best_n else batch_size):
         # Position of the original image (even index in the flat list)
         flat_orig_i = 2 * i
         row_orig = flat_orig_i // n_images_per_row
@@ -1151,7 +1164,7 @@ def split_comparison_val_image(grid_path: str,
         # Crop original
         orig_crop = grid_img.crop((x_orig, y_orig, x_orig + img_size, y_orig + img_size))
         orig_crop.save(
-            os.path.join(origs_dir, f"sample_{i + sample_number_shift:04d}.png")
+            os.path.join(origs_dir, f"{grid_filename}_{i:04d}.png")
         )
 
         # Position of the reconstructed image (odd index)
@@ -1164,13 +1177,13 @@ def split_comparison_val_image(grid_path: str,
         # Crop reconstructed
         recon_crop = grid_img.crop((x_recon, y_recon, x_recon + img_size, y_recon + img_size))
         recon_crop.save(
-            os.path.join(recons_dir, f"sample_{i + sample_number_shift:04d}.png")
+            os.path.join(recons_dir, f"{grid_filename}_{i:04d}.png")
         )
 
 
-def get_labels_for_val(classes_ids_list: list,
-                       batch_size: int,
-                       select_best_n: int | None = 10) -> list:
+def get_labels_for_val_from_batch(classes_ids_list: list,
+                                  batch_size: int,
+                                  select_best_n: int | None = None) -> list:
     """
     Generate ground truth labels for validation based on the balanced selection logic 
     of `main_pipeline`.
@@ -1183,16 +1196,56 @@ def get_labels_for_val(classes_ids_list: list,
     Returns:
         List of integer class labels in the order they appear in the split grid.
     """
-    labels = []
-    select_best_n = min(batch_size, select_best_n)
+    labels = {}
+    select_best_n = min(batch_size, select_best_n) if select_best_n else batch_size
     n_samples_base = select_best_n // len(classes_ids_list)
     remainder = select_best_n % len(classes_ids_list)
     
-    for class_id_i, class_id in enumerate(classes_ids_list):
-        n_class_samples = min(
-            n_samples_base + int(class_id_i < remainder), 
-            len(classes_ids_list)
-        )
-        labels += [class_id] * n_class_samples
+    for class_id_i, class_id in enumerate(classes_ids_list):        
+        n_class_samples = n_samples_base + int(class_id_i < remainder)
+        labels.extend([class_id] * n_class_samples)
         
     return labels
+
+
+def get_labels_for_val_from_names(images_path: list,
+                                  extract_label_func: Callable | None = None,
+                                  **extract_label_args) -> dict:
+    """
+    Generate integer class labels for validation images by extracting them from file names.
+
+    Args:
+        images_path:          Path to a directory containing validation images.
+        extract_label_func:   Callable receiving the file name (and any additional keyword 
+                              arguments) and returns an integer class label. 
+                              If `None`, image filename is considered having a scheme like
+                              `<key arg>_<value>_<class_label>_....<extension>` and parsed
+                              accordingly.
+        **extract_label_args: Additional keyword arguments passed to `extract_label_func`.
+
+    Returns:
+        List of integer class labels corresponding to each image in the directory.
+    """
+    labels = {}
+    for image_path in os.listdir(images_path):
+        image_name = os.path.splitext(os.path.basename(image_path))[0]
+        labels[image_name] = extract_label_func(image_name, **extract_label_args) \
+            if extract_label_func else \
+                             image_path.split("_")[2]
+    return labels
+
+
+def sort_labels_by_images(labels_true_networks: list[dict],
+                          orig_images_dirs: list[str]) -> list[list]:
+    return  [
+                [
+                    network_labels[
+                        orig_image_name.rsplit('.', 1)[0] 
+                        if ('.' in orig_image_name) else 
+                        orig_image_name
+                    ] 
+                    for orig_image_name in os.listdir(network_orig_images_dir)
+                ] 
+                for network_labels, network_orig_images_dir in zip(labels_true_networks, orig_images_dirs)
+            ]
+    
