@@ -1,0 +1,2287 @@
+Validating regnet_x_3_2 on subset: batch_size=2, class=1 (n=2)...
+
+    Original images validation:
+File: bs_2_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.75445533)', 'class 425 (0.00128181)', 'class 449 (0.00088856)', 'class 448 (0.00083235)', 'class 660 (0.00080146)']
+File: bs_2_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.96462095)', 'class 58 (0.00055081)', 'class 130 (0.00038418)', 'class 0 (0.00035367)', 'class 393 (0.00021960)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.46619436)', 'class 29 (0.01805081)', 'class 794 (0.00406327)', 'class 393 (0.00247244)', 'class 115 (0.00203402)']
+File: bs_2_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 996 (0.11060154)', 'class 991 (0.10413796)', 'class 1 (0.05311900)', 'class 110 (0.02933855)', 'class 108 (0.02791249)']
+Classification accuracy: 1/2 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=10 (n=2)...
+
+    Original images validation:
+File: bs_2_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.79651332)', 'class 13 (0.00185102)', 'class 86 (0.00132754)', 'class 761 (0.00099458)', 'class 85 (0.00096397)']
+File: bs_2_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.86189926)', 'class 761 (0.00147680)', 'class 13 (0.00119675)', 'class 140 (0.00047396)', 'class 12 (0.00045513)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 996 (0.24902768)', 'class 991 (0.20537479)', 'class 611 (0.03865233)', 'class 110 (0.02901033)', 'class 973 (0.01974731)']
+File: bs_2_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 991 (0.33187521)', 'class 996 (0.13932683)', 'class 32 (0.04209940)', 'class 115 (0.03224790)', 'class 120 (0.01539817)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=24 (n=2)...
+
+    Original images validation:
+File: bs_2_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.89883405)', 'class 82 (0.00042585)', 'class 210 (0.00036831)', 'class 367 (0.00036174)', 'class 164 (0.00032830)']
+File: bs_2_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82329816)', 'class 82 (0.00040146)', 'class 87 (0.00039271)', 'class 21 (0.00038708)', 'class 138 (0.00037009)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 73 (0.67088068)', 'class 75 (0.04818004)', 'class 83 (0.02802517)', 'class 77 (0.02781640)', 'class 80 (0.01250883)']
+File: bs_2_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 108 (0.06078525)', 'class 946 (0.05435756)', 'class 32 (0.03983324)', 'class 973 (0.03935734)', 'class 38 (0.02681410)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=79 (n=2)...
+
+    Original images validation:
+File: bs_2_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84968501)', 'class 69 (0.00063972)', 'class 126 (0.00050988)', 'class 71 (0.00028991)', 'class 314 (0.00028468)']
+File: bs_2_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.82910144)', 'class 314 (0.00055410)', 'class 69 (0.00042093)', 'class 71 (0.00040029)', 'class 111 (0.00035838)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 73 (0.59837061)', 'class 38 (0.09493171)', 'class 71 (0.06934237)', 'class 111 (0.01652148)', 'class 300 (0.01413294)']
+File: bs_2_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.59574413)', 'class 111 (0.17799167)', 'class 26 (0.02715852)', 'class 52 (0.02156893)', 'class 38 (0.00856675)']
+Classification accuracy: 1/2 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=100 (n=2)...
+
+    Original images validation:
+File: bs_2_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.87830400)', 'class 136 (0.00293436)', 'class 80 (0.00173905)', 'class 137 (0.00113685)', 'class 209 (0.00096528)']
+File: bs_2_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.86571687)', 'class 99 (0.00412088)', 'class 209 (0.00156408)', 'class 130 (0.00053112)', 'class 206 (0.00046248)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 32 (0.09214927)', 'class 116 (0.08294914)', 'class 120 (0.06206087)', 'class 126 (0.05436134)', 'class 47 (0.02074610)']
+File: bs_2_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 32 (0.19181424)', 'class 38 (0.07755719)', 'class 996 (0.03378989)', 'class 41 (0.02112828)', 'class 31 (0.01485166)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=409 (n=2)...
+
+    Original images validation:
+File: bs_2_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.98719656)', 'class 635 (0.00148827)', 'class 531 (0.00070621)', 'class 892 (0.00066945)', 'class 485 (0.00021030)']
+File: bs_2_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.61445701)', 'class 530 (0.13890536)', 'class 892 (0.01812768)', 'class 688 (0.01302874)', 'class 531 (0.01030419)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 535 (0.83777118)', 'class 409 (0.02251437)', 'class 426 (0.01818268)', 'class 479 (0.00929749)', 'class 783 (0.00883560)']
+File: bs_2_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 783 (0.18439142)', 'class 409 (0.11899745)', 'class 506 (0.03573362)', 'class 535 (0.03554897)', 'class 426 (0.01359271)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=701 (n=2)...
+
+    Original images validation:
+File: bs_2_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.81071115)', 'class 557 (0.00059280)', 'class 978 (0.00047439)', 'class 895 (0.00043910)', 'class 405 (0.00040177)']
+File: bs_2_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.83147746)', 'class 978 (0.00054833)', 'class 557 (0.00053850)', 'class 417 (0.00045209)', 'class 895 (0.00042789)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 66 (0.26087919)', 'class 68 (0.09653239)', 'class 45 (0.03084610)', 'class 34 (0.03003234)', 'class 67 (0.02821624)']
+File: bs_2_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 584 (0.29346865)', 'class 73 (0.28993431)', 'class 75 (0.03992732)', 'class 326 (0.02445078)', 'class 923 (0.01396947)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=712 (n=2)...
+
+    Original images validation:
+File: bs_2_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.76021236)', 'class 111 (0.00195978)', 'class 925 (0.00102237)', 'class 262 (0.00077815)', 'class 969 (0.00056648)']
+File: bs_2_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.97308582)', 'class 415 (0.00308132)', 'class 551 (0.00197654)', 'class 333 (0.00073981)', 'class 509 (0.00034534)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 110 (0.17584226)', 'class 115 (0.06703099)', 'class 5 (0.04848636)', 'class 289 (0.03676577)', 'class 126 (0.02936987)']
+File: bs_2_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.62137288)', 'class 635 (0.02596620)', 'class 996 (0.01153636)', 'class 426 (0.01033084)', 'class 409 (0.00926811)']
+Classification accuracy: 1/2 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=850 (n=2)...
+
+    Original images validation:
+File: bs_2_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.96175206)', 'class 865 (0.00124658)', 'class 457 (0.00045549)', 'class 529 (0.00039122)', 'class 719 (0.00035140)']
+File: bs_2_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.87839639)', 'class 865 (0.00175145)', 'class 106 (0.00064880)', 'class 863 (0.00059364)', 'class 201 (0.00056574)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 996 (0.09033489)', 'class 850 (0.06130725)', 'class 32 (0.04704918)', 'class 936 (0.03577105)', 'class 973 (0.02363279)']
+File: bs_2_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 996 (0.50860709)', 'class 32 (0.05093971)', 'class 995 (0.02555829)', 'class 66 (0.02122332)', 'class 68 (0.02034280)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=950 (n=2)...
+
+    Original images validation:
+File: bs_2_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.70771724)', 'class 954 (0.00542926)', 'class 951 (0.00515972)', 'class 957 (0.00276157)', 'class 773 (0.00227904)']
+File: bs_2_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.91119224)', 'class 942 (0.01179670)', 'class 951 (0.00789182)', 'class 940 (0.00240265)', 'class 932 (0.00116700)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 115 (0.08280443)', 'class 392 (0.06011192)', 'class 65 (0.05093436)', 'class 56 (0.02650167)', 'class 973 (0.02507841)']
+File: bs_2_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 996 (0.28977710)', 'class 991 (0.13102211)', 'class 993 (0.03705556)', 'class 995 (0.03231404)', 'class 973 (0.02826070)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=953 (n=2)...
+
+    Original images validation:
+File: bs_2_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.96566707)', 'class 923 (0.00115768)', 'class 954 (0.00086787)', 'class 942 (0.00073696)', 'class 950 (0.00059189)']
+File: bs_2_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.91124767)', 'class 85 (0.00107265)', 'class 954 (0.00056929)', 'class 950 (0.00026245)', 'class 987 (0.00025176)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.13774519)', 'class 923 (0.11997718)', 'class 956 (0.04799467)', 'class 949 (0.02539784)', 'class 936 (0.02411497)']
+File: bs_2_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 783 (0.11299647)', 'class 845 (0.02457796)', 'class 611 (0.02191711)', 'class 917 (0.01789576)', 'class 406 (0.01344041)']
+Classification accuracy: 1/2 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=954 (n=2)...
+
+    Original images validation:
+File: bs_2_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.85994148)', 'class 582 (0.00142477)', 'class 950 (0.00107424)', 'class 953 (0.00094471)', 'class 948 (0.00068594)']
+File: bs_2_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.94659132)', 'class 991 (0.00444614)', 'class 996 (0.00090016)', 'class 988 (0.00047437)', 'class 987 (0.00021592)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 995 (0.06792453)', 'class 996 (0.06241582)', 'class 985 (0.05547052)', 'class 73 (0.05521304)', 'class 325 (0.05472384)']
+File: bs_2_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 996 (0.26703805)', 'class 991 (0.06634177)', 'class 937 (0.02945044)', 'class 738 (0.02780469)', 'class 995 (0.02196756)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=2, class=999 (n=2)...
+
+    Original images validation:
+File: bs_2_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.90684646)', 'class 731 (0.04827878)', 'class 182 (0.00488012)', 'class 700 (0.00413379)', 'class 184 (0.00192287)']
+File: bs_2_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.47429484)', 'class 700 (0.03067574)', 'class 678 (0.02348384)', 'class 824 (0.02225832)', 'class 720 (0.01345368)']
+Classification accuracy: 2/2 (100.00%)
+
+    Reconstructed images validation:
+File: bs_2_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 270 (0.04009619)', 'class 66 (0.02939446)', 'class 60 (0.02539488)', 'class 54 (0.02488827)', 'class 535 (0.01999759)']
+File: bs_2_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 25 (0.18516985)', 'class 73 (0.04715781)', 'class 72 (0.03858018)', 'class 10 (0.03855068)', 'class 32 (0.02710115)']
+Classification accuracy: 0/2 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=1 (n=4)...
+
+    Original images validation:
+File: bs_4_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.75445563)', 'class 425 (0.00128181)', 'class 449 (0.00088855)', 'class 448 (0.00083235)', 'class 660 (0.00080146)']
+File: bs_4_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.96462107)', 'class 58 (0.00055081)', 'class 130 (0.00038418)', 'class 0 (0.00035367)', 'class 393 (0.00021960)']
+File: bs_4_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.95652568)', 'class 629 (0.00052707)', 'class 126 (0.00051036)', 'class 27 (0.00050181)', 'class 327 (0.00036341)']
+File: bs_4_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.88738269)', 'class 794 (0.00091874)', 'class 115 (0.00076028)', 'class 393 (0.00051285)', 'class 562 (0.00050140)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.91242832)', 'class 115 (0.00153552)', 'class 120 (0.00130963)', 'class 5 (0.00079627)', 'class 393 (0.00069118)']
+File: bs_4_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.13216253)', 'class 108 (0.11206513)', 'class 973 (0.08048695)', 'class 292 (0.03147847)', 'class 738 (0.02078931)']
+File: bs_4_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.14919537)', 'class 108 (0.04677068)', 'class 973 (0.02540130)', 'class 980 (0.02403877)', 'class 126 (0.01194576)']
+File: bs_4_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 865 (0.05910996)', 'class 51 (0.04104266)', 'class 980 (0.03507625)', 'class 973 (0.03493533)', 'class 108 (0.02624745)']
+Classification accuracy: 3/4 (75.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=10 (n=4)...
+
+    Original images validation:
+File: bs_4_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.82693565)', 'class 13 (0.00172058)', 'class 761 (0.00154198)', 'class 868 (0.00074751)', 'class 188 (0.00059588)']
+File: bs_4_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.79651362)', 'class 13 (0.00185101)', 'class 86 (0.00132754)', 'class 761 (0.00099458)', 'class 85 (0.00096397)']
+File: bs_4_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.86189944)', 'class 761 (0.00147680)', 'class 13 (0.00119675)', 'class 140 (0.00047396)', 'class 12 (0.00045513)']
+File: bs_4_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85788572)', 'class 761 (0.00198372)', 'class 13 (0.00085478)', 'class 11 (0.00072571)', 'class 426 (0.00044925)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 712 (0.25635669)', 'class 10 (0.04712442)', 'class 120 (0.04309290)', 'class 108 (0.04006023)', 'class 110 (0.03549685)']
+File: bs_4_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 996 (0.06547908)', 'class 289 (0.04968435)', 'class 985 (0.03656029)', 'class 10 (0.03079617)', 'class 991 (0.02555243)']
+File: bs_4_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 334 (0.10100824)', 'class 102 (0.03101340)', 'class 362 (0.02441519)', 'class 106 (0.02325925)', 'class 640 (0.01819632)']
+File: bs_4_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 392 (0.02367423)', 'class 803 (0.02042235)', 'class 441 (0.01848501)', 'class 868 (0.01611976)', 'class 25 (0.01454070)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=24 (n=4)...
+
+    Original images validation:
+File: bs_4_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82329768)', 'class 82 (0.00040146)', 'class 87 (0.00039271)', 'class 21 (0.00038708)', 'class 138 (0.00037009)']
+File: bs_4_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.89883405)', 'class 82 (0.00042585)', 'class 210 (0.00036831)', 'class 367 (0.00036174)', 'class 164 (0.00032830)']
+File: bs_4_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82118666)', 'class 8 (0.00061624)', 'class 87 (0.00051696)', 'class 828 (0.00045169)', 'class 21 (0.00035738)']
+File: bs_4_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82014346)', 'class 633 (0.00057875)', 'class 87 (0.00056295)', 'class 21 (0.00046716)', 'class 567 (0.00036518)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 996 (0.33378392)', 'class 991 (0.31896847)', 'class 993 (0.02392650)', 'class 994 (0.01163054)', 'class 289 (0.00938822)']
+File: bs_4_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 73 (0.23670644)', 'class 289 (0.02987481)', 'class 251 (0.02251899)', 'class 290 (0.01631860)', 'class 300 (0.01158191)']
+File: bs_4_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 32 (0.07039150)', 'class 991 (0.05576520)', 'class 49 (0.03584961)', 'class 115 (0.02917165)', 'class 66 (0.02319454)']
+File: bs_4_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 973 (0.16439620)', 'class 991 (0.13761175)', 'class 996 (0.08637213)', 'class 396 (0.06763676)', 'class 738 (0.03026317)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=79 (n=4)...
+
+    Original images validation:
+File: bs_4_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.90761137)', 'class 69 (0.00035173)', 'class 314 (0.00021426)', 'class 429 (0.00017894)', 'class 111 (0.00017495)']
+File: bs_4_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.93481052)', 'class 111 (0.00173284)', 'class 110 (0.00059927)', 'class 114 (0.00024315)', 'class 521 (0.00019531)']
+File: bs_4_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84968495)', 'class 69 (0.00063972)', 'class 126 (0.00050988)', 'class 71 (0.00028991)', 'class 314 (0.00028468)']
+File: bs_4_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.82910150)', 'class 314 (0.00055409)', 'class 69 (0.00042093)', 'class 71 (0.00040029)', 'class 111 (0.00035838)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 38 (0.31524369)', 'class 65 (0.11568784)', 'class 108 (0.10665110)', 'class 73 (0.02439317)', 'class 126 (0.01846836)']
+File: bs_4_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 110 (0.36400226)', 'class 28 (0.06433287)', 'class 26 (0.06329396)', 'class 115 (0.03315626)', 'class 38 (0.01498050)']
+File: bs_4_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.72438997)', 'class 110 (0.02560339)', 'class 38 (0.01903030)', 'class 41 (0.01296476)', 'class 26 (0.00619016)']
+File: bs_4_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.54886353)', 'class 111 (0.06830700)', 'class 126 (0.05703629)', 'class 996 (0.00527275)', 'class 52 (0.00481792)']
+Classification accuracy: 2/4 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=100 (n=4)...
+
+    Original images validation:
+File: bs_4_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.84086442)', 'class 99 (0.00483342)', 'class 137 (0.00151535)', 'class 53 (0.00082990)', 'class 136 (0.00078841)']
+File: bs_4_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.87830430)', 'class 136 (0.00293436)', 'class 80 (0.00173905)', 'class 137 (0.00113685)', 'class 209 (0.00096528)']
+File: bs_4_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.86571681)', 'class 99 (0.00412089)', 'class 209 (0.00156408)', 'class 130 (0.00053112)', 'class 206 (0.00046248)']
+File: bs_4_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.75972068)', 'class 209 (0.00200340)', 'class 53 (0.00176907)', 'class 25 (0.00152992)', 'class 99 (0.00132699)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 38 (0.04827566)', 'class 584 (0.02437113)', 'class 43 (0.02051190)', 'class 611 (0.01753477)', 'class 322 (0.01348631)']
+File: bs_4_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 120 (0.21607037)', 'class 41 (0.07073323)', 'class 996 (0.05900178)', 'class 995 (0.04110600)', 'class 32 (0.02905421)']
+File: bs_4_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 995 (0.18809651)', 'class 994 (0.10942054)', 'class 996 (0.05263370)', 'class 305 (0.03073430)', 'class 302 (0.02479607)']
+File: bs_4_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 251 (0.15325317)', 'class 108 (0.07960308)', 'class 552 (0.05977375)', 'class 970 (0.01440091)', 'class 611 (0.01271473)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=409 (n=4)...
+
+    Original images validation:
+File: bs_4_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.61445713)', 'class 530 (0.13890539)', 'class 892 (0.01812769)', 'class 688 (0.01302874)', 'class 531 (0.01030418)']
+File: bs_4_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.85967630)', 'class 442 (0.02513720)', 'class 892 (0.00954517)', 'class 698 (0.00802926)', 'class 624 (0.00156404)']
+File: bs_4_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.72680998)', 'class 826 (0.03202322)', 'class 892 (0.02783776)', 'class 426 (0.01467862)', 'class 531 (0.01248245)']
+File: bs_4_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.98719656)', 'class 635 (0.00148827)', 'class 531 (0.00070621)', 'class 892 (0.00066945)', 'class 485 (0.00021030)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 892 (0.27646363)', 'class 783 (0.06260849)', 'class 409 (0.04157157)', 'class 677 (0.02072711)', 'class 328 (0.01806350)']
+File: bs_4_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 442 (0.51136065)', 'class 409 (0.31054187)', 'class 892 (0.07848225)', 'class 698 (0.00914012)', 'class 635 (0.00517299)']
+File: bs_4_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.09713441)', 'class 892 (0.09055011)', 'class 611 (0.04103867)', 'class 426 (0.03192796)', 'class 644 (0.02673327)']
+File: bs_4_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.48106173)', 'class 892 (0.11737785)', 'class 635 (0.05970956)', 'class 426 (0.02764053)', 'class 826 (0.02703996)']
+Classification accuracy: 2/4 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=701 (n=4)...
+
+    Original images validation:
+File: bs_4_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.74268824)', 'class 557 (0.00083125)', 'class 978 (0.00068405)', 'class 417 (0.00064202)', 'class 895 (0.00063613)']
+File: bs_4_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.83147746)', 'class 978 (0.00054833)', 'class 557 (0.00053850)', 'class 417 (0.00045209)', 'class 895 (0.00042789)']
+File: bs_4_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.90068883)', 'class 557 (0.00037488)', 'class 417 (0.00033645)', 'class 895 (0.00025572)', 'class 797 (0.00023932)']
+File: bs_4_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.81071121)', 'class 557 (0.00059280)', 'class 978 (0.00047439)', 'class 895 (0.00043910)', 'class 405 (0.00040177)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 615 (0.08023682)', 'class 740 (0.03657532)', 'class 584 (0.02940642)', 'class 461 (0.02920610)', 'class 450 (0.01851726)']
+File: bs_4_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 584 (0.10800362)', 'class 712 (0.04393032)', 'class 644 (0.03469169)', 'class 115 (0.03046591)', 'class 38 (0.02974363)']
+File: bs_4_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.38225204)', 'class 403 (0.01941989)', 'class 73 (0.01500828)', 'class 461 (0.01491523)', 'class 506 (0.01436482)']
+File: bs_4_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 584 (0.07478321)', 'class 712 (0.06183063)', 'class 403 (0.04247993)', 'class 611 (0.02674677)', 'class 695 (0.01615826)']
+Classification accuracy: 1/4 (25.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=712 (n=4)...
+
+    Original images validation:
+File: bs_4_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.83512121)', 'class 892 (0.00701487)', 'class 677 (0.00384326)', 'class 927 (0.00246533)', 'class 409 (0.00203668)']
+File: bs_4_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.76021236)', 'class 111 (0.00195978)', 'class 925 (0.00102237)', 'class 262 (0.00077815)', 'class 969 (0.00056648)']
+File: bs_4_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.97308582)', 'class 415 (0.00308132)', 'class 551 (0.00197654)', 'class 333 (0.00073981)', 'class 509 (0.00034534)']
+File: bs_4_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.79356551)', 'class 599 (0.00997489)', 'class 441 (0.00614327)', 'class 115 (0.00585496)', 'class 440 (0.00297754)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 991 (0.34826568)', 'class 328 (0.17095122)', 'class 994 (0.08948307)', 'class 996 (0.05500079)', 'class 327 (0.02467965)']
+File: bs_4_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 5 (0.18856306)', 'class 126 (0.06720459)', 'class 397 (0.04638096)', 'class 251 (0.03578025)', 'class 289 (0.03352325)']
+File: bs_4_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.33966616)', 'class 996 (0.04140256)', 'class 973 (0.03403302)', 'class 116 (0.02178233)', 'class 611 (0.01947220)']
+File: bs_4_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 996 (0.08744089)', 'class 73 (0.06834282)', 'class 32 (0.05445118)', 'class 995 (0.03376250)', 'class 77 (0.02803435)']
+Classification accuracy: 1/4 (25.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=850 (n=4)...
+
+    Original images validation:
+File: bs_4_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.67822587)', 'class 785 (0.00191971)', 'class 865 (0.00187589)', 'class 414 (0.00158087)', 'class 529 (0.00140797)']
+File: bs_4_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.79911810)', 'class 865 (0.01326564)', 'class 719 (0.00834941)', 'class 736 (0.00185476)', 'class 773 (0.00154727)']
+File: bs_4_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.87839645)', 'class 865 (0.00175144)', 'class 106 (0.00064880)', 'class 863 (0.00059363)', 'class 201 (0.00056574)']
+File: bs_4_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.96175194)', 'class 865 (0.00124658)', 'class 457 (0.00045549)', 'class 529 (0.00039122)', 'class 719 (0.00035140)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.66675520)', 'class 865 (0.03460103)', 'class 973 (0.01234078)', 'class 414 (0.00682277)', 'class 393 (0.00339321)']
+File: bs_4_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.58585316)', 'class 36 (0.01706378)', 'class 32 (0.01043512)', 'class 35 (0.01012237)', 'class 51 (0.00991455)']
+File: bs_4_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 32 (0.38284299)', 'class 363 (0.02577666)', 'class 30 (0.02509845)', 'class 850 (0.02037287)', 'class 996 (0.01252456)']
+File: bs_4_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.44462281)', 'class 97 (0.04785204)', 'class 36 (0.02936083)', 'class 973 (0.02795888)', 'class 103 (0.02105155)']
+Classification accuracy: 3/4 (75.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=950 (n=4)...
+
+    Original images validation:
+File: bs_4_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.70771700)', 'class 954 (0.00542927)', 'class 951 (0.00515973)', 'class 957 (0.00276157)', 'class 773 (0.00227904)']
+File: bs_4_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.83529001)', 'class 951 (0.00845013)', 'class 954 (0.00614442)', 'class 957 (0.00078054)', 'class 953 (0.00067158)']
+File: bs_4_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.91119236)', 'class 942 (0.01179668)', 'class 951 (0.00789181)', 'class 940 (0.00240264)', 'class 932 (0.00116700)']
+File: bs_4_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.88217860)', 'class 951 (0.00608338)', 'class 954 (0.00459811)', 'class 33 (0.00067647)', 'class 582 (0.00064710)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 64 (0.20686276)', 'class 32 (0.05243947)', 'class 59 (0.02504435)', 'class 35 (0.02471403)', 'class 53 (0.02437639)']
+File: bs_4_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 53 (0.16932487)', 'class 949 (0.09451066)', 'class 52 (0.08401949)', 'class 996 (0.02471005)', 'class 126 (0.01624775)']
+File: bs_4_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 936 (0.16459942)', 'class 994 (0.12018888)', 'class 996 (0.07276870)', 'class 991 (0.03312335)', 'class 32 (0.03295434)']
+File: bs_4_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 574 (0.85806447)', 'class 722 (0.01698715)', 'class 855 (0.00640668)', 'class 996 (0.00274594)', 'class 773 (0.00189187)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=953 (n=4)...
+
+    Original images validation:
+File: bs_4_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.97817159)', 'class 85 (0.00061480)', 'class 954 (0.00042760)', 'class 837 (0.00016953)', 'class 836 (0.00010663)']
+File: bs_4_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.96566707)', 'class 923 (0.00115768)', 'class 954 (0.00086787)', 'class 942 (0.00073696)', 'class 950 (0.00059189)']
+File: bs_4_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.91124755)', 'class 85 (0.00107265)', 'class 954 (0.00056929)', 'class 950 (0.00026245)', 'class 987 (0.00025176)']
+File: bs_4_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.90730566)', 'class 946 (0.00136203)', 'class 85 (0.00124517)', 'class 944 (0.00052725)', 'class 955 (0.00028127)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.80568749)', 'class 946 (0.04119250)', 'class 944 (0.00706045)', 'class 988 (0.00319646)', 'class 85 (0.00081122)']
+File: bs_4_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.40651494)', 'class 923 (0.01928028)', 'class 949 (0.01865070)', 'class 987 (0.01301545)', 'class 956 (0.00988001)']
+File: bs_4_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.84673965)', 'class 956 (0.01616242)', 'class 946 (0.00317737)', 'class 954 (0.00291323)', 'class 108 (0.00279373)']
+File: bs_4_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 985 (0.06567720)', 'class 996 (0.05236997)', 'class 991 (0.04618464)', 'class 995 (0.04453660)', 'class 738 (0.03102333)']
+Classification accuracy: 3/4 (75.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=954 (n=4)...
+
+    Original images validation:
+File: bs_4_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.94659102)', 'class 991 (0.00444615)', 'class 996 (0.00090016)', 'class 988 (0.00047437)', 'class 987 (0.00021593)']
+File: bs_4_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.89325511)', 'class 940 (0.00096462)', 'class 950 (0.00059771)', 'class 953 (0.00047388)', 'class 939 (0.00039031)']
+File: bs_4_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.86034721)', 'class 940 (0.00391161)', 'class 950 (0.00137595)', 'class 951 (0.00104117)', 'class 953 (0.00091150)']
+File: bs_4_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.85994130)', 'class 582 (0.00142477)', 'class 950 (0.00107424)', 'class 953 (0.00094471)', 'class 948 (0.00068594)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 991 (0.43127981)', 'class 996 (0.21300958)', 'class 973 (0.15022089)', 'class 995 (0.01024577)', 'class 738 (0.00520003)']
+File: bs_4_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 384 (0.10400032)', 'class 105 (0.04112224)', 'class 309 (0.03825055)', 'class 292 (0.03269851)', 'class 996 (0.03026260)']
+File: bs_4_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 985 (0.31211981)', 'class 309 (0.12350376)', 'class 470 (0.07260361)', 'class 883 (0.03654512)', 'class 794 (0.01522196)']
+File: bs_4_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 384 (0.04808566)', 'class 802 (0.04465350)', 'class 996 (0.04442042)', 'class 309 (0.03447394)', 'class 383 (0.02641070)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=4, class=999 (n=4)...
+
+    Original images validation:
+File: bs_4_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.75774372)', 'class 700 (0.00411354)', 'class 767 (0.00238345)', 'class 731 (0.00158419)', 'class 855 (0.00139577)']
+File: bs_4_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.90684652)', 'class 731 (0.04827876)', 'class 182 (0.00488011)', 'class 700 (0.00413379)', 'class 184 (0.00192287)']
+File: bs_4_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.86156583)', 'class 700 (0.04508100)', 'class 758 (0.00268452)', 'class 855 (0.00075727)', 'class 731 (0.00070974)']
+File: bs_4_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.47429466)', 'class 700 (0.03067577)', 'class 678 (0.02348385)', 'class 824 (0.02225832)', 'class 720 (0.01345366)']
+Classification accuracy: 4/4 (100.00%)
+
+    Reconstructed images validation:
+File: bs_4_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 384 (0.03919174)', 'class 51 (0.02919070)', 'class 714 (0.02623579)', 'class 269 (0.02580732)', 'class 362 (0.02240217)']
+File: bs_4_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 996 (0.57264805)', 'class 973 (0.02501059)', 'class 406 (0.01356894)', 'class 995 (0.00984558)', 'class 991 (0.00740707)']
+File: bs_4_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 289 (0.13817453)', 'class 269 (0.09107564)', 'class 270 (0.02784157)', 'class 287 (0.02362989)', 'class 288 (0.02235015)']
+File: bs_4_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 996 (0.36149773)', 'class 973 (0.03675331)', 'class 116 (0.01732977)', 'class 384 (0.01596858)', 'class 936 (0.01410856)']
+Classification accuracy: 0/4 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=1 (n=8)...
+
+    Original images validation:
+File: bs_8_1_0007.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.82752967)', 'class 29 (0.00092165)', 'class 395 (0.00086720)', 'class 393 (0.00085405)', 'class 130 (0.00077635)']
+File: bs_8_1_0004.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.78251868)', 'class 393 (0.00078912)', 'class 392 (0.00077191)', 'class 0 (0.00065899)', 'class 27 (0.00065135)']
+File: bs_8_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.78779793)', 'class 393 (0.00132701)', 'class 29 (0.00118150)', 'class 27 (0.00099084)', 'class 395 (0.00079534)']
+File: bs_8_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.88738292)', 'class 794 (0.00091874)', 'class 115 (0.00076028)', 'class 393 (0.00051285)', 'class 562 (0.00050140)']
+File: bs_8_1_0005.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.96462107)', 'class 58 (0.00055081)', 'class 130 (0.00038418)', 'class 0 (0.00035367)', 'class 393 (0.00021960)']
+File: bs_8_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.95652592)', 'class 629 (0.00052707)', 'class 126 (0.00051036)', 'class 27 (0.00050181)', 'class 327 (0.00036341)']
+File: bs_8_1_0006.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.75445563)', 'class 425 (0.00128181)', 'class 449 (0.00088855)', 'class 448 (0.00083235)', 'class 660 (0.00080146)']
+File: bs_8_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.84432840)', 'class 393 (0.00076823)', 'class 973 (0.00059066)', 'class 801 (0.00056852)', 'class 392 (0.00055187)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_1_0007.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.36779895)', 'class 973 (0.11781032)', 'class 115 (0.04115118)', 'class 393 (0.02727178)', 'class 108 (0.02272758)']
+File: bs_8_1_0004.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.42196277)', 'class 332 (0.05933433)', 'class 925 (0.03684370)', 'class 283 (0.02916096)', 'class 980 (0.01154636)']
+File: bs_8_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.36503029)', 'class 110 (0.06732786)', 'class 126 (0.03574896)', 'class 289 (0.01821409)', 'class 108 (0.01810105)']
+File: bs_8_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.46522754)', 'class 93 (0.04152917)', 'class 188 (0.01570582)', 'class 115 (0.01342524)', 'class 120 (0.01152127)']
+File: bs_8_1_0005.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.28684646)', 'class 58 (0.05554499)', 'class 5 (0.03712395)', 'class 36 (0.01623795)', 'class 32 (0.01615535)']
+File: bs_8_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.34550798)', 'class 110 (0.05943302)', 'class 289 (0.05692676)', 'class 126 (0.02806218)', 'class 980 (0.02656119)']
+File: bs_8_1_0006.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.15895458)', 'class 973 (0.08491700)', 'class 41 (0.05161427)', 'class 98 (0.02297102)', 'class 67 (0.01661935)']
+File: bs_8_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.67342830)', 'class 108 (0.07568894)', 'class 552 (0.01870353)', 'class 115 (0.01473354)', 'class 393 (0.00886356)']
+Classification accuracy: 8/8 (100.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=10 (n=8)...
+
+    Original images validation:
+File: bs_8_10_0004.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85148847)', 'class 13 (0.00184316)', 'class 761 (0.00136282)', 'class 15 (0.00078216)', 'class 188 (0.00050984)']
+File: bs_8_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.79651362)', 'class 13 (0.00185101)', 'class 86 (0.00132754)', 'class 761 (0.00099458)', 'class 85 (0.00096397)']
+File: bs_8_10_0007.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.84657121)', 'class 13 (0.00392245)', 'class 140 (0.00056096)', 'class 188 (0.00055318)', 'class 11 (0.00054219)']
+File: bs_8_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.88368094)', 'class 13 (0.00180457)', 'class 188 (0.00054954)', 'class 761 (0.00049460)', 'class 11 (0.00041061)']
+File: bs_8_10_0006.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.80519795)', 'class 13 (0.00172487)', 'class 761 (0.00150758)', 'class 15 (0.00084016)', 'class 11 (0.00071547)']
+File: bs_8_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85788578)', 'class 761 (0.00198372)', 'class 13 (0.00085477)', 'class 11 (0.00072571)', 'class 426 (0.00044925)']
+File: bs_8_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.82693565)', 'class 13 (0.00172058)', 'class 761 (0.00154198)', 'class 868 (0.00074751)', 'class 188 (0.00059588)']
+File: bs_8_10_0005.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.86189944)', 'class 761 (0.00147680)', 'class 13 (0.00119675)', 'class 140 (0.00047396)', 'class 12 (0.00045513)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_10_0004.png
+    True class: 10
+    Top-5 predictions: ['class 991 (0.08503938)', 'class 996 (0.03411552)', 'class 324 (0.02879475)', 'class 108 (0.02744943)', 'class 994 (0.02331503)']
+File: bs_8_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.26017120)', 'class 120 (0.09464028)', 'class 70 (0.09270049)', 'class 73 (0.03515277)', 'class 328 (0.00902336)']
+File: bs_8_10_0007.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.12769380)', 'class 712 (0.06265290)', 'class 58 (0.02676874)', 'class 145 (0.02540480)', 'class 13 (0.02359202)']
+File: bs_8_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.75509477)', 'class 120 (0.07450908)', 'class 92 (0.00860258)', 'class 815 (0.00505341)', 'class 73 (0.00391349)']
+File: bs_8_10_0006.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.42656618)', 'class 145 (0.10559094)', 'class 139 (0.03644710)', 'class 98 (0.03591047)', 'class 20 (0.01955129)']
+File: bs_8_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.88626713)', 'class 11 (0.00677250)', 'class 12 (0.00088783)', 'class 13 (0.00080412)', 'class 86 (0.00075754)']
+File: bs_8_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 328 (0.23562166)', 'class 996 (0.06399738)', 'class 991 (0.03393267)', 'class 287 (0.03379595)', 'class 995 (0.03352252)']
+File: bs_8_10_0005.png
+    True class: 10
+    Top-5 predictions: ['class 5 (0.21410120)', 'class 49 (0.10366858)', 'class 936 (0.05240972)', 'class 32 (0.04183772)', 'class 111 (0.03520325)']
+Classification accuracy: 5/8 (62.50%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=24 (n=8)...
+
+    Original images validation:
+File: bs_8_24_0005.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.89883405)', 'class 82 (0.00042585)', 'class 210 (0.00036831)', 'class 367 (0.00036174)', 'class 164 (0.00032830)']
+File: bs_8_24_0006.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82164246)', 'class 21 (0.00111063)', 'class 82 (0.00076498)', 'class 87 (0.00044619)', 'class 47 (0.00036459)']
+File: bs_8_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.83534241)', 'class 87 (0.00041760)', 'class 21 (0.00036973)', 'class 138 (0.00036134)', 'class 8 (0.00033983)']
+File: bs_8_24_0004.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.81910175)', 'class 87 (0.00059076)', 'class 83 (0.00045024)', 'class 138 (0.00044654)', 'class 21 (0.00042868)']
+File: bs_8_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82014346)', 'class 633 (0.00057875)', 'class 87 (0.00056295)', 'class 21 (0.00046716)', 'class 567 (0.00036518)']
+File: bs_8_24_0007.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.81059664)', 'class 21 (0.00068776)', 'class 756 (0.00048559)', 'class 87 (0.00046843)', 'class 425 (0.00041171)']
+File: bs_8_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82329768)', 'class 82 (0.00040146)', 'class 87 (0.00039271)', 'class 21 (0.00038708)', 'class 138 (0.00037009)']
+File: bs_8_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82118678)', 'class 8 (0.00061624)', 'class 87 (0.00051696)', 'class 828 (0.00045169)', 'class 21 (0.00035737)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_24_0005.png
+    True class: 24
+    Top-5 predictions: ['class 289 (0.87301010)', 'class 290 (0.03485830)', 'class 288 (0.02341963)', 'class 251 (0.02341744)', 'class 293 (0.00655400)']
+File: bs_8_24_0006.png
+    True class: 24
+    Top-5 predictions: ['class 41 (0.11809999)', 'class 994 (0.05779479)', 'class 24 (0.04614617)', 'class 38 (0.03793871)', 'class 82 (0.03650293)']
+File: bs_8_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.61960632)', 'class 384 (0.01961717)', 'class 287 (0.00899381)', 'class 383 (0.00896291)', 'class 335 (0.00819014)']
+File: bs_8_24_0004.png
+    True class: 24
+    Top-5 predictions: ['class 289 (0.64543194)', 'class 288 (0.06214657)', 'class 292 (0.03931157)', 'class 290 (0.03930606)', 'class 291 (0.02536254)']
+File: bs_8_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 289 (0.14785802)', 'class 288 (0.11895482)', 'class 287 (0.05488484)', 'class 293 (0.02847906)', 'class 82 (0.01531025)']
+File: bs_8_24_0007.png
+    True class: 24
+    Top-5 predictions: ['class 885 (0.14161856)', 'class 946 (0.08189195)', 'class 991 (0.04515724)', 'class 973 (0.04082886)', 'class 24 (0.02468055)']
+File: bs_8_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 292 (0.18581797)', 'class 290 (0.09022665)', 'class 289 (0.05869321)', 'class 288 (0.05118334)', 'class 293 (0.04052183)']
+File: bs_8_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.60807574)', 'class 738 (0.05048623)', 'class 946 (0.03274607)', 'class 973 (0.01015496)', 'class 989 (0.00683511)']
+Classification accuracy: 2/8 (25.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=79 (n=8)...
+
+    Original images validation:
+File: bs_8_79_0004.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80613333)', 'class 60 (0.00055609)', 'class 58 (0.00054982)', 'class 44 (0.00049537)', 'class 52 (0.00047740)']
+File: bs_8_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.90761137)', 'class 69 (0.00035173)', 'class 314 (0.00021426)', 'class 429 (0.00017894)', 'class 111 (0.00017495)']
+File: bs_8_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80201232)', 'class 69 (0.00055434)', 'class 314 (0.00038172)', 'class 39 (0.00036090)', 'class 71 (0.00035062)']
+File: bs_8_79_0005.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84968483)', 'class 69 (0.00063972)', 'class 126 (0.00050989)', 'class 71 (0.00028991)', 'class 314 (0.00028468)']
+File: bs_8_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84181559)', 'class 126 (0.00051770)', 'class 69 (0.00047398)', 'class 783 (0.00037347)', 'class 314 (0.00033560)']
+File: bs_8_79_0006.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.82910126)', 'class 314 (0.00055410)', 'class 69 (0.00042093)', 'class 71 (0.00040029)', 'class 111 (0.00035838)']
+File: bs_8_79_0007.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80890840)', 'class 314 (0.00052045)', 'class 60 (0.00049091)', 'class 69 (0.00048467)', 'class 313 (0.00045976)']
+File: bs_8_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.93481052)', 'class 111 (0.00173284)', 'class 110 (0.00059927)', 'class 114 (0.00024315)', 'class 521 (0.00019531)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_79_0004.png
+    True class: 79
+    Top-5 predictions: ['class 45 (0.43447280)', 'class 79 (0.16753623)', 'class 38 (0.10762779)', 'class 52 (0.02023149)', 'class 54 (0.01215681)']
+File: bs_8_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.55481672)', 'class 111 (0.12558910)', 'class 126 (0.01074906)', 'class 326 (0.00846159)', 'class 783 (0.00767568)']
+File: bs_8_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.70294774)', 'class 38 (0.05979619)', 'class 126 (0.03362396)', 'class 125 (0.01034752)', 'class 120 (0.00834221)']
+File: bs_8_79_0005.png
+    True class: 79
+    Top-5 predictions: ['class 111 (0.16359581)', 'class 73 (0.15349795)', 'class 120 (0.11328471)', 'class 78 (0.06808770)', 'class 712 (0.03571401)']
+File: bs_8_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 611 (0.10297908)', 'class 662 (0.09601534)', 'class 403 (0.02346865)', 'class 712 (0.01562537)', 'class 434 (0.01343056)']
+File: bs_8_79_0006.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.37113610)', 'class 111 (0.06391843)', 'class 110 (0.01653842)', 'class 26 (0.01052166)', 'class 120 (0.00674645)']
+File: bs_8_79_0007.png
+    True class: 79
+    Top-5 predictions: ['class 409 (0.07705349)', 'class 819 (0.07065588)', 'class 892 (0.03185119)', 'class 865 (0.02971152)', 'class 971 (0.02679726)']
+File: bs_8_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 28 (0.26548889)', 'class 26 (0.21393844)', 'class 25 (0.05415438)', 'class 120 (0.05286096)', 'class 79 (0.03426122)']
+Classification accuracy: 3/8 (37.50%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=100 (n=8)...
+
+    Original images validation:
+File: bs_8_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.84086442)', 'class 99 (0.00483341)', 'class 137 (0.00151535)', 'class 53 (0.00082990)', 'class 136 (0.00078841)']
+File: bs_8_100_0006.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.86571687)', 'class 99 (0.00412089)', 'class 209 (0.00156408)', 'class 130 (0.00053112)', 'class 206 (0.00046248)']
+File: bs_8_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.71232337)', 'class 209 (0.00298090)', 'class 206 (0.00111618)', 'class 99 (0.00105530)', 'class 25 (0.00099287)']
+File: bs_8_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.75972056)', 'class 209 (0.00200340)', 'class 53 (0.00176908)', 'class 25 (0.00152992)', 'class 99 (0.00132699)']
+File: bs_8_100_0007.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.82811087)', 'class 209 (0.00212194)', 'class 136 (0.00165240)', 'class 143 (0.00149730)', 'class 99 (0.00143553)']
+File: bs_8_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.78775674)', 'class 209 (0.00221671)', 'class 25 (0.00127364)', 'class 53 (0.00089582)', 'class 206 (0.00086935)']
+File: bs_8_100_0005.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.87830418)', 'class 136 (0.00293436)', 'class 80 (0.00173905)', 'class 137 (0.00113685)', 'class 209 (0.00096528)']
+File: bs_8_100_0004.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.77766973)', 'class 99 (0.00325138)', 'class 25 (0.00131649)', 'class 209 (0.00120280)', 'class 53 (0.00100098)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.24852636)', 'class 1 (0.03009268)', 'class 87 (0.02689303)', 'class 130 (0.01344805)', 'class 36 (0.01273227)']
+File: bs_8_100_0006.png
+    True class: 100
+    Top-5 predictions: ['class 584 (0.04505299)', 'class 155 (0.03613408)', 'class 265 (0.02798189)', 'class 115 (0.02434803)', 'class 108 (0.02004912)']
+File: bs_8_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.75525874)', 'class 996 (0.00623646)', 'class 99 (0.00185980)', 'class 82 (0.00185024)', 'class 135 (0.00181861)']
+File: bs_8_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 995 (0.09449568)', 'class 993 (0.06302776)', 'class 991 (0.06111148)', 'class 994 (0.05387301)', 'class 996 (0.05250969)']
+File: bs_8_100_0007.png
+    True class: 100
+    Top-5 predictions: ['class 136 (0.62110519)', 'class 100 (0.14351757)', 'class 972 (0.02712501)', 'class 327 (0.01278503)', 'class 137 (0.01170586)']
+File: bs_8_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.33773217)', 'class 360 (0.10914756)', 'class 394 (0.03983205)', 'class 337 (0.03624851)', 'class 80 (0.01900839)']
+File: bs_8_100_0005.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.54592109)', 'class 146 (0.02175720)', 'class 115 (0.01959941)', 'class 80 (0.01107311)', 'class 92 (0.01058311)']
+File: bs_8_100_0004.png
+    True class: 100
+    Top-5 predictions: ['class 38 (0.13895753)', 'class 996 (0.12343142)', 'class 120 (0.11333565)', 'class 41 (0.03285320)', 'class 309 (0.01838945)']
+Classification accuracy: 4/8 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=409 (n=8)...
+
+    Original images validation:
+File: bs_8_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.85967630)', 'class 442 (0.02513720)', 'class 892 (0.00954517)', 'class 698 (0.00802925)', 'class 624 (0.00156404)']
+File: bs_8_409_0004.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.70218027)', 'class 892 (0.05312372)', 'class 826 (0.04328157)', 'class 426 (0.01448454)', 'class 531 (0.00764640)']
+File: bs_8_409_0007.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.39679131)', 'class 892 (0.01951575)', 'class 635 (0.01685245)', 'class 531 (0.00845051)', 'class 826 (0.00583624)']
+File: bs_8_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.61445695)', 'class 530 (0.13890556)', 'class 892 (0.01812768)', 'class 688 (0.01302873)', 'class 531 (0.01030419)']
+File: bs_8_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.89268440)', 'class 892 (0.03985587)', 'class 605 (0.01052529)', 'class 826 (0.00885847)', 'class 426 (0.00643689)']
+File: bs_8_409_0006.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.72680962)', 'class 826 (0.03202324)', 'class 892 (0.02783776)', 'class 426 (0.01467863)', 'class 531 (0.01248248)']
+File: bs_8_409_0005.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.98719656)', 'class 635 (0.00148827)', 'class 531 (0.00070620)', 'class 892 (0.00066945)', 'class 485 (0.00021030)']
+File: bs_8_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.78390145)', 'class 892 (0.02787026)', 'class 897 (0.00921972)', 'class 635 (0.00410581)', 'class 426 (0.00357716)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.63393581)', 'class 892 (0.16322507)', 'class 442 (0.09855745)', 'class 646 (0.00698619)', 'class 698 (0.00269183)']
+File: bs_8_409_0004.png
+    True class: 409
+    Top-5 predictions: ['class 328 (0.10093625)', 'class 996 (0.06516083)', 'class 995 (0.05866458)', 'class 310 (0.04467285)', 'class 108 (0.04377401)']
+File: bs_8_409_0007.png
+    True class: 409
+    Top-5 predictions: ['class 308 (0.28609028)', 'class 309 (0.12903526)', 'class 108 (0.04444655)', 'class 300 (0.03400959)', 'class 77 (0.03017676)']
+File: bs_8_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 892 (0.60740674)', 'class 409 (0.07431412)', 'class 640 (0.04186740)', 'class 328 (0.01440172)', 'class 73 (0.00576710)']
+File: bs_8_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 5 (0.31550539)', 'class 126 (0.03940881)', 'class 38 (0.02043561)', 'class 111 (0.01901863)', 'class 149 (0.01457610)']
+File: bs_8_409_0006.png
+    True class: 409
+    Top-5 predictions: ['class 973 (0.04625110)', 'class 51 (0.03301782)', 'class 996 (0.02789848)', 'class 108 (0.02415923)', 'class 76 (0.01937900)']
+File: bs_8_409_0005.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.59006810)', 'class 635 (0.23046832)', 'class 892 (0.07404889)', 'class 426 (0.01823310)', 'class 826 (0.00439128)']
+File: bs_8_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.43499288)', 'class 531 (0.07424459)', 'class 426 (0.04579115)', 'class 633 (0.04533019)', 'class 826 (0.02754875)']
+Classification accuracy: 3/8 (37.50%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=701 (n=8)...
+
+    Original images validation:
+File: bs_8_701_0006.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.79750276)', 'class 456 (0.00074694)', 'class 557 (0.00074361)', 'class 895 (0.00050042)', 'class 978 (0.00049866)']
+File: bs_8_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.81071103)', 'class 557 (0.00059280)', 'class 978 (0.00047439)', 'class 895 (0.00043910)', 'class 405 (0.00040177)']
+File: bs_8_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.80286759)', 'class 557 (0.00060148)', 'class 895 (0.00049882)', 'class 417 (0.00047968)', 'class 978 (0.00044325)']
+File: bs_8_701_0004.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.83147746)', 'class 978 (0.00054833)', 'class 557 (0.00053850)', 'class 417 (0.00045209)', 'class 895 (0.00042789)']
+File: bs_8_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.90068883)', 'class 557 (0.00037488)', 'class 417 (0.00033645)', 'class 895 (0.00025572)', 'class 797 (0.00023932)']
+File: bs_8_701_0007.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.75994390)', 'class 557 (0.00076724)', 'class 895 (0.00050095)', 'class 699 (0.00049800)', 'class 456 (0.00046502)']
+File: bs_8_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.78081638)', 'class 557 (0.00072300)', 'class 978 (0.00071576)', 'class 895 (0.00060745)', 'class 417 (0.00057987)']
+File: bs_8_701_0005.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.74268836)', 'class 557 (0.00083125)', 'class 978 (0.00068405)', 'class 417 (0.00064202)', 'class 895 (0.00063613)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_701_0006.png
+    True class: 701
+    Top-5 predictions: ['class 644 (0.06434886)', 'class 620 (0.02684633)', 'class 403 (0.02405238)', 'class 626 (0.02269465)', 'class 812 (0.02174754)']
+File: bs_8_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 644 (0.13356312)', 'class 403 (0.09367722)', 'class 812 (0.04453584)', 'class 700 (0.04027145)', 'class 611 (0.01821732)']
+File: bs_8_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 38 (0.13508052)', 'class 409 (0.06328881)', 'class 712 (0.02524036)', 'class 65 (0.02281419)', 'class 892 (0.01988927)']
+File: bs_8_701_0004.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.13167001)', 'class 417 (0.04632221)', 'class 712 (0.02467987)', 'class 971 (0.01226436)', 'class 560 (0.01015421)']
+File: bs_8_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 66 (0.05353409)', 'class 68 (0.04517702)', 'class 828 (0.03698040)', 'class 49 (0.03203087)', 'class 54 (0.02808700)']
+File: bs_8_701_0007.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.60288370)', 'class 417 (0.06464606)', 'class 749 (0.05045541)', 'class 812 (0.01443069)', 'class 723 (0.01334089)']
+File: bs_8_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 611 (0.03463439)', 'class 973 (0.03180280)', 'class 712 (0.03007899)', 'class 804 (0.02467799)', 'class 861 (0.02159059)']
+File: bs_8_701_0005.png
+    True class: 701
+    Top-5 predictions: ['class 470 (0.31206641)', 'class 701 (0.03854031)', 'class 795 (0.03848294)', 'class 971 (0.03432575)', 'class 970 (0.03158934)']
+Classification accuracy: 2/8 (25.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=712 (n=8)...
+
+    Original images validation:
+File: bs_8_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.83512157)', 'class 892 (0.00701485)', 'class 677 (0.00384325)', 'class 927 (0.00246532)', 'class 409 (0.00203668)']
+File: bs_8_712_0004.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.93404138)', 'class 647 (0.00097872)', 'class 455 (0.00069936)', 'class 720 (0.00048410)', 'class 310 (0.00046135)']
+File: bs_8_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.79356515)', 'class 599 (0.00997492)', 'class 441 (0.00614328)', 'class 115 (0.00585497)', 'class 440 (0.00297754)']
+File: bs_8_712_0007.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.97308582)', 'class 415 (0.00308132)', 'class 551 (0.00197654)', 'class 333 (0.00073981)', 'class 509 (0.00034534)']
+File: bs_8_712_0006.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.84549296)', 'class 551 (0.02904563)', 'class 927 (0.00197360)', 'class 931 (0.00115444)', 'class 720 (0.00078621)']
+File: bs_8_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.76021236)', 'class 111 (0.00195978)', 'class 925 (0.00102237)', 'class 262 (0.00077815)', 'class 969 (0.00056648)']
+File: bs_8_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.96108240)', 'class 968 (0.00234025)', 'class 572 (0.00054857)', 'class 647 (0.00052320)', 'class 509 (0.00037833)']
+File: bs_8_712_0005.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.89327329)', 'class 769 (0.00106401)', 'class 893 (0.00092441)', 'class 635 (0.00072526)', 'class 551 (0.00064794)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 991 (0.08216286)', 'class 996 (0.06699682)', 'class 712 (0.05753878)', 'class 328 (0.03910386)', 'class 936 (0.03901204)']
+File: bs_8_712_0004.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.66192651)', 'class 5 (0.03697234)', 'class 111 (0.03181768)', 'class 126 (0.01727742)', 'class 577 (0.01528903)']
+File: bs_8_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 996 (0.30895194)', 'class 115 (0.05817003)', 'class 111 (0.03058968)', 'class 110 (0.02670353)', 'class 289 (0.01744816)']
+File: bs_8_712_0007.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.10453849)', 'class 861 (0.02884064)', 'class 996 (0.02789360)', 'class 574 (0.02325982)', 'class 719 (0.02170616)']
+File: bs_8_712_0006.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.58596992)', 'class 973 (0.04796805)', 'class 611 (0.01600507)', 'class 49 (0.01320471)', 'class 5 (0.00935140)']
+File: bs_8_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.40938324)', 'class 110 (0.08619425)', 'class 5 (0.03556538)', 'class 111 (0.03477661)', 'class 996 (0.03384581)']
+File: bs_8_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 968 (0.11041141)', 'class 712 (0.08386546)', 'class 470 (0.03570736)', 'class 572 (0.01825354)', 'class 969 (0.01622914)']
+File: bs_8_712_0005.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.74988914)', 'class 66 (0.02151702)', 'class 73 (0.01086148)', 'class 861 (0.00688694)', 'class 54 (0.00686365)']
+Classification accuracy: 5/8 (62.50%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=850 (n=8)...
+
+    Original images validation:
+File: bs_8_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.78502834)', 'class 697 (0.01124664)', 'class 865 (0.00435173)', 'class 911 (0.00413137)', 'class 265 (0.00401418)']
+File: bs_8_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.79911804)', 'class 865 (0.01326565)', 'class 719 (0.00834941)', 'class 736 (0.00185476)', 'class 773 (0.00154727)']
+File: bs_8_850_0004.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.88361204)', 'class 865 (0.00354465)', 'class 539 (0.00173966)', 'class 496 (0.00152862)', 'class 419 (0.00146716)']
+File: bs_8_850_0006.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.67822587)', 'class 785 (0.00191971)', 'class 865 (0.00187589)', 'class 414 (0.00158087)', 'class 529 (0.00140797)']
+File: bs_8_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.76379734)', 'class 865 (0.01188034)', 'class 797 (0.00599481)', 'class 588 (0.00366467)', 'class 520 (0.00209533)']
+File: bs_8_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.96175206)', 'class 865 (0.00124658)', 'class 457 (0.00045549)', 'class 529 (0.00039122)', 'class 719 (0.00035140)']
+File: bs_8_850_0007.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.87243778)', 'class 658 (0.00262957)', 'class 496 (0.00251288)', 'class 824 (0.00168072)', 'class 414 (0.00115470)']
+File: bs_8_850_0005.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.87839627)', 'class 865 (0.00175144)', 'class 106 (0.00064880)', 'class 863 (0.00059364)', 'class 201 (0.00056574)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 996 (0.57495087)', 'class 991 (0.06088766)', 'class 126 (0.04903377)', 'class 850 (0.02412545)', 'class 973 (0.01865627)']
+File: bs_8_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.24026377)', 'class 126 (0.08011810)', 'class 108 (0.07938863)', 'class 328 (0.03795620)', 'class 329 (0.03680613)']
+File: bs_8_850_0004.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.16849525)', 'class 973 (0.15898588)', 'class 996 (0.06157701)', 'class 611 (0.03558623)', 'class 108 (0.02781563)']
+File: bs_8_850_0006.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.88963974)', 'class 203 (0.00378036)', 'class 865 (0.00277270)', 'class 188 (0.00246847)', 'class 229 (0.00201730)']
+File: bs_8_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.51099819)', 'class 865 (0.09424181)', 'class 108 (0.01361695)', 'class 289 (0.01262871)', 'class 327 (0.00979409)']
+File: bs_8_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 308 (0.32813749)', 'class 109 (0.04355671)', 'class 328 (0.03196067)', 'class 300 (0.02618405)', 'class 850 (0.02313802)']
+File: bs_8_850_0007.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.21880196)', 'class 108 (0.05309941)', 'class 496 (0.04893734)', 'class 327 (0.03555245)', 'class 996 (0.02734739)']
+File: bs_8_850_0005.png
+    True class: 850
+    Top-5 predictions: ['class 996 (0.08088917)', 'class 116 (0.04621971)', 'class 308 (0.03273378)', 'class 344 (0.03201004)', 'class 973 (0.03023341)']
+Classification accuracy: 5/8 (62.50%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=950 (n=8)...
+
+    Original images validation:
+File: bs_8_950_0006.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.70771724)', 'class 954 (0.00542926)', 'class 951 (0.00515972)', 'class 957 (0.00276157)', 'class 773 (0.00227904)']
+File: bs_8_950_0007.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.83529001)', 'class 951 (0.00845012)', 'class 954 (0.00614442)', 'class 957 (0.00078054)', 'class 953 (0.00067158)']
+File: bs_8_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.78207183)', 'class 951 (0.00426152)', 'class 942 (0.00190266)', 'class 954 (0.00142722)', 'class 930 (0.00120007)']
+File: bs_8_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.88217860)', 'class 951 (0.00608338)', 'class 954 (0.00459811)', 'class 33 (0.00067647)', 'class 582 (0.00064710)']
+File: bs_8_950_0004.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.93432885)', 'class 954 (0.00748873)', 'class 951 (0.00708007)', 'class 990 (0.00130579)', 'class 957 (0.00113584)']
+File: bs_8_950_0005.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.91119236)', 'class 942 (0.01179669)', 'class 951 (0.00789181)', 'class 940 (0.00240265)', 'class 932 (0.00116700)']
+File: bs_8_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.86010790)', 'class 951 (0.01105077)', 'class 954 (0.00779779)', 'class 953 (0.00062244)', 'class 957 (0.00058214)']
+File: bs_8_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.80636972)', 'class 951 (0.01525979)', 'class 954 (0.00503302)', 'class 60 (0.00077564)', 'class 953 (0.00071675)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_950_0006.png
+    True class: 950
+    Top-5 predictions: ['class 73 (0.03267505)', 'class 302 (0.02698900)', 'class 310 (0.02245738)', 'class 107 (0.02219876)', 'class 994 (0.02153919)']
+File: bs_8_950_0007.png
+    True class: 950
+    Top-5 predictions: ['class 940 (0.10793509)', 'class 53 (0.09973562)', 'class 52 (0.05327328)', 'class 68 (0.02818760)', 'class 61 (0.02130018)']
+File: bs_8_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 931 (0.07783563)', 'class 950 (0.05793937)', 'class 850 (0.05541781)', 'class 930 (0.04246906)', 'class 961 (0.02493039)']
+File: bs_8_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 996 (0.17410955)', 'class 995 (0.08902378)', 'class 52 (0.05971885)', 'class 994 (0.03525401)', 'class 949 (0.03154271)']
+File: bs_8_950_0004.png
+    True class: 950
+    Top-5 predictions: ['class 883 (0.14101422)', 'class 989 (0.03194134)', 'class 725 (0.03175990)', 'class 738 (0.02632206)', 'class 712 (0.02269719)']
+File: bs_8_950_0005.png
+    True class: 950
+    Top-5 predictions: ['class 996 (0.78136909)', 'class 991 (0.05833205)', 'class 599 (0.01368970)', 'class 994 (0.01245711)', 'class 993 (0.00587716)']
+File: bs_8_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 397 (0.18534006)', 'class 392 (0.08714361)', 'class 1 (0.04063937)', 'class 5 (0.03333993)', 'class 115 (0.03260836)']
+File: bs_8_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 397 (0.23061688)', 'class 115 (0.15506396)', 'class 393 (0.05508234)', 'class 25 (0.03447450)', 'class 108 (0.02061509)']
+Classification accuracy: 0/8 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=953 (n=8)...
+
+    Original images validation:
+File: bs_8_953_0007.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.94129932)', 'class 955 (0.00345053)', 'class 954 (0.00337142)', 'class 941 (0.00159112)', 'class 868 (0.00123053)']
+File: bs_8_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.79248506)', 'class 85 (0.00202600)', 'class 954 (0.00122666)', 'class 950 (0.00111254)', 'class 949 (0.00058187)']
+File: bs_8_953_0006.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.91124767)', 'class 85 (0.00107265)', 'class 954 (0.00056929)', 'class 950 (0.00026245)', 'class 987 (0.00025176)']
+File: bs_8_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.90730560)', 'class 946 (0.00136203)', 'class 85 (0.00124517)', 'class 944 (0.00052726)', 'class 955 (0.00028127)']
+File: bs_8_953_0004.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.96566707)', 'class 923 (0.00115768)', 'class 954 (0.00086787)', 'class 942 (0.00073695)', 'class 950 (0.00059189)']
+File: bs_8_953_0005.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.84337384)', 'class 946 (0.00120452)', 'class 954 (0.00109289)', 'class 85 (0.00100946)', 'class 950 (0.00065479)']
+File: bs_8_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.71072364)', 'class 956 (0.03073651)', 'class 949 (0.00346315)', 'class 988 (0.00263057)', 'class 329 (0.00250542)']
+File: bs_8_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.97817159)', 'class 85 (0.00061480)', 'class 954 (0.00042760)', 'class 837 (0.00016953)', 'class 836 (0.00010663)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_953_0007.png
+    True class: 953
+    Top-5 predictions: ['class 991 (0.16926757)', 'class 994 (0.05970763)', 'class 996 (0.05960559)', 'class 953 (0.04464345)', 'class 108 (0.03633194)']
+File: bs_8_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.15960865)', 'class 985 (0.08748564)', 'class 946 (0.03106816)', 'class 973 (0.03075362)', 'class 995 (0.02446342)']
+File: bs_8_953_0006.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.09092747)', 'class 108 (0.04050008)', 'class 973 (0.03246005)', 'class 996 (0.02228592)', 'class 578 (0.02053905)']
+File: bs_8_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 985 (0.07093813)', 'class 938 (0.05876996)', 'class 325 (0.05670803)', 'class 996 (0.05010528)', 'class 324 (0.03618383)']
+File: bs_8_953_0004.png
+    True class: 953
+    Top-5 predictions: ['class 923 (0.16886960)', 'class 937 (0.08063567)', 'class 996 (0.06322892)', 'class 883 (0.05203445)', 'class 738 (0.02820788)']
+File: bs_8_953_0005.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.66144669)', 'class 946 (0.12221655)', 'class 944 (0.00568860)', 'class 956 (0.00526002)', 'class 949 (0.00386183)']
+File: bs_8_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.46122912)', 'class 988 (0.03578414)', 'class 998 (0.02784864)', 'class 956 (0.02323593)', 'class 37 (0.02191622)']
+File: bs_8_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 738 (0.04506872)', 'class 38 (0.03323785)', 'class 988 (0.02524177)', 'class 883 (0.02489021)', 'class 996 (0.01913385)']
+Classification accuracy: 4/8 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=954 (n=8)...
+
+    Original images validation:
+File: bs_8_954_0006.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.82655299)', 'class 950 (0.00182419)', 'class 951 (0.00139004)', 'class 939 (0.00113574)', 'class 953 (0.00089514)']
+File: bs_8_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.81910676)', 'class 950 (0.00116292)', 'class 668 (0.00091868)', 'class 582 (0.00089322)', 'class 953 (0.00081269)']
+File: bs_8_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.86034709)', 'class 940 (0.00391162)', 'class 950 (0.00137595)', 'class 951 (0.00104117)', 'class 953 (0.00091150)']
+File: bs_8_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.89325511)', 'class 940 (0.00096462)', 'class 950 (0.00059771)', 'class 953 (0.00047388)', 'class 939 (0.00039031)']
+File: bs_8_954_0005.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.85994130)', 'class 582 (0.00142477)', 'class 950 (0.00107424)', 'class 953 (0.00094471)', 'class 948 (0.00068594)']
+File: bs_8_954_0004.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.94659102)', 'class 991 (0.00444615)', 'class 996 (0.00090016)', 'class 988 (0.00047437)', 'class 987 (0.00021593)']
+File: bs_8_954_0007.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.74194002)', 'class 940 (0.00502756)', 'class 950 (0.00190645)', 'class 995 (0.00185704)', 'class 939 (0.00176353)']
+File: bs_8_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.91318274)', 'class 738 (0.00458746)', 'class 542 (0.00079346)', 'class 506 (0.00055760)', 'class 950 (0.00050606)']
+Classification accuracy: 8/8 (100.00%)
+
+    Reconstructed images validation:
+File: bs_8_954_0006.png
+    True class: 954
+    Top-5 predictions: ['class 248 (0.08585862)', 'class 249 (0.06780899)', 'class 384 (0.05434573)', 'class 250 (0.04316124)', 'class 383 (0.04195645)']
+File: bs_8_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 43 (0.11366943)', 'class 36 (0.04005476)', 'class 35 (0.03210601)', 'class 319 (0.02345539)', 'class 37 (0.02069883)']
+File: bs_8_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 985 (0.11098988)', 'class 309 (0.08740897)', 'class 865 (0.03271409)', 'class 580 (0.02608041)', 'class 308 (0.02560894)']
+File: bs_8_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.15237032)', 'class 309 (0.05503042)', 'class 985 (0.05228450)', 'class 865 (0.02138592)', 'class 308 (0.01522278)']
+File: bs_8_954_0005.png
+    True class: 954
+    Top-5 predictions: ['class 996 (0.08462939)', 'class 599 (0.07526667)', 'class 309 (0.06956211)', 'class 987 (0.03025699)', 'class 28 (0.02725198)']
+File: bs_8_954_0004.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.23409456)', 'class 580 (0.02337610)', 'class 996 (0.01335825)', 'class 985 (0.01154033)', 'class 738 (0.00920823)']
+File: bs_8_954_0007.png
+    True class: 954
+    Top-5 predictions: ['class 917 (0.05174341)', 'class 936 (0.02238831)', 'class 938 (0.01368882)', 'class 987 (0.01343373)', 'class 973 (0.01061064)']
+File: bs_8_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 738 (0.07081005)', 'class 954 (0.05718909)', 'class 996 (0.03615073)', 'class 580 (0.02247767)', 'class 995 (0.01765093)']
+Classification accuracy: 2/8 (25.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=8, class=999 (n=8)...
+
+    Original images validation:
+File: bs_8_999_0007.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.86156553)', 'class 700 (0.04508105)', 'class 758 (0.00268452)', 'class 855 (0.00075727)', 'class 731 (0.00070974)']
+File: bs_8_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.47429463)', 'class 700 (0.03067576)', 'class 678 (0.02348383)', 'class 824 (0.02225834)', 'class 720 (0.01345367)']
+File: bs_8_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 910 (0.10585097)', 'class 402 (0.07553092)', 'class 420 (0.07538096)', 'class 999 (0.06753796)', 'class 459 (0.05100555)']
+File: bs_8_999_0006.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.75774360)', 'class 700 (0.00411354)', 'class 767 (0.00238345)', 'class 731 (0.00158419)', 'class 855 (0.00139577)']
+File: bs_8_999_0004.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.96821767)', 'class 700 (0.02705025)', 'class 955 (0.00040977)', 'class 884 (0.00005947)', 'class 811 (0.00005443)']
+File: bs_8_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.52495247)', 'class 700 (0.01528184)', 'class 419 (0.01511615)', 'class 855 (0.01063719)', 'class 767 (0.00840454)']
+File: bs_8_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.70744741)', 'class 700 (0.01606943)', 'class 637 (0.00358280)', 'class 855 (0.00152093)', 'class 767 (0.00141214)']
+File: bs_8_999_0005.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.90684652)', 'class 731 (0.04827876)', 'class 182 (0.00488011)', 'class 700 (0.00413379)', 'class 184 (0.00192287)']
+Classification accuracy: 7/8 (87.50%)
+
+    Reconstructed images validation:
+File: bs_8_999_0007.png
+    True class: 999
+    Top-5 predictions: ['class 783 (0.12361746)', 'class 753 (0.07226262)', 'class 686 (0.05494414)', 'class 999 (0.05323098)', 'class 149 (0.04531628)']
+File: bs_8_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 269 (0.03942602)', 'class 996 (0.03687414)', 'class 994 (0.03319282)', 'class 936 (0.03026293)', 'class 991 (0.01733104)']
+File: bs_8_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 249 (0.06596994)', 'class 261 (0.04324865)', 'class 361 (0.04110171)', 'class 384 (0.03412373)', 'class 383 (0.02591660)']
+File: bs_8_999_0006.png
+    True class: 999
+    Top-5 predictions: ['class 973 (0.19219370)', 'class 328 (0.06710010)', 'class 392 (0.05692614)', 'class 109 (0.03240924)', 'class 855 (0.02287724)']
+File: bs_8_999_0004.png
+    True class: 999
+    Top-5 predictions: ['class 327 (0.15190023)', 'class 115 (0.11578813)', 'class 110 (0.07666562)', 'class 973 (0.06352389)', 'class 996 (0.02854644)']
+File: bs_8_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 115 (0.05421904)', 'class 126 (0.04611418)', 'class 269 (0.03185256)', 'class 108 (0.02353861)', 'class 991 (0.02103140)']
+File: bs_8_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 461 (0.10671466)', 'class 149 (0.08406007)', 'class 611 (0.04649919)', 'class 524 (0.03625766)', 'class 470 (0.03104250)']
+File: bs_8_999_0005.png
+    True class: 999
+    Top-5 predictions: ['class 146 (0.05001558)', 'class 264 (0.04030944)', 'class 384 (0.03828834)', 'class 341 (0.03678963)', 'class 996 (0.03304414)']
+Classification accuracy: 0/8 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=1 (n=10)...
+
+    Original images validation:
+File: bs_16_1_0009.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.82418227)', 'class 393 (0.00147290)', 'class 392 (0.00080033)', 'class 5 (0.00066745)', 'class 973 (0.00055880)']
+File: bs_16_1_0008.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.74773329)', 'class 392 (0.00220693)', 'class 973 (0.00187648)', 'class 393 (0.00151156)', 'class 5 (0.00069180)']
+File: bs_16_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.78251868)', 'class 393 (0.00078912)', 'class 392 (0.00077191)', 'class 0 (0.00065899)', 'class 27 (0.00065135)']
+File: bs_16_1_0007.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.69753450)', 'class 29 (0.00111466)', 'class 393 (0.00089237)', 'class 27 (0.00088007)', 'class 0 (0.00087657)']
+File: bs_16_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.96462107)', 'class 58 (0.00055081)', 'class 130 (0.00038418)', 'class 0 (0.00035367)', 'class 393 (0.00021960)']
+File: bs_16_1_0004.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.88738292)', 'class 794 (0.00091874)', 'class 115 (0.00076028)', 'class 393 (0.00051285)', 'class 562 (0.00050140)']
+File: bs_16_1_0006.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.78779793)', 'class 393 (0.00132701)', 'class 29 (0.00118150)', 'class 27 (0.00099084)', 'class 395 (0.00079534)']
+File: bs_16_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.84432840)', 'class 393 (0.00076823)', 'class 973 (0.00059066)', 'class 801 (0.00056852)', 'class 392 (0.00055187)']
+File: bs_16_1_0005.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.95652592)', 'class 629 (0.00052707)', 'class 126 (0.00051036)', 'class 27 (0.00050181)', 'class 327 (0.00036341)']
+File: bs_16_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.84213150)', 'class 107 (0.00073803)', 'class 393 (0.00070742)', 'class 782 (0.00049913)', 'class 980 (0.00047812)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_1_0009.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.70965946)', 'class 115 (0.03316872)', 'class 393 (0.00323003)', 'class 301 (0.00258007)', 'class 110 (0.00240850)']
+File: bs_16_1_0008.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.85509485)', 'class 328 (0.00225270)', 'class 393 (0.00126112)', 'class 107 (0.00109314)', 'class 973 (0.00083722)']
+File: bs_16_1_0003.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.83592552)', 'class 844 (0.00338617)', 'class 80 (0.00250946)', 'class 626 (0.00156701)', 'class 701 (0.00123771)']
+File: bs_16_1_0007.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.46995041)', 'class 108 (0.11846798)', 'class 110 (0.02401608)', 'class 393 (0.01758188)', 'class 107 (0.01377857)']
+File: bs_16_1_0000.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.89704818)', 'class 973 (0.00659831)', 'class 108 (0.00399933)', 'class 738 (0.00363220)', 'class 393 (0.00242960)']
+File: bs_16_1_0004.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.71129602)', 'class 108 (0.06093914)', 'class 393 (0.03768462)', 'class 973 (0.02889599)', 'class 327 (0.00530227)']
+File: bs_16_1_0006.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.88220531)', 'class 115 (0.02546336)', 'class 126 (0.01027267)', 'class 110 (0.00555788)', 'class 327 (0.00357382)']
+File: bs_16_1_0002.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.91043669)', 'class 973 (0.00311330)', 'class 392 (0.00169384)', 'class 109 (0.00102087)', 'class 393 (0.00092213)']
+File: bs_16_1_0005.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.11174452)', 'class 155 (0.09853762)', 'class 264 (0.09717906)', 'class 247 (0.08878447)', 'class 249 (0.01795318)']
+File: bs_16_1_0001.png
+    True class: 1
+    Top-5 predictions: ['class 1 (0.22828284)', 'class 108 (0.05976668)', 'class 396 (0.04007281)', 'class 326 (0.03718444)', 'class 321 (0.03401601)']
+Classification accuracy: 10/10 (100.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=10 (n=10)...
+
+    Original images validation:
+File: bs_16_10_0005.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.79651362)', 'class 13 (0.00185101)', 'class 86 (0.00132754)', 'class 761 (0.00099458)', 'class 85 (0.00096397)']
+File: bs_16_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.75076759)', 'class 761 (0.00298553)', 'class 11 (0.00188440)', 'class 13 (0.00110355)', 'class 986 (0.00079834)']
+File: bs_16_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.82893044)', 'class 13 (0.00145128)', 'class 761 (0.00144941)', 'class 188 (0.00069882)', 'class 11 (0.00066636)']
+File: bs_16_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85886890)', 'class 761 (0.00178603)', 'class 13 (0.00094355)', 'class 11 (0.00077314)', 'class 15 (0.00067771)']
+File: bs_16_10_0007.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85148847)', 'class 13 (0.00184316)', 'class 761 (0.00136282)', 'class 15 (0.00078216)', 'class 188 (0.00050984)']
+File: bs_16_10_0004.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.80602789)', 'class 13 (0.00223353)', 'class 761 (0.00112712)', 'class 11 (0.00102342)', 'class 15 (0.00089262)']
+File: bs_16_10_0006.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.88368094)', 'class 13 (0.00180457)', 'class 188 (0.00054954)', 'class 761 (0.00049460)', 'class 11 (0.00041061)']
+File: bs_16_10_0008.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.86189944)', 'class 761 (0.00147680)', 'class 13 (0.00119675)', 'class 140 (0.00047396)', 'class 12 (0.00045513)']
+File: bs_16_10_0009.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.84259933)', 'class 13 (0.00214478)', 'class 761 (0.00149308)', 'class 11 (0.00096503)', 'class 12 (0.00079627)']
+File: bs_16_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.85788578)', 'class 761 (0.00198372)', 'class 13 (0.00085477)', 'class 11 (0.00072571)', 'class 426 (0.00044925)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_10_0005.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.61067009)', 'class 15 (0.03908487)', 'class 83 (0.01376479)', 'class 86 (0.01361241)', 'class 139 (0.00376989)']
+File: bs_16_10_0003.png
+    True class: 10
+    Top-5 predictions: ['class 328 (0.14991301)', 'class 10 (0.06540336)', 'class 120 (0.04202129)', 'class 108 (0.04193810)', 'class 393 (0.02756907)']
+File: bs_16_10_0000.png
+    True class: 10
+    Top-5 predictions: ['class 328 (0.40517882)', 'class 327 (0.11152506)', 'class 815 (0.02105368)', 'class 896 (0.01756635)', 'class 951 (0.01504381)']
+File: bs_16_10_0002.png
+    True class: 10
+    Top-5 predictions: ['class 712 (0.18317978)', 'class 793 (0.12476845)', 'class 108 (0.09179044)', 'class 925 (0.03161153)', 'class 115 (0.02619715)']
+File: bs_16_10_0007.png
+    True class: 10
+    Top-5 predictions: ['class 120 (0.04733400)', 'class 50 (0.03104657)', 'class 126 (0.02914372)', 'class 10 (0.02215974)', 'class 36 (0.02146070)']
+File: bs_16_10_0004.png
+    True class: 10
+    Top-5 predictions: ['class 115 (0.31269333)', 'class 110 (0.13275856)', 'class 120 (0.02923007)', 'class 58 (0.01413029)', 'class 26 (0.01386051)']
+File: bs_16_10_0006.png
+    True class: 10
+    Top-5 predictions: ['class 611 (0.08053563)', 'class 58 (0.03777770)', 'class 120 (0.03679441)', 'class 115 (0.03661994)', 'class 108 (0.02698347)']
+File: bs_16_10_0008.png
+    True class: 10
+    Top-5 predictions: ['class 111 (0.09061074)', 'class 712 (0.07371553)', 'class 120 (0.06062211)', 'class 32 (0.03259431)', 'class 10 (0.03191232)']
+File: bs_16_10_0009.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.68647301)', 'class 120 (0.03779981)', 'class 139 (0.01261326)', 'class 140 (0.00574959)', 'class 13 (0.00252822)']
+File: bs_16_10_0001.png
+    True class: 10
+    Top-5 predictions: ['class 10 (0.74577260)', 'class 11 (0.00186575)', 'class 761 (0.00161652)', 'class 13 (0.00120254)', 'class 86 (0.00112334)']
+Classification accuracy: 3/10 (30.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=24 (n=10)...
+
+    Original images validation:
+File: bs_16_24_0004.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.89883405)', 'class 82 (0.00042585)', 'class 210 (0.00036831)', 'class 367 (0.00036174)', 'class 164 (0.00032830)']
+File: bs_16_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.81837219)', 'class 87 (0.00044941)', 'class 21 (0.00043658)', 'class 289 (0.00041907)', 'class 138 (0.00040004)']
+File: bs_16_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.80914104)', 'class 87 (0.00042451)', 'class 138 (0.00040472)', 'class 82 (0.00040078)', 'class 101 (0.00039639)']
+File: bs_16_24_0006.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.83534241)', 'class 87 (0.00041760)', 'class 21 (0.00036973)', 'class 138 (0.00036134)', 'class 8 (0.00033983)']
+File: bs_16_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82145429)', 'class 82 (0.00042100)', 'class 21 (0.00041750)', 'class 87 (0.00040814)', 'class 138 (0.00035543)']
+File: bs_16_24_0005.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.80595773)', 'class 87 (0.00050340)', 'class 21 (0.00046244)', 'class 138 (0.00038614)', 'class 543 (0.00035611)']
+File: bs_16_24_0008.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.81203288)', 'class 8 (0.00091960)', 'class 814 (0.00067357)', 'class 87 (0.00045456)', 'class 828 (0.00040874)']
+File: bs_16_24_0009.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.77968556)', 'class 82 (0.00056601)', 'class 21 (0.00049055)', 'class 138 (0.00043419)', 'class 87 (0.00042689)']
+File: bs_16_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82014346)', 'class 633 (0.00057875)', 'class 87 (0.00056295)', 'class 21 (0.00046716)', 'class 567 (0.00036518)']
+File: bs_16_24_0007.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.82329768)', 'class 82 (0.00040146)', 'class 87 (0.00039271)', 'class 21 (0.00038708)', 'class 138 (0.00037009)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_24_0004.png
+    True class: 24
+    Top-5 predictions: ['class 73 (0.06567507)', 'class 946 (0.05471683)', 'class 310 (0.04836925)', 'class 991 (0.03362176)', 'class 996 (0.03269646)']
+File: bs_16_24_0001.png
+    True class: 24
+    Top-5 predictions: ['class 24 (0.08786014)', 'class 361 (0.03958688)', 'class 946 (0.03828482)', 'class 885 (0.03310039)', 'class 953 (0.03127753)']
+File: bs_16_24_0002.png
+    True class: 24
+    Top-5 predictions: ['class 349 (0.02715119)', 'class 269 (0.02288815)', 'class 289 (0.02226556)', 'class 82 (0.02136911)', 'class 24 (0.01942272)']
+File: bs_16_24_0006.png
+    True class: 24
+    Top-5 predictions: ['class 946 (0.21631689)', 'class 42 (0.08229261)', 'class 24 (0.05274302)', 'class 738 (0.02082637)', 'class 728 (0.02056640)']
+File: bs_16_24_0003.png
+    True class: 24
+    Top-5 predictions: ['class 383 (0.64809543)', 'class 384 (0.12729555)', 'class 299 (0.01183927)', 'class 264 (0.00964301)', 'class 289 (0.00948700)']
+File: bs_16_24_0005.png
+    True class: 24
+    Top-5 predictions: ['class 991 (0.28434327)', 'class 946 (0.08892924)', 'class 108 (0.04734969)', 'class 115 (0.04090408)', 'class 287 (0.03087500)']
+File: bs_16_24_0008.png
+    True class: 24
+    Top-5 predictions: ['class 289 (0.13352057)', 'class 287 (0.12654217)', 'class 288 (0.07863861)', 'class 293 (0.04891666)', 'class 290 (0.03914874)']
+File: bs_16_24_0009.png
+    True class: 24
+    Top-5 predictions: ['class 991 (0.27322796)', 'class 994 (0.19896097)', 'class 996 (0.17512114)', 'class 24 (0.03650187)', 'class 993 (0.02210866)']
+File: bs_16_24_0000.png
+    True class: 24
+    Top-5 predictions: ['class 396 (0.19815132)', 'class 723 (0.12029506)', 'class 644 (0.05916326)', 'class 749 (0.05063194)', 'class 383 (0.04505690)']
+File: bs_16_24_0007.png
+    True class: 24
+    Top-5 predictions: ['class 115 (0.30000693)', 'class 991 (0.17399454)', 'class 38 (0.05263621)', 'class 973 (0.03813651)', 'class 994 (0.02944415)']
+Classification accuracy: 1/10 (10.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=79 (n=10)...
+
+    Original images validation:
+File: bs_16_79_0006.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84968483)', 'class 69 (0.00063972)', 'class 126 (0.00050989)', 'class 71 (0.00028991)', 'class 314 (0.00028468)']
+File: bs_16_79_0007.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.85138512)', 'class 126 (0.00185553)', 'class 69 (0.00132511)', 'class 314 (0.00105514)', 'class 71 (0.00088098)']
+File: bs_16_79_0008.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80890840)', 'class 314 (0.00052045)', 'class 60 (0.00049091)', 'class 69 (0.00048467)', 'class 313 (0.00045976)']
+File: bs_16_79_0004.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80613333)', 'class 60 (0.00055609)', 'class 58 (0.00054982)', 'class 44 (0.00049537)', 'class 52 (0.00047740)']
+File: bs_16_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.93481052)', 'class 111 (0.00173284)', 'class 110 (0.00059927)', 'class 114 (0.00024315)', 'class 521 (0.00019531)']
+File: bs_16_79_0009.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.80201232)', 'class 69 (0.00055434)', 'class 314 (0.00038172)', 'class 39 (0.00036090)', 'class 71 (0.00035062)']
+File: bs_16_79_0005.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.77584577)', 'class 53 (0.00091233)', 'class 319 (0.00079029)', 'class 110 (0.00077910)', 'class 52 (0.00072855)']
+File: bs_16_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.90761137)', 'class 69 (0.00035173)', 'class 314 (0.00021426)', 'class 429 (0.00017894)', 'class 111 (0.00017495)']
+File: bs_16_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.78420287)', 'class 314 (0.00066716)', 'class 69 (0.00064437)', 'class 126 (0.00045917)', 'class 302 (0.00039171)']
+File: bs_16_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.84181559)', 'class 126 (0.00051770)', 'class 69 (0.00047398)', 'class 783 (0.00037347)', 'class 314 (0.00033560)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_79_0006.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.73713863)', 'class 314 (0.03103063)', 'class 126 (0.01139656)', 'class 115 (0.00291283)', 'class 111 (0.00239937)']
+File: bs_16_79_0007.png
+    True class: 79
+    Top-5 predictions: ['class 396 (0.14890853)', 'class 79 (0.09937134)', 'class 308 (0.06096585)', 'class 309 (0.05776986)', 'class 1 (0.02752339)']
+File: bs_16_79_0008.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.06418229)', 'class 124 (0.05487269)', 'class 973 (0.04288841)', 'class 108 (0.03398311)', 'class 120 (0.02574053)']
+File: bs_16_79_0004.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.86801976)', 'class 111 (0.00982978)', 'class 126 (0.00685496)', 'class 110 (0.00552290)', 'class 38 (0.00176894)']
+File: bs_16_79_0002.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.49077070)', 'class 111 (0.10947808)', 'class 110 (0.08153518)', 'class 26 (0.04660928)', 'class 115 (0.02175774)']
+File: bs_16_79_0009.png
+    True class: 79
+    Top-5 predictions: ['class 38 (0.31596595)', 'class 79 (0.10269232)', 'class 68 (0.06192862)', 'class 60 (0.04855102)', 'class 66 (0.04147258)']
+File: bs_16_79_0005.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.41041645)', 'class 111 (0.13362256)', 'class 28 (0.03523930)', 'class 26 (0.02638874)', 'class 58 (0.02035906)']
+File: bs_16_79_0000.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.90832120)', 'class 111 (0.00221937)', 'class 126 (0.00059869)', 'class 110 (0.00044012)', 'class 52 (0.00038685)']
+File: bs_16_79_0003.png
+    True class: 79
+    Top-5 predictions: ['class 126 (0.41867527)', 'class 79 (0.29333016)', 'class 783 (0.03708831)', 'class 111 (0.01097796)', 'class 677 (0.00495191)']
+File: bs_16_79_0001.png
+    True class: 79
+    Top-5 predictions: ['class 79 (0.55933934)', 'class 73 (0.07530424)', 'class 70 (0.00965518)', 'class 78 (0.00564551)', 'class 77 (0.00556994)']
+Classification accuracy: 7/10 (70.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=100 (n=10)...
+
+    Original images validation:
+File: bs_16_100_0007.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.87830418)', 'class 136 (0.00293436)', 'class 80 (0.00173905)', 'class 137 (0.00113685)', 'class 209 (0.00096528)']
+File: bs_16_100_0008.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.76965982)', 'class 209 (0.00551440)', 'class 206 (0.00107695)', 'class 82 (0.00086789)', 'class 25 (0.00077107)']
+File: bs_16_100_0004.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.75972056)', 'class 209 (0.00200340)', 'class 53 (0.00176908)', 'class 25 (0.00152992)', 'class 99 (0.00132699)']
+File: bs_16_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.84086442)', 'class 99 (0.00483341)', 'class 137 (0.00151535)', 'class 53 (0.00082990)', 'class 136 (0.00078841)']
+File: bs_16_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.80088025)', 'class 99 (0.00251125)', 'class 143 (0.00193559)', 'class 209 (0.00151382)', 'class 128 (0.00146557)']
+File: bs_16_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.79388273)', 'class 99 (0.00229704)', 'class 209 (0.00194525)', 'class 130 (0.00092608)', 'class 90 (0.00080192)']
+File: bs_16_100_0009.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.74048775)', 'class 209 (0.00396709)', 'class 206 (0.00123167)', 'class 25 (0.00115672)', 'class 53 (0.00104667)']
+File: bs_16_100_0005.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.76169860)', 'class 99 (0.00380055)', 'class 136 (0.00220366)', 'class 209 (0.00139186)', 'class 80 (0.00099091)']
+File: bs_16_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.86571687)', 'class 99 (0.00412089)', 'class 209 (0.00156408)', 'class 130 (0.00053112)', 'class 206 (0.00046248)']
+File: bs_16_100_0006.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.82811087)', 'class 209 (0.00212194)', 'class 136 (0.00165240)', 'class 143 (0.00149730)', 'class 99 (0.00143553)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_100_0007.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.48317289)', 'class 99 (0.03921322)', 'class 87 (0.03908050)', 'class 136 (0.02512200)', 'class 137 (0.02495092)']
+File: bs_16_100_0008.png
+    True class: 100
+    Top-5 predictions: ['class 738 (0.04637223)', 'class 28 (0.04180603)', 'class 883 (0.02477840)', 'class 611 (0.01653939)', 'class 26 (0.01289800)']
+File: bs_16_100_0004.png
+    True class: 100
+    Top-5 predictions: ['class 32 (0.15005513)', 'class 828 (0.06777875)', 'class 738 (0.02852064)', 'class 470 (0.02134439)', 'class 876 (0.01613146)']
+File: bs_16_100_0003.png
+    True class: 100
+    Top-5 predictions: ['class 130 (0.31336889)', 'class 795 (0.15973493)', 'class 100 (0.07521331)', 'class 394 (0.03219155)', 'class 644 (0.02450207)']
+File: bs_16_100_0001.png
+    True class: 100
+    Top-5 predictions: ['class 802 (0.14193274)', 'class 80 (0.12803750)', 'class 644 (0.12213177)', 'class 795 (0.04140711)', 'class 970 (0.01926290)']
+File: bs_16_100_0002.png
+    True class: 100
+    Top-5 predictions: ['class 100 (0.84501821)', 'class 136 (0.00484495)', 'class 143 (0.00376012)', 'class 128 (0.00330473)', 'class 206 (0.00185590)']
+File: bs_16_100_0009.png
+    True class: 100
+    Top-5 predictions: ['class 32 (0.35268703)', 'class 38 (0.03172025)', 'class 45 (0.02132363)', 'class 73 (0.01678579)', 'class 845 (0.01618768)']
+File: bs_16_100_0005.png
+    True class: 100
+    Top-5 predictions: ['class 110 (0.18735519)', 'class 394 (0.05389069)', 'class 973 (0.03551344)', 'class 108 (0.02749174)', 'class 327 (0.02378250)']
+File: bs_16_100_0000.png
+    True class: 100
+    Top-5 predictions: ['class 232 (0.04475832)', 'class 250 (0.04267771)', 'class 248 (0.03749807)', 'class 155 (0.03697233)', 'class 229 (0.03341914)']
+File: bs_16_100_0006.png
+    True class: 100
+    Top-5 predictions: ['class 80 (0.16640119)', 'class 16 (0.13888358)', 'class 100 (0.06816276)', 'class 136 (0.04834079)', 'class 1 (0.01607036)']
+Classification accuracy: 2/10 (20.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=409 (n=10)...
+
+    Original images validation:
+File: bs_16_409_0008.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.78390145)', 'class 892 (0.02787026)', 'class 897 (0.00921972)', 'class 635 (0.00410581)', 'class 426 (0.00357716)']
+File: bs_16_409_0004.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.67129093)', 'class 892 (0.04698966)', 'class 279 (0.00194435)', 'class 530 (0.00175895)', 'class 550 (0.00136930)']
+File: bs_16_409_0006.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.56494069)', 'class 892 (0.10471172)', 'class 605 (0.02579404)', 'class 487 (0.01661511)', 'class 620 (0.01106192)']
+File: bs_16_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.39679131)', 'class 892 (0.01951575)', 'class 635 (0.01685245)', 'class 531 (0.00845051)', 'class 826 (0.00583624)']
+File: bs_16_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.70218027)', 'class 892 (0.05312372)', 'class 826 (0.04328157)', 'class 426 (0.01448454)', 'class 531 (0.00764640)']
+File: bs_16_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.89268440)', 'class 892 (0.03985587)', 'class 605 (0.01052529)', 'class 826 (0.00885847)', 'class 426 (0.00643689)']
+File: bs_16_409_0005.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.85967630)', 'class 442 (0.02513720)', 'class 892 (0.00954517)', 'class 698 (0.00802925)', 'class 624 (0.00156404)']
+File: bs_16_409_0009.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.74141890)', 'class 826 (0.02860786)', 'class 892 (0.01104837)', 'class 531 (0.00755684)', 'class 426 (0.00356551)']
+File: bs_16_409_0007.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.98719656)', 'class 635 (0.00148827)', 'class 531 (0.00070620)', 'class 892 (0.00066945)', 'class 485 (0.00021030)']
+File: bs_16_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.61445695)', 'class 530 (0.13890556)', 'class 892 (0.01812768)', 'class 688 (0.01302873)', 'class 531 (0.01030419)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_409_0008.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.44584274)', 'class 892 (0.24019171)', 'class 426 (0.03529997)', 'class 635 (0.01825937)', 'class 826 (0.01723621)']
+File: bs_16_409_0004.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.62369275)', 'class 892 (0.32023796)', 'class 635 (0.00781689)', 'class 426 (0.00174414)', 'class 826 (0.00104570)']
+File: bs_16_409_0006.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.72748905)', 'class 892 (0.18633944)', 'class 426 (0.00598492)', 'class 611 (0.00413455)', 'class 917 (0.00376954)']
+File: bs_16_409_0003.png
+    True class: 409
+    Top-5 predictions: ['class 892 (0.18027118)', 'class 328 (0.12478098)', 'class 426 (0.06115251)', 'class 409 (0.05626291)', 'class 111 (0.05556459)']
+File: bs_16_409_0002.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.45379454)', 'class 892 (0.24792697)', 'class 826 (0.05956129)', 'class 426 (0.03300801)', 'class 635 (0.01122622)']
+File: bs_16_409_0000.png
+    True class: 409
+    Top-5 predictions: ['class 111 (0.05351463)', 'class 110 (0.05228584)', 'class 126 (0.03432519)', 'class 5 (0.03296639)', 'class 344 (0.02788918)']
+File: bs_16_409_0005.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.70092928)', 'class 442 (0.11013129)', 'class 892 (0.09911250)', 'class 497 (0.02706095)', 'class 448 (0.00565995)']
+File: bs_16_409_0009.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.44381139)', 'class 826 (0.12908198)', 'class 892 (0.11109780)', 'class 426 (0.06324725)', 'class 635 (0.02281858)']
+File: bs_16_409_0007.png
+    True class: 409
+    Top-5 predictions: ['class 409 (0.67965019)', 'class 892 (0.17837486)', 'class 426 (0.01696162)', 'class 635 (0.01363625)', 'class 826 (0.00625054)']
+File: bs_16_409_0001.png
+    True class: 409
+    Top-5 predictions: ['class 973 (0.10880699)', 'class 892 (0.03920056)', 'class 108 (0.01976347)', 'class 996 (0.01672481)', 'class 611 (0.01658273)']
+Classification accuracy: 7/10 (70.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=701 (n=10)...
+
+    Original images validation:
+File: bs_16_701_0004.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.78081638)', 'class 557 (0.00072300)', 'class 978 (0.00071576)', 'class 895 (0.00060745)', 'class 417 (0.00057987)']
+File: bs_16_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.80286759)', 'class 557 (0.00060148)', 'class 895 (0.00049882)', 'class 417 (0.00047968)', 'class 978 (0.00044325)']
+File: bs_16_701_0007.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.92282903)', 'class 978 (0.00039407)', 'class 557 (0.00038232)', 'class 981 (0.00033170)', 'class 895 (0.00026887)']
+File: bs_16_701_0006.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.81071103)', 'class 557 (0.00059280)', 'class 978 (0.00047439)', 'class 895 (0.00043910)', 'class 405 (0.00040177)']
+File: bs_16_701_0008.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.83147746)', 'class 978 (0.00054833)', 'class 557 (0.00053850)', 'class 417 (0.00045209)', 'class 895 (0.00042789)']
+File: bs_16_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.81327373)', 'class 557 (0.00065288)', 'class 417 (0.00059915)', 'class 895 (0.00047100)', 'class 917 (0.00036964)']
+File: bs_16_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.80292869)', 'class 895 (0.00111353)', 'class 557 (0.00065440)', 'class 657 (0.00049259)', 'class 908 (0.00047403)']
+File: bs_16_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.84997630)', 'class 417 (0.00092077)', 'class 405 (0.00081516)', 'class 10 (0.00078025)', 'class 746 (0.00077924)']
+File: bs_16_701_0005.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.90068883)', 'class 557 (0.00037488)', 'class 417 (0.00033645)', 'class 895 (0.00025572)', 'class 797 (0.00023932)']
+File: bs_16_701_0009.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.80458719)', 'class 557 (0.00065665)', 'class 417 (0.00057180)', 'class 895 (0.00047767)', 'class 917 (0.00043921)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_701_0004.png
+    True class: 701
+    Top-5 predictions: ['class 328 (0.62748808)', 'class 108 (0.02406888)', 'class 334 (0.01390085)', 'class 115 (0.00992461)', 'class 973 (0.00840873)']
+File: bs_16_701_0002.png
+    True class: 701
+    Top-5 predictions: ['class 326 (0.33514306)', 'class 701 (0.05848919)', 'class 322 (0.02270707)', 'class 73 (0.02256108)', 'class 126 (0.01250226)']
+File: bs_16_701_0007.png
+    True class: 701
+    Top-5 predictions: ['class 80 (0.07331166)', 'class 879 (0.05194482)', 'class 917 (0.04780934)', 'class 970 (0.04145824)', 'class 562 (0.03624625)']
+File: bs_16_701_0006.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.55777347)', 'class 895 (0.10868284)', 'class 802 (0.02237963)', 'class 417 (0.00551519)', 'class 657 (0.00534299)']
+File: bs_16_701_0008.png
+    True class: 701
+    Top-5 predictions: ['class 73 (0.22458731)', 'class 701 (0.12643275)', 'class 417 (0.05408210)', 'class 451 (0.04333837)', 'class 328 (0.02040428)']
+File: bs_16_701_0003.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.20630197)', 'class 895 (0.09078542)', 'class 403 (0.07426330)', 'class 812 (0.02257239)', 'class 326 (0.01542988)']
+File: bs_16_701_0000.png
+    True class: 701
+    Top-5 predictions: ['class 584 (0.04824788)', 'class 970 (0.04637091)', 'class 802 (0.04122836)', 'class 795 (0.04069355)', 'class 712 (0.03048919)']
+File: bs_16_701_0001.png
+    True class: 701
+    Top-5 predictions: ['class 975 (0.04079391)', 'class 120 (0.02223072)', 'class 644 (0.02018845)', 'class 449 (0.01685557)', 'class 403 (0.01566160)']
+File: bs_16_701_0005.png
+    True class: 701
+    Top-5 predictions: ['class 701 (0.48107877)', 'class 417 (0.02477261)', 'class 562 (0.01387505)', 'class 107 (0.01352254)', 'class 396 (0.01234039)']
+File: bs_16_701_0009.png
+    True class: 701
+    Top-5 predictions: ['class 403 (0.06627656)', 'class 844 (0.04125305)', 'class 543 (0.03656863)', 'class 691 (0.02816330)', 'class 450 (0.02429949)']
+Classification accuracy: 3/10 (30.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=712 (n=10)...
+
+    Original images validation:
+File: bs_16_712_0004.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.96108240)', 'class 968 (0.00234025)', 'class 572 (0.00054857)', 'class 647 (0.00052320)', 'class 509 (0.00037833)']
+File: bs_16_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.88199264)', 'class 868 (0.00487446)', 'class 111 (0.00355513)', 'class 861 (0.00266508)', 'class 729 (0.00258771)']
+File: bs_16_712_0008.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.89327329)', 'class 769 (0.00106401)', 'class 893 (0.00092441)', 'class 635 (0.00072526)', 'class 551 (0.00064794)']
+File: bs_16_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.76021236)', 'class 111 (0.00195978)', 'class 925 (0.00102237)', 'class 262 (0.00077815)', 'class 969 (0.00056648)']
+File: bs_16_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.83512157)', 'class 892 (0.00701485)', 'class 677 (0.00384325)', 'class 927 (0.00246532)', 'class 409 (0.00203668)']
+File: bs_16_712_0009.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.93404138)', 'class 647 (0.00097872)', 'class 455 (0.00069936)', 'class 720 (0.00048410)', 'class 310 (0.00046135)']
+File: bs_16_712_0007.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.93065965)', 'class 669 (0.00307150)', 'class 691 (0.00131873)', 'class 711 (0.00088151)', 'class 427 (0.00082979)']
+File: bs_16_712_0006.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.85255539)', 'class 892 (0.01020040)', 'class 409 (0.00754038)', 'class 826 (0.00602929)', 'class 528 (0.00340342)']
+File: bs_16_712_0005.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.87733197)', 'class 966 (0.00460279)', 'class 551 (0.00319215)', 'class 438 (0.00307463)', 'class 838 (0.00233205)']
+File: bs_16_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.79356515)', 'class 599 (0.00997492)', 'class 441 (0.00614328)', 'class 115 (0.00585497)', 'class 440 (0.00297754)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_712_0004.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.28940403)', 'class 968 (0.03898061)', 'class 861 (0.01113394)', 'class 506 (0.01073339)', 'class 470 (0.01059344)']
+File: bs_16_712_0001.png
+    True class: 712
+    Top-5 predictions: ['class 149 (0.26863435)', 'class 577 (0.24024490)', 'class 787 (0.15409912)', 'class 494 (0.03960253)', 'class 461 (0.02643615)']
+File: bs_16_712_0008.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.82736254)', 'class 635 (0.01837139)', 'class 470 (0.00703099)', 'class 409 (0.00318174)', 'class 426 (0.00282185)']
+File: bs_16_712_0000.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.19961245)', 'class 5 (0.09726219)', 'class 149 (0.03246974)', 'class 78 (0.02724233)', 'class 110 (0.02362705)']
+File: bs_16_712_0002.png
+    True class: 712
+    Top-5 predictions: ['class 328 (0.39447379)', 'class 327 (0.20989572)', 'class 892 (0.02036633)', 'class 991 (0.01850571)', 'class 108 (0.00962081)']
+File: bs_16_712_0009.png
+    True class: 712
+    Top-5 predictions: ['class 787 (0.12470675)', 'class 577 (0.07052799)', 'class 397 (0.05559783)', 'class 461 (0.02947218)', 'class 110 (0.01559829)']
+File: bs_16_712_0007.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.18357857)', 'class 577 (0.11879300)', 'class 728 (0.02464445)', 'class 691 (0.01533456)', 'class 494 (0.01468592)']
+File: bs_16_712_0006.png
+    True class: 712
+    Top-5 predictions: ['class 994 (0.10826159)', 'class 126 (0.07298889)', 'class 712 (0.06063795)', 'class 995 (0.02535775)', 'class 991 (0.02489916)']
+File: bs_16_712_0005.png
+    True class: 712
+    Top-5 predictions: ['class 712 (0.39977944)', 'class 968 (0.07725394)', 'class 470 (0.03634299)', 'class 647 (0.03366456)', 'class 793 (0.02803381)']
+File: bs_16_712_0003.png
+    True class: 712
+    Top-5 predictions: ['class 996 (0.17216286)', 'class 110 (0.12104712)', 'class 115 (0.08863106)', 'class 991 (0.06024374)', 'class 126 (0.04278243)']
+Classification accuracy: 5/10 (50.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=850 (n=10)...
+
+    Original images validation:
+File: bs_16_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.87243778)', 'class 658 (0.00262957)', 'class 496 (0.00251288)', 'class 824 (0.00168072)', 'class 414 (0.00115470)']
+File: bs_16_850_0008.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.32110158)', 'class 529 (0.00576725)', 'class 865 (0.00393319)', 'class 265 (0.00299630)', 'class 636 (0.00289741)']
+File: bs_16_850_0009.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.78502834)', 'class 697 (0.01124664)', 'class 865 (0.00435173)', 'class 911 (0.00413137)', 'class 265 (0.00401418)']
+File: bs_16_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.83809477)', 'class 911 (0.02294943)', 'class 584 (0.00531099)', 'class 840 (0.00188054)', 'class 452 (0.00123861)']
+File: bs_16_850_0004.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.76379734)', 'class 865 (0.01188034)', 'class 797 (0.00599481)', 'class 588 (0.00366467)', 'class 520 (0.00209533)']
+File: bs_16_850_0007.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.77387577)', 'class 588 (0.04345065)', 'class 865 (0.00431382)', 'class 905 (0.00352981)', 'class 496 (0.00186853)']
+File: bs_16_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.78979981)', 'class 865 (0.01940002)', 'class 443 (0.00549649)', 'class 529 (0.00120136)', 'class 452 (0.00066951)']
+File: bs_16_850_0006.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.67269814)', 'class 203 (0.00609111)', 'class 186 (0.00474156)', 'class 296 (0.00461439)', 'class 192 (0.00369165)']
+File: bs_16_850_0005.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.55705422)', 'class 883 (0.00758239)', 'class 985 (0.00690260)', 'class 840 (0.00368633)', 'class 584 (0.00335570)']
+File: bs_16_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.96175206)', 'class 865 (0.00124658)', 'class 457 (0.00045549)', 'class 529 (0.00039122)', 'class 719 (0.00035140)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_850_0003.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.12988096)', 'class 973 (0.10429290)', 'class 115 (0.10164361)', 'class 108 (0.05861439)', 'class 109 (0.03186053)']
+File: bs_16_850_0008.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.69837308)', 'class 973 (0.00971642)', 'class 109 (0.00549956)', 'class 108 (0.00389438)', 'class 865 (0.00268784)']
+File: bs_16_850_0009.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.76894915)', 'class 996 (0.02328706)', 'class 991 (0.01051376)', 'class 865 (0.00732860)', 'class 611 (0.00613158)']
+File: bs_16_850_0002.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.28820667)', 'class 109 (0.09922815)', 'class 616 (0.08897919)', 'class 506 (0.00620959)', 'class 973 (0.00572057)']
+File: bs_16_850_0004.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.46689609)', 'class 359 (0.11884359)', 'class 358 (0.04467070)', 'class 356 (0.02353617)', 'class 362 (0.01486624)']
+File: bs_16_850_0007.png
+    True class: 850
+    Top-5 predictions: ['class 109 (0.21941513)', 'class 850 (0.14760241)', 'class 996 (0.11001895)', 'class 973 (0.05107087)', 'class 108 (0.01765675)']
+File: bs_16_850_0001.png
+    True class: 850
+    Top-5 predictions: ['class 108 (0.36516544)', 'class 973 (0.10588746)', 'class 109 (0.06859770)', 'class 850 (0.03861338)', 'class 393 (0.03259399)']
+File: bs_16_850_0006.png
+    True class: 850
+    Top-5 predictions: ['class 996 (0.07982040)', 'class 850 (0.06183866)', 'class 356 (0.02335268)', 'class 73 (0.01456960)', 'class 32 (0.01440521)']
+File: bs_16_850_0005.png
+    True class: 850
+    Top-5 predictions: ['class 108 (0.15625183)', 'class 936 (0.11761938)', 'class 985 (0.10096726)', 'class 327 (0.04772975)', 'class 328 (0.04398708)']
+File: bs_16_850_0000.png
+    True class: 850
+    Top-5 predictions: ['class 850 (0.47869372)', 'class 109 (0.05055871)', 'class 973 (0.02044861)', 'class 328 (0.01643251)', 'class 457 (0.01132986)']
+Classification accuracy: 6/10 (60.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=950 (n=10)...
+
+    Original images validation:
+File: bs_16_950_0009.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.81917143)', 'class 951 (0.01593210)', 'class 934 (0.00173262)', 'class 940 (0.00136334)', 'class 957 (0.00131417)']
+File: bs_16_950_0007.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.77618259)', 'class 951 (0.01820810)', 'class 838 (0.00088453)', 'class 737 (0.00085483)', 'class 954 (0.00080972)']
+File: bs_16_950_0008.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.86129379)', 'class 951 (0.00944964)', 'class 954 (0.00158850)', 'class 942 (0.00057006)', 'class 809 (0.00056782)']
+File: bs_16_950_0005.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.78416193)', 'class 951 (0.01005536)', 'class 942 (0.00447631)', 'class 940 (0.00126864)', 'class 952 (0.00125669)']
+File: bs_16_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.88217860)', 'class 951 (0.00608338)', 'class 954 (0.00459811)', 'class 33 (0.00067647)', 'class 582 (0.00064710)']
+File: bs_16_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.78207183)', 'class 951 (0.00426152)', 'class 942 (0.00190266)', 'class 954 (0.00142722)', 'class 930 (0.00120007)']
+File: bs_16_950_0006.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.91119236)', 'class 942 (0.01179669)', 'class 951 (0.00789181)', 'class 940 (0.00240265)', 'class 932 (0.00116700)']
+File: bs_16_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.86010790)', 'class 951 (0.01105077)', 'class 954 (0.00779779)', 'class 953 (0.00062244)', 'class 957 (0.00058214)']
+File: bs_16_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.70131266)', 'class 951 (0.01042992)', 'class 599 (0.00779809)', 'class 942 (0.00549050)', 'class 925 (0.00283869)']
+File: bs_16_950_0004.png
+    True class: 950
+    Top-5 predictions: ['class 950 (0.80636972)', 'class 951 (0.01525979)', 'class 954 (0.00503302)', 'class 60 (0.00077564)', 'class 953 (0.00071675)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_950_0009.png
+    True class: 950
+    Top-5 predictions: ['class 109 (0.20259562)', 'class 108 (0.11602665)', 'class 973 (0.11176715)', 'class 328 (0.08274892)', 'class 327 (0.05457269)']
+File: bs_16_950_0007.png
+    True class: 950
+    Top-5 predictions: ['class 574 (0.02407169)', 'class 66 (0.02094301)', 'class 60 (0.01858410)', 'class 995 (0.01850538)', 'class 68 (0.01807308)']
+File: bs_16_950_0008.png
+    True class: 950
+    Top-5 predictions: ['class 397 (0.09132346)', 'class 108 (0.03699110)', 'class 940 (0.02598134)', 'class 328 (0.02571271)', 'class 393 (0.02055364)']
+File: bs_16_950_0005.png
+    True class: 950
+    Top-5 predictions: ['class 115 (0.09389810)', 'class 107 (0.05955199)', 'class 996 (0.03652928)', 'class 991 (0.02743721)', 'class 712 (0.02446180)']
+File: bs_16_950_0003.png
+    True class: 950
+    Top-5 predictions: ['class 574 (0.13039799)', 'class 1 (0.12657677)', 'class 397 (0.03672338)', 'class 951 (0.01967702)', 'class 112 (0.01816360)']
+File: bs_16_950_0002.png
+    True class: 950
+    Top-5 predictions: ['class 936 (0.15857659)', 'class 996 (0.14849128)', 'class 930 (0.07748731)', 'class 952 (0.06168966)', 'class 951 (0.03310542)']
+File: bs_16_950_0006.png
+    True class: 950
+    Top-5 predictions: ['class 996 (0.23500291)', 'class 994 (0.07817418)', 'class 991 (0.06072911)', 'class 973 (0.04948765)', 'class 108 (0.03859767)']
+File: bs_16_950_0000.png
+    True class: 950
+    Top-5 predictions: ['class 1 (0.70699048)', 'class 115 (0.01122607)', 'class 574 (0.00746185)', 'class 950 (0.00704925)', 'class 949 (0.00700956)']
+File: bs_16_950_0001.png
+    True class: 950
+    Top-5 predictions: ['class 938 (0.09209267)', 'class 996 (0.04230611)', 'class 121 (0.03405460)', 'class 126 (0.02951032)', 'class 936 (0.02628975)']
+File: bs_16_950_0004.png
+    True class: 950
+    Top-5 predictions: ['class 397 (0.19131157)', 'class 115 (0.06425328)', 'class 574 (0.05874575)', 'class 828 (0.05543896)', 'class 722 (0.04776585)']
+Classification accuracy: 0/10 (0.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=953 (n=10)...
+
+    Original images validation:
+File: bs_16_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.84183848)', 'class 85 (0.00224030)', 'class 954 (0.00104423)', 'class 950 (0.00053588)', 'class 949 (0.00034324)']
+File: bs_16_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.71072364)', 'class 956 (0.03073651)', 'class 949 (0.00346315)', 'class 988 (0.00263057)', 'class 329 (0.00250542)']
+File: bs_16_953_0004.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.90730560)', 'class 946 (0.00136203)', 'class 85 (0.00124517)', 'class 944 (0.00052726)', 'class 955 (0.00028127)']
+File: bs_16_953_0006.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.83961177)', 'class 85 (0.00166567)', 'class 954 (0.00123976)', 'class 946 (0.00070371)', 'class 988 (0.00060857)']
+File: bs_16_953_0005.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.83848447)', 'class 85 (0.00261497)', 'class 954 (0.00153983)', 'class 108 (0.00062222)', 'class 950 (0.00051613)']
+File: bs_16_953_0008.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.81458169)', 'class 987 (0.00268117)', 'class 85 (0.00210644)', 'class 954 (0.00108472)', 'class 998 (0.00082344)']
+File: bs_16_953_0007.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.84147203)', 'class 987 (0.00653623)', 'class 905 (0.00280878)', 'class 998 (0.00247733)', 'class 954 (0.00239720)']
+File: bs_16_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.78412640)', 'class 85 (0.00280712)', 'class 954 (0.00121423)', 'class 950 (0.00070101)', 'class 946 (0.00051717)']
+File: bs_16_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.79248506)', 'class 85 (0.00202600)', 'class 954 (0.00122666)', 'class 950 (0.00111254)', 'class 949 (0.00058187)']
+File: bs_16_953_0009.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.91124767)', 'class 85 (0.00107265)', 'class 954 (0.00056929)', 'class 950 (0.00026245)', 'class 987 (0.00025176)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_953_0001.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.89409733)', 'class 946 (0.00380779)', 'class 85 (0.00097791)', 'class 949 (0.00080275)', 'class 944 (0.00070818)']
+File: bs_16_953_0000.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.72018731)', 'class 112 (0.02738052)', 'class 329 (0.00638027)', 'class 883 (0.00559568)', 'class 37 (0.00456201)']
+File: bs_16_953_0004.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.90151173)', 'class 946 (0.00781456)', 'class 996 (0.00266736)', 'class 944 (0.00189100)', 'class 959 (0.00146903)']
+File: bs_16_953_0006.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.76242989)', 'class 946 (0.02347903)', 'class 944 (0.00810315)', 'class 956 (0.00405334)', 'class 996 (0.00235289)']
+File: bs_16_953_0005.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.80464792)', 'class 996 (0.00277307)', 'class 85 (0.00238957)', 'class 946 (0.00207540)', 'class 936 (0.00109672)']
+File: bs_16_953_0008.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.96877354)', 'class 973 (0.00112452)', 'class 917 (0.00092210)', 'class 936 (0.00066717)', 'class 938 (0.00046031)']
+File: bs_16_953_0007.png
+    True class: 953
+    Top-5 predictions: ['class 580 (0.06582223)', 'class 36 (0.03750692)', 'class 985 (0.03268700)', 'class 309 (0.02835951)', 'class 37 (0.02755359)']
+File: bs_16_953_0002.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.76656568)', 'class 946 (0.05011261)', 'class 944 (0.01534105)', 'class 949 (0.00333124)', 'class 956 (0.00151437)']
+File: bs_16_953_0003.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.33145151)', 'class 946 (0.19347948)', 'class 944 (0.03871773)', 'class 328 (0.02223514)', 'class 936 (0.01194771)']
+File: bs_16_953_0009.png
+    True class: 953
+    Top-5 predictions: ['class 953 (0.50842798)', 'class 108 (0.05532263)', 'class 577 (0.01168387)', 'class 936 (0.00965725)', 'class 946 (0.00867255)']
+Classification accuracy: 9/10 (90.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=954 (n=10)...
+
+    Original images validation:
+File: bs_16_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.91318274)', 'class 738 (0.00458746)', 'class 542 (0.00079346)', 'class 506 (0.00055760)', 'class 950 (0.00050606)']
+File: bs_16_954_0004.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.80021572)', 'class 582 (0.00367795)', 'class 950 (0.00190702)', 'class 951 (0.00118250)', 'class 953 (0.00094276)']
+File: bs_16_954_0005.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.68522596)', 'class 940 (0.00323173)', 'class 950 (0.00257377)', 'class 951 (0.00159252)', 'class 953 (0.00126563)']
+File: bs_16_954_0006.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.87818336)', 'class 927 (0.00116116)', 'class 950 (0.00057804)', 'class 940 (0.00037715)', 'class 953 (0.00034021)']
+File: bs_16_954_0007.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.83705193)', 'class 950 (0.00327715)', 'class 951 (0.00250915)', 'class 948 (0.00156823)', 'class 940 (0.00090000)']
+File: bs_16_954_0008.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.83077735)', 'class 950 (0.00201193)', 'class 951 (0.00129189)', 'class 939 (0.00083679)', 'class 953 (0.00061308)']
+File: bs_16_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.89325511)', 'class 940 (0.00096462)', 'class 950 (0.00059771)', 'class 953 (0.00047388)', 'class 939 (0.00039031)']
+File: bs_16_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.86034709)', 'class 940 (0.00391162)', 'class 950 (0.00137595)', 'class 951 (0.00104117)', 'class 953 (0.00091150)']
+File: bs_16_954_0009.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.83580852)', 'class 939 (0.00120534)', 'class 940 (0.00093331)', 'class 950 (0.00091576)', 'class 951 (0.00086262)']
+File: bs_16_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.85994130)', 'class 582 (0.00142477)', 'class 950 (0.00107424)', 'class 953 (0.00094471)', 'class 948 (0.00068594)']
+Classification accuracy: 10/10 (100.00%)
+
+    Reconstructed images validation:
+File: bs_16_954_0003.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.51288962)', 'class 738 (0.19548626)', 'class 883 (0.01450754)', 'class 580 (0.01177098)', 'class 643 (0.00894119)']
+File: bs_16_954_0004.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.09930603)', 'class 108 (0.07210719)', 'class 936 (0.02688153)', 'class 995 (0.01968814)', 'class 949 (0.01851049)']
+File: bs_16_954_0005.png
+    True class: 954
+    Top-5 predictions: ['class 122 (0.04551865)', 'class 73 (0.03839374)', 'class 996 (0.03278432)', 'class 995 (0.02852030)', 'class 32 (0.02695546)']
+File: bs_16_954_0006.png
+    True class: 954
+    Top-5 predictions: ['class 155 (0.07825536)', 'class 194 (0.05721726)', 'class 599 (0.03295296)', 'class 264 (0.02675969)', 'class 219 (0.02492028)']
+File: bs_16_954_0007.png
+    True class: 954
+    Top-5 predictions: ['class 264 (0.19250508)', 'class 249 (0.06154944)', 'class 232 (0.05743449)', 'class 239 (0.05243146)', 'class 247 (0.05105603)']
+File: bs_16_954_0008.png
+    True class: 954
+    Top-5 predictions: ['class 392 (0.10533801)', 'class 954 (0.09758101)', 'class 852 (0.04615971)', 'class 917 (0.04183466)', 'class 470 (0.02883862)']
+File: bs_16_954_0002.png
+    True class: 954
+    Top-5 predictions: ['class 954 (0.14033623)', 'class 728 (0.06540085)', 'class 793 (0.04402949)', 'class 937 (0.02810630)', 'class 938 (0.01587990)']
+File: bs_16_954_0001.png
+    True class: 954
+    Top-5 predictions: ['class 1 (0.50068760)', 'class 980 (0.01751270)', 'class 327 (0.01416365)', 'class 728 (0.00871823)', 'class 979 (0.00813744)']
+File: bs_16_954_0009.png
+    True class: 954
+    Top-5 predictions: ['class 943 (0.13912939)', 'class 954 (0.12170435)', 'class 939 (0.08557264)', 'class 64 (0.04725860)', 'class 936 (0.04373913)']
+File: bs_16_954_0000.png
+    True class: 954
+    Top-5 predictions: ['class 985 (0.05569250)', 'class 995 (0.05016699)', 'class 937 (0.03676487)', 'class 51 (0.02877916)', 'class 738 (0.02577864)']
+Classification accuracy: 3/10 (30.00%)
+
+Validating regnet_x_3_2 on subset: batch_size=16, class=999 (n=10)...
+
+    Original images validation:
+File: bs_16_999_0008.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.90684652)', 'class 731 (0.04827876)', 'class 182 (0.00488011)', 'class 700 (0.00413379)', 'class 184 (0.00192287)']
+File: bs_16_999_0006.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.96821767)', 'class 700 (0.02705025)', 'class 955 (0.00040977)', 'class 884 (0.00005947)', 'class 811 (0.00005443)']
+File: bs_16_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.73483139)', 'class 700 (0.11997081)', 'class 659 (0.00575075)', 'class 896 (0.00450464)', 'class 281 (0.00368289)']
+File: bs_16_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.86156553)', 'class 700 (0.04508105)', 'class 758 (0.00268452)', 'class 855 (0.00075727)', 'class 731 (0.00070974)']
+File: bs_16_999_0009.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.75774360)', 'class 700 (0.00411354)', 'class 767 (0.00238345)', 'class 731 (0.00158419)', 'class 855 (0.00139577)']
+File: bs_16_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.83958066)', 'class 767 (0.01459493)', 'class 700 (0.00701858)', 'class 549 (0.00323963)', 'class 692 (0.00264836)']
+File: bs_16_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.70744741)', 'class 700 (0.01606943)', 'class 637 (0.00358280)', 'class 855 (0.00152093)', 'class 767 (0.00141214)']
+File: bs_16_999_0005.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.48804244)', 'class 692 (0.35001981)', 'class 700 (0.04861003)', 'class 509 (0.01516227)', 'class 932 (0.00455450)']
+File: bs_16_999_0004.png
+    True class: 999
+    Top-5 predictions: ['class 910 (0.10585097)', 'class 402 (0.07553092)', 'class 420 (0.07538096)', 'class 999 (0.06753796)', 'class 459 (0.05100555)']
+File: bs_16_999_0007.png
+    True class: 999
+    Top-5 predictions: ['class 999 (0.47429463)', 'class 700 (0.03067576)', 'class 678 (0.02348383)', 'class 824 (0.02225834)', 'class 720 (0.01345367)']
+Classification accuracy: 9/10 (90.00%)
+
+    Reconstructed images validation:
+File: bs_16_999_0008.png
+    True class: 999
+    Top-5 predictions: ['class 996 (0.61355251)', 'class 995 (0.02797143)', 'class 936 (0.01204211)', 'class 991 (0.01146679)', 'class 38 (0.00906888)']
+File: bs_16_999_0006.png
+    True class: 999
+    Top-5 predictions: ['class 973 (0.22898962)', 'class 108 (0.07123213)', 'class 393 (0.04341305)', 'class 328 (0.02368857)', 'class 115 (0.02279443)']
+File: bs_16_999_0001.png
+    True class: 999
+    Top-5 predictions: ['class 281 (0.17578380)', 'class 552 (0.05390220)', 'class 282 (0.04137723)', 'class 700 (0.03805882)', 'class 285 (0.02216694)']
+File: bs_16_999_0002.png
+    True class: 999
+    Top-5 predictions: ['class 758 (0.05789805)', 'class 586 (0.05055910)', 'class 847 (0.04831434)', 'class 999 (0.03628005)', 'class 674 (0.02067091)']
+File: bs_16_999_0009.png
+    True class: 999
+    Top-5 predictions: ['class 327 (0.18109126)', 'class 700 (0.09336602)', 'class 999 (0.08665208)', 'class 973 (0.04542282)', 'class 328 (0.04369549)']
+File: bs_16_999_0003.png
+    True class: 999
+    Top-5 predictions: ['class 591 (0.24484345)', 'class 310 (0.11128022)', 'class 700 (0.04417013)', 'class 885 (0.02876967)', 'class 999 (0.01531901)']
+File: bs_16_999_0000.png
+    True class: 999
+    Top-5 predictions: ['class 332 (0.06068996)', 'class 980 (0.05407795)', 'class 461 (0.04855655)', 'class 850 (0.04052759)', 'class 469 (0.02953330)']
+File: bs_16_999_0005.png
+    True class: 999
+    Top-5 predictions: ['class 917 (0.59528166)', 'class 643 (0.12099337)', 'class 552 (0.02706977)', 'class 865 (0.02619618)', 'class 692 (0.01927748)']
+File: bs_16_999_0004.png
+    True class: 999
+    Top-5 predictions: ['class 225 (0.04156224)', 'class 151 (0.04137502)', 'class 235 (0.03154318)', 'class 254 (0.02945199)', 'class 110 (0.02341764)']
+File: bs_16_999_0007.png
+    True class: 999
+    Top-5 predictions: ['class 936 (0.32899976)', 'class 308 (0.03453522)', 'class 994 (0.02297147)', 'class 578 (0.01945930)', 'class 996 (0.01796714)']
+Classification accuracy: 0/10 (0.00%)

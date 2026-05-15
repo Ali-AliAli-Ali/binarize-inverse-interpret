@@ -1,0 +1,231 @@
+class 1
+
+Found 47 correctly classified images out of 50 total
+
+Reconstruction done in 2687.812 s. Average time for step: 0.269 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.427323    , 0.917298    ]
+Mean total_loss for best samples: 0.749282    
+
+Reconstruction done in 1563.273 s. Average time for step: 0.156 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.262824    , 1.469949    ]
+Mean total_loss for best samples: 0.866386    
+
+
+class 10
+
+
+Found 46 correctly classified images out of 50 total
+
+Reconstruction done in 2792.825 s. Average time for step: 0.279 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.262797    , 0.942641    ]
+Mean total_loss for best samples: 0.588399    
+
+Reconstruction done in 1445.902 s. Average time for step: 0.145 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.197487    , 0.257935    ]
+Mean total_loss for best samples: 0.227711  
+
+
+class 24
+
+
+Found 49 correctly classified images out of 50 total
+Reconstruction done in 2610.881 s. Average time for step: 0.261 s
+
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.263418    , 0.961369    ]
+Mean total_loss for best samples: 0.601182    
+
+Reconstruction done in 1443.907 s. Average time for step: 0.144 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.296250    , 0.381231    ]
+Mean total_loss for best samples: 0.338741 
+
+
+class 79
+
+
+Found 40 correctly classified images out of 50 total
+
+Reconstruction done in 2548.939 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.362475    , 0.998295    ]
+Mean total_loss for best samples: 0.690562    
+
+Reconstruction done in 1427.663 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.488568    , 1.185959    ]
+Mean total_loss for best samples: 0.837264 
+
+
+class 100
+
+
+Found 49 correctly classified images out of 50 total
+
+Reconstruction done in 2559.461 s. Average time for step: 0.256 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.234819    , 0.463490    ]
+Mean total_loss for best samples: 0.347805    
+
+Reconstruction done in 1459.602 s. Average time for step: 0.146 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.409945    , 0.433583    ]
+Mean total_loss for best samples: 0.421764  
+
+
+class 409
+
+
+Found 36 correctly classified images out of 50 total
+
+Reconstruction done in 2549.581 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.654556    , 1.151738    ]
+Mean total_loss for best samples: 0.864779    
+
+Reconstruction done in 1426.766 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [1.240672    , 2.221900    ]
+Mean total_loss for best samples: 1.731286  
+
+
+class 701
+
+
+Found 47 correctly classified images out of 50 total
+
+Reconstruction done in 2546.790 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.504141    , 0.725516    ]
+Mean total_loss for best samples: 0.608277    
+
+Reconstruction done in 1425.149 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.439542    , 0.537212    ]
+Mean total_loss for best samples: 0.488377  
+
+
+class 712
+
+
+Found 41 correctly classified images out of 50 total
+
+Reconstruction done in 2544.614 s. Average time for step: 0.254 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.301881    , 0.943901    ]
+Mean total_loss for best samples: 0.539856    
+
+Reconstruction done in 1424.934 s. Average time for step: 0.142 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [1.038770    , 1.438634    ]
+Mean total_loss for best samples: 1.238702  
+
+
+class 850
+
+
+Found 44 correctly classified images out of 50 total
+
+Reconstruction done in 2547.063 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.274623    , 1.118474    ]
+Mean total_loss for best samples: 0.502145    
+
+Reconstruction done in 1425.335 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.300616    , 0.363722    ]
+Mean total_loss for best samples: 0.332169    
+
+
+class 950
+
+
+Found 39 correctly classified images out of 50 total
+
+Reconstruction done in 2546.770 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.312106    , 0.979257    ]
+Mean total_loss for best samples: 0.798842    
+
+Reconstruction done in 1425.673 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.425795    , 0.811310    ]
+Mean total_loss for best samples: 0.618552   
+
+
+class 953
+
+
+Found 46 correctly classified images out of 50 total
+
+Reconstruction done in 2547.758 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.928606    , 1.485981    ]
+Mean total_loss for best samples: 1.211010    
+
+Reconstruction done in 1426.651 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [1.068162    , 1.467858    ]
+Mean total_loss for best samples: 1.268010   
+
+
+class 954
+
+
+Found 43 correctly classified images out of 50 total
+
+Reconstruction done in 2548.674 s. Average time for step: 0.255 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.222077    , 0.423019    ]
+Mean total_loss for best samples: 0.348855    
+
+Reconstruction done in 1426.489 s. Average time for step: 0.143 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.225099    , 1.138823    ]
+Mean total_loss for best samples: 0.681961
+
+
+class 999
+
+
+Found 32 correctly classified images out of 50 total
+
+Reconstruction done in 2618.414 s. Average time for step: 0.262 s
+Classification accuracy (all samples):
+    Reconstructed images: 4/4 (100.0%)
+Best samples total_loss range: [0.354246    , 1.022240    ]
+Mean total_loss for best samples: 0.703268    
+
+Reconstruction done in 1462.892 s. Average time for step: 0.146 s
+Classification accuracy (all samples):
+    Reconstructed images: 2/2 (100.0%)
+Best samples total_loss range: [0.389667    , 0.503577    ]
+Mean total_loss for best samples: 0.446622 
