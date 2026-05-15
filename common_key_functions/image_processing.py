@@ -173,34 +173,7 @@ def normalize_contrast_saturation(batch: torch.Tensor) -> torch.Tensor:
     return normalized.clamp_(0., 1.)
 
 
-def tv_loss(x: torch.Tensor, 
-            per_sample: bool = False) -> torch.Tensor:
-    """
-    Total variation (TV) loss with separate channel differences for RGB images.
-    Computes horizontal and vertical differences, then adds cross-channel terms
-    (R-G, B-G) for both directions.
-
-    Args:
-        x: Input tensor of shape (B, 3, H, W) in arbitrary range.
-        per_sample: If True, returns a 1D tensor of shape (B,) with per-sample losses;
-                    otherwise returns a scalar (sum over batch).
-
-    Returns:
-        TV loss value (scalar or per-sample vector).
-    """
-    dh = x[:, :, 1:, :] - x[:, :, :-1, :]
-    dw = x[:, :, :, 1:] - x[:, :, :, :-1]
-    dhr = dh[:, 0, :, :] - dh[:, 1, :, :]
-    dhb = dh[:, 2, :, :] - dh[:, 1, :, :]
-    dwr = dw[:, 0, :, :] - dw[:, 1, :, :]
-    dwb = dw[:, 2, :, :] - dw[:, 1, :, :]
-    
-    return dh.abs().sum(dim=[1,2,3]) + dw.abs().sum(dim=[1,2,3]) + dhr.abs().sum(dim=[1,2]) + dhb.abs().sum(dim=[1,2]) + dwr.abs().sum(dim=[1,2]) + dwb.abs().sum(dim=[1,2]) \
-           if per_sample else \
-           dh.abs().sum() + dw.abs().sum() + dhr.abs().sum() + dhb.abs().sum() + dwr.abs().sum() + dwb.abs().sum()
-
-
-def gray_edge_l1(rgb):  # rgb: (B,3,H,W) already ImageNet-normalized
+def gray_edge_l1(rgb: torch.Tensor):  # rgb: (B,3,H,W) already ImageNet-normalized
     """
     Compute L1 loss on the deviation of colour channels from their mean gradient.
 

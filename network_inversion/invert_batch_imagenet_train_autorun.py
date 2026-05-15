@@ -241,28 +241,43 @@ if __name__ == '__main__':
     dataset_dir_imagenet = "/media/user/Hitachi/ILSVRC/Data/CLS-LOC"
     dataset_name = "ImageNet"
     
-    classes_ids = "1, 10, 100, 999" #  + ", " + "24, 79, 409, 701, 712, 850, 950, 953, 954"
+    classes_ids_test = "1, 10, 100, 999"
+    classes_ids_max_gap = "24, 79, 409, 701, 712, 850, 950, 953, 954"
+    classes_ids = classes_ids_test  + ", " + classes_ids_max_gap
+    
     classes_ids_int = [ int(class_id.strip()) for class_id in classes_ids.split(",") ]
     classes_ids_n = len(classes_ids_int)
     
-    networks_names = ["regnet_x_3_2", "regnet_x_16", "resnet50"] #MODELS_CONFIGS.keys()
-    networks_batch_sizes = {
-        "regnet_x_3_2" : [8, 4, 2, 1],
-        "regnet_x_16" :  [2, 1],
-        "resnet50":      [8, 4, 2, 1]
-    }
+    networks_names = ["regnet_x_3_2", "regnet_x_16", "resnet50", "vit_b_16"] #, MODELS_CONFIGS.keys()
+    # networks_batch_sizes = {
+    #     "regnet_x_3_2" : [16, 8, 4, 2],
+    #     "regnet_x_16" :  [4, 2],
+    #     "resnet50":      [12, 8, 4, 2],
+    #     "vit_b_16":      [4, 2]
+    # }
     n_training_steps = 10_000
     select_best_n = 10
-    
-    train_inversion_over_batch_size(
-        networks_names,
-        networks_batch_sizes,
-        dataset_dir_imagenet, 
-        dataset_name, 
-        n_training_steps=n_training_steps,
-        classes_ids=classes_ids,
-        select_best_n=3,
-        out_dir_all="network_inversion/inversion_images_logs_diff_batch_size/",
-        run_mode="debug"
-    )
-    
+
+    for class_id in classes_ids_int:
+        print(f"Processing class {class_id}...")
+        train_inversion(
+            networks_names,
+            dataset_dir_imagenet, 
+            dataset_name, 
+            n_training_steps=n_training_steps,
+            classes_ids=str(class_id),
+            select_best_n=select_best_n,
+            out_dir_all="network_inversion/inversion_images_logs_mse_batch_indept/",
+            run_mode="run"
+        )
+        # train_inversion_over_batch_size(
+        #     networks_names,
+        #     networks_batch_sizes,
+        #     dataset_dir_imagenet, 
+        #     dataset_name, 
+        #     n_training_steps=n_training_steps,
+        #     classes_ids=str(class_id),
+        #     select_best_n=select_best_n,
+        #     out_dir_all="network_inversion/inversion_images_logs_diff_batch_size_per_class/",
+        #     run_mode="run"
+        # )

@@ -27,7 +27,7 @@ if module_dir not in sys.path:
     
 from constants_configs import IMAGENET_CONSTANTS, MODELS_CONFIGS   # noqa: E402
 from helpful_funcs import get_model_and_features, format_classes_ids_str            # noqa: E402
-from image_processing import tv_loss, normalize_contrast_saturation, gray_edge_l1   # noqa: E402
+from image_processing import normalize_contrast_saturation, gray_edge_l1   # noqa: E402
 from training_logger import TrainingLogger    # noqa: E402
 
 
@@ -325,9 +325,11 @@ def ab_for_threshold(t: float):
 # Losses calculations
 
 
-def sym_kl_div(x, y, per_sample: bool = False) -> float:
+def sym_kl_div_feature_loss(x: torch.Tensor, 
+                            y: torch.Tensor, 
+                            per_sample: bool = False) -> float:
     """
-    Symmetric Kullback–Leibler divergence between two logit tensors.
+    Symmetric Kullback-Leibler divergence between two logit tensors.
 
     Both inputs are assumed to be logits (will be converted to log-probabilities
     using log_softmax along dimension 1). The symmetric divergence is defined as
@@ -358,31 +360,57 @@ def sym_kl_div(x, y, per_sample: bool = False) -> float:
     return 0.5 * (kl1 + kl2)
 
 
-def tv_feature_loss(x):
+def mse_feature_loss(x: torch.Tensor,
+                     y: torch.Tensor,
+                     per_sample: bool | None = False):
     """
-    Compute isotropic total variation loss on a whitened feature map.
+    Mean Squared Error between the channel-wise spatial average of two feature maps.
 
-    Steps:
-        1. Whiten the feature map per channel (subtract mean, divide by std).
-        2. Compute forward differences (horizontal and vertical) on the (H-1,W-1) grid.
-        3. Sum the absolute values of all differences.
+    When `per_sample=False`, the result is averaged over the batch for batch size
+    independency. When `per_sample=True`, per-sample MSE are returned with shape (B,).
 
     Args:
-        f: Feature tensor of shape (B, C, H, W).
+        x:          First feature tensor, shape (B, C, H, W).
+        y:          Second feature tensor, shape (B, C, H, W).
+        per_sample: If `True`, return per-sample losses (B,);
+                    otherwise return the batch-mean loss (scalar).
 
     Returns:
-        Scalar TV loss (sum over batch, channels, and spatial positions).
+        MSE loss.
     """
-    # f: (B, C, H, W)
-    # whiten
-    x = (x - x.mean(dim=[0,2,3], keepdim=True)) / (x.std(dim=[0,2,3], keepdim=True) + 1e-5)
-    # compute spatial diffs
-    dh = x[:, :, 1:, :-1] - x[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
-    dw = x[:, :, :-1, 1:] - x[:, :, :-1, :-1]  # -> (B, C, H-1, W-1)
-    # squared magnitude of the C-dimensional gradient vector
-    grad2 = dh.abs().sum() + dw.abs().sum()  # (B, H-1, W-1)
-    # isotropic vector-TV
-    return grad2
+    x_mean = x.mean(dim=[1,2,3], keepdim=True)
+    y_mean = y.mean(dim=[1,2,3], keepdim=True)
+
+    return F.mse_loss(x_mean, y_mean, reduction="none").sum(dim=[1,2,3]) \
+        if per_sample else \
+            F.mse_loss(x_mean, y_mean, reduction="mean")
+
+
+def tv_feature_loss(x: torch.Tensor, 
+            per_sample: bool | None = False) -> torch.Tensor:
+    """
+    Total variation (TV) loss with separate channel differences for RGB images.
+    Computes horizontal and vertical differences, then adds cross-channel terms
+    (R-G, B-G) for both directions.
+
+    Args:
+        x: Input tensor of shape (B, 3, H, W) in arbitrary range.
+        per_sample: If True, returns a 1D tensor of shape (B,) with per-sample losses;
+                    otherwise returns a scalar (sum over batch).
+
+    Returns:
+        TV loss value (scalar or per-sample vector).
+    """
+    dh = x[:, :, 1:, :] - x[:, :, :-1, :]
+    dw = x[:, :, :, 1:] - x[:, :, :, :-1]
+    dhr = dh[:, 0, :, :] - dh[:, 1, :, :]
+    dhb = dh[:, 2, :, :] - dh[:, 1, :, :]
+    dwr = dw[:, 0, :, :] - dw[:, 1, :, :]
+    dwb = dw[:, 2, :, :] - dw[:, 1, :, :]
+    
+    return dh.abs().sum(dim=[1,2,3]) + dw.abs().sum(dim=[1,2,3]) + dhr.abs().sum(dim=[1,2]) + dhb.abs().sum(dim=[1,2]) + dwr.abs().sum(dim=[1,2]) + dwb.abs().sum(dim=[1,2]) \
+           if per_sample else \
+           dh.abs().sum() + dw.abs().sum() + dhr.abs().sum() + dhb.abs().sum() + dwr.abs().sum() + dwb.abs().sum()
 
 
 def gradient_edginess(x: torch.Tensor, 
@@ -411,8 +439,8 @@ def gradient_edginess(x: torch.Tensor,
     return torch.sqrt((du * du + dv * dv).sum(dim=1) + eps)  # sum over channels
 
 
-def centering_losses(x: torch.Tensor, 
-                     eps: float = 1e-8):
+def centering_feature_losses(x: torch.Tensor, 
+                             eps: float = 1e-8):
     """
     Compute centering and border losses based on the edge strength map.
 
@@ -452,60 +480,50 @@ def centering_losses(x: torch.Tensor,
   
 
 AllLosses = tuple[float, float, float, float, float, float, float]
-def compute_all_losses(feat, 
-                       target_feat, 
-                       x, 
-                       tv_weight=0.0, 
-                       l2_weight=0.0, 
-                       l1_weight=0.0, 
-                       tv_loss_orig=None, 
-                       per_sample=False) -> AllLosses:
+def compute_all_losses(feat: torch.Tensor, 
+                       target_feat: torch.Tensor, 
+                       x: torch.Tensor, 
+                       tv_weight: float | None = 0.0, 
+                       l2_weight: float | None = 0.0, 
+                       l1_weight: float | None = 0.0, 
+                       tv_loss_orig: float | None = None, 
+                       per_sample: bool | None = False) -> AllLosses:
     """
-    Compute all loss components for feature matching and image regularization.
-
-    The loss includes:
-        - Symmetric KL divergence between feat and target_feat.
-        - L2 (MSE) loss on the channel-wise mean (spatial average) of feat and target_feat.
-        - Total variation loss on x, optionally with a threshold relative to tv_loss_orig.
-        - L1 loss (via gray_edge_l1, assumed defined elsewhere).
-        - Centering and border losses from centering_losses.
+    Compute all loss components for feature matching and image regularization:
+        - Symmetric KL divergence between `feat` and `target_feat`.
+        - Total variation loss on `x`, optionally with a threshold relative to `tv_loss_orig`.
+        - L2 (MSE) loss on the channel-wise mean of `feat` and `target_feat`.
+        - L1 loss on the channel-wise mean of `feat` and `target_feat`.
+        - Centering and border losses.
 
     Args:
-        feat:         Predicted feature map (B, C, H, W).
-        target_feat:  Target feature map (B, C, H, W).
-        x:            Reconstructed image (B, 3, H, W).
+        feat:         Predicted feature map.
+        target_feat:  Target feature map.
+        x:            Reconstructed image.
         tv_weight:    Weight for the total variation term.
         l2_weight:    Weight for the MSE term.
         l1_weight:    Weight for the L1 term.
-        tv_loss_orig: Reference TV loss (e.g., from original image) used to clip TV loss.
-        per_sample:   If True, returns per-sample loss components; else scalar averages.
+        tv_loss_orig: Reference TV loss used to clip TV loss.
+        per_sample:   If `True`, returns per-sample loss components; else scalar averages.
 
     Returns:
-        Tuple(loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss).
+        tuple(loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss), where
+        losses are not weighted and `total_loss` is a weighted sum.
     """
-    loss_kl = sym_kl_div(feat, target_feat, per_sample=per_sample)
-    loss_mse =  l2_weight * F.mse_loss(
-                    feat.mean(dim=[1,2,3], keepdim=True), 
-                    target_feat.mean(dim=[1,2,3], keepdim=True), 
-                    reduction='none'
-                ).sum(dim=[1,2,3]) \
-        if per_sample else \
-                l2_weight * F.mse_loss(
-                    feat.mean(dim=[1,2,3], keepdim=True), 
-                    target_feat.mean(dim=[1,2,3], keepdim=True)
-                )
+    loss_kl = sym_kl_div_feature_loss(feat, target_feat, per_sample=per_sample)
+    loss_mse =  mse_feature_loss(feat, target_feat, per_sample=per_sample)
+    loss_l1 = gray_edge_l1(x)
+    loss_centering, loss_border = centering_feature_losses(x)
     
-    tv_x = tv_loss(x, per_sample=per_sample) # TV loss with threshold: max(tv_loss(x) - 0.1*tv_loss_orig, 0)
+    loss_tv = tv_feature_loss(x, per_sample=per_sample) # TV loss with threshold: max(tv_feature_loss(x) - 0.1*tv_feature_loss_orig, 0)
     if tv_loss_orig is not None:
-        tv_x = torch.maximum(tv_x - 0.4 * tv_loss_orig, torch.tensor(0.0, device=x.device, dtype=tv_x.dtype))
-    loss_tv = tv_weight * tv_x
+        loss_tv = torch.maximum(
+            loss_tv - 0.4 * tv_loss_orig, 
+            torch.tensor(0.0, device=x.device, dtype=loss_tv.dtype)
+        )
     
-    loss_l1 = l1_weight * gray_edge_l1(x)
-
-    centering_loss, border_loss = centering_losses(x)
-
-    total_loss = loss_kl + loss_mse + loss_tv + loss_l1
-    return loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss
+    return loss_kl, loss_mse, loss_tv, loss_l1, loss_centering, loss_border, \
+           loss_kl + l2_weight * loss_mse + tv_weight * loss_tv + l1_weight * loss_l1
 
 
 # Images processing
@@ -582,116 +600,7 @@ def save_best_images(x_best, imgs_best, mean, std, out_dir, class_id_str, nrow=N
         os.path.join(out_dir, f'best_orig_{class_id_str}.png'),
         nrow=nrow,
     )
-
-class ImageFolderDataset(Dataset):
-    """
-    Dataset for loading images from a folder, extracting labels from file names or provided list.
-    """
-    def __init__(self, 
-                 image_paths: list[str], 
-                 labels: list[int], 
-                 transform: None):
-        """
-        Args:
-            image_paths: List of paths (absolute or relative) to images.
-            labels:      Ground truth class indices corresponding to each image.
-            transform:   `torchvision transform` to apply to each image.
-        """
-        self.image_paths = image_paths
-        self.labels = labels
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.image_paths)
-
-    def __getitem__(self, idx):
-        img = Image.open(self.image_paths[idx]).convert('RGB')
-        if self.transform:
-            img = self.transform(img)
-        label = self.labels[idx]
-        return img, label
     
-
-def val_model_on_files(network_name: str,
-                       images_dir: str,
-                       labels_true: list,
-                       batch_size: int | None = 32,
-                       num_workers: int | None = 8,
-                       print_details: bool | None = True,
-                       top_k: int | None = 5) -> dict:
-    """
-    Load saved images from disk and evaluate classification accuracy
-
-    Args:
-        network_name:  Name of PyTorch model to be evaluated.
-        images_dir:    Directory containing images as files.
-        labels_true:   List or array of true class indices, aligned with the sorted image file list.
-        file_pattern:  Glob pattern to match image files (e.g., "recon_*.png").
-        batch_size:    Batch size for inference.
-        num_workers:   Number of subprocesses for data loading.
-        print_details: If `True`, print file name, true class, and `top_k` predictions with probabilities
-                       for every image.
-        top_k:         Number of top predictions to display when `print_details=True`.
-
-    Returns:
-        Tuple(accuracy, correct samples, total samples)
-    """    
-    images_paths = os.listdir(images_dir)
-    
-    sorted_images_ids = sorted(range(len(images_paths)), key=lambda i: images_paths[i])
-    images_paths_sorted = [images_paths[i] for i in sorted_images_ids]
-    labels_true_sorted = [labels_true[i] for i in sorted_images_ids]    
-    
-    images_paths_sorted = [ os.path.join(images_dir, image_path) for image_path in images_paths_sorted ]
-    
-    transform = transforms.Compose([
-        transforms.Resize(IMAGENET_CONSTANTS["size_resize"]),
-        transforms.CenterCrop(IMAGENET_CONSTANTS["size_center_crop"]),
-        transforms.ToTensor()
-    ])
-    dataset = ImageFolderDataset(images_paths_sorted, labels_true_sorted, transform=transform)
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
-
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    
-    model, _ = get_model_and_features(network_name)
-    model = model.to(device)
-    model.eval()
-
-    correct = 0
-    total = 0
-    batch_start_i = 0
-    with torch.no_grad():
-        for imgs, labels in loader:
-            imgs = imgs.to(device)
-            labels = labels.to(device)
-            
-            logits = model(imgs)
-            probs = F.softmax(logits, dim=1)
-            topk_probs, topk_indices = torch.topk(probs, k=top_k, dim=1)
-            
-            preds = logits.argmax(dim=1)
-            correct += (preds == labels).sum().item()
-            total += labels.size(0)
-            
-            if print_details:
-                for i in range(len(imgs)):
-                    global_idx = batch_start_i + i
-                    image_name = os.path.basename(images_paths_sorted[global_idx])
-                    print(
-                        f"File: {image_name}\n" 
-                        f"    True class: {labels_true_sorted[global_idx]}\n"
-                        f"    Top-{top_k} predictions: {[ \
-                            f'class {idx} ({prob:.8f})' for idx, prob in zip(topk_indices[i], topk_probs[i]) \
-                        ]}"
-                    )
-            
-            batch_start_i += len(imgs)
-                    
-    accuracy = correct / total
-    print(f"Classification accuracy: {correct}/{total} ({accuracy:.2%})")
-
-    return accuracy, correct, total
 
 
 def main_pipeline(data_dir: str | None = './data/imagenet',
@@ -754,7 +663,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
 
     os.makedirs(out_dir, exist_ok=True)
     
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     IMAGENET_CONSTANTS["mean"] = IMAGENET_CONSTANTS["mean"].to(device)
     IMAGENET_CONSTANTS["std"] = IMAGENET_CONSTANTS["std"].to(device)
@@ -887,7 +796,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     
     # 4. Extract and fix target features
     
-    tv_loss_orig = tv_loss(imgs_norm)  # TV loss of original images for threshold
+    tv_loss_orig = tv_feature_loss(imgs_norm)  # TV loss of original images for threshold
     with torch.no_grad():
         _ = model(imgs_norm)
         target_feat = activation['feat'].detach()
@@ -1004,8 +913,6 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         feat = forward_and_get_feat(model, x, activation)
         
         # Compute per-sample losses
-        # Calculate per-sample TV loss for originals
-        tv_loss_orig_per_sample = tv_loss(imgs_norm, per_sample=True)
         loss_kl_per_sample, _, _, _, _, _, _ = compute_all_losses(
             feat, 
             target_feat, 
@@ -1013,7 +920,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
             tv_weight, 
             l2_weight=l2_weight, 
             l1_weight=l1_weight, 
-            tv_loss_orig=tv_loss_orig_per_sample, 
+            tv_loss_orig=tv_feature_loss(imgs_norm, per_sample=True), 
             per_sample=True
         )
         
@@ -1070,6 +977,36 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
 
 
 # INVERSION VALIDATION
+
+
+class ImageFolderDataset(Dataset):
+    """
+    Dataset for loading images from a folder, extracting labels from file names or provided list.
+    """
+    def __init__(self, 
+                 images_paths: list[str], 
+                 labels: list[int], 
+                 transform: None):
+        """
+        Args:
+            images_paths: List of paths (absolute or relative) to images.
+            labels:      Ground truth class indices corresponding to each image.
+            transform:   `torchvision transform` to apply to each image.
+        """
+        self.images_paths = images_paths
+        self.labels = labels
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.images_paths)
+
+    def __getitem__(self, idx):
+        img = Image.open(self.images_paths[idx]).convert('RGB')
+        if self.transform:
+            img = self.transform(img)
+        label = self.labels[idx]
+        return img, label
+
 
 
 def get_grid_images_paths(networks_names: list[str],
@@ -1249,3 +1186,172 @@ def sort_labels_by_images(labels_true_networks: list[dict],
                 for network_labels, network_orig_images_dir in zip(labels_true_networks, orig_images_dirs)
             ]
     
+
+
+def val_model_on_files(network_name: str, 
+                       images_paths: str | list[str], 
+                       val_by_paths: bool,
+                       labels_true: list[str], 
+                       batch_size: int | None = 32,
+                       num_workers: int | None = 8, 
+                       top_k_preds: int | None = 1,
+                       get_top2_gap: bool | None = False,
+                       print_details: bool | None = True) -> tuple[float, int, int]:
+    """
+    Load saved images from disk and evaluate classification accuracy
+
+    Args:
+        network_name:  Name of PyTorch model to be evaluated.
+        images_paths:  Directory containing images as files or exact paths to images files.
+        val_by_paths:  If `False`, validates network on all files in directory given
+                       (PLEASE ENSURE `images_paths` IS A PATH TO DIRECTORY, NOT FILE!)
+                       Otherwise iterates over exact paths
+        labels_true:   List or array of true class indices, aligned with the sorted image file list.
+        batch_size:    Batch size for inference.
+        num_workers:   Number of subprocesses for data loading.
+        top_k_preds:   Number of top predictions to display when `print_details=True`.
+        get_top2_gap:  If `True`, calculate difference between top-2 predictions probabilities.
+        print_details: If `True`, print file name, true class, and `top_k` predictions with probabilities
+                       for every image.
+
+    Returns:
+        Tuple(accuracy, correct samples, total samples, probability gap between top2 predictions)
+    """ 
+    if val_by_paths:
+        images_paths_sorted = images_paths
+        labels_true_sorted = labels_true
+    else:
+        images_paths_listed = os.listdir(images_paths)
+    
+        sorted_images_ids = sorted(
+            range(len(images_paths_listed)), 
+            key=lambda i: images_paths_listed[i]
+        )
+        images_paths_sorted = [ images_paths_listed[i] for i in sorted_images_ids ]
+        images_paths_sorted = [ os.path.join(images_paths, image_path) for image_path in images_paths_sorted ]
+        labels_true_sorted =  [ labels_true[i]  for i in sorted_images_ids ]    
+        
+         
+    transform = transforms.Compose([
+        transforms.Resize(IMAGENET_CONSTANTS["size_resize"]),
+        transforms.CenterCrop(IMAGENET_CONSTANTS["size_center_crop"]),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                             std=[0.229, 0.224, 0.225])
+        # transforms.Normalize(mean=IMAGENET_CONSTANTS["mean"].tolist(),
+        #                      std=IMAGENET_CONSTANTS["std"].tolist())  # TODO: CHECK IF Normalize IS NEEDED!
+    ])
+    dataset = ImageFolderDataset(images_paths_sorted, labels_true_sorted, transform=transform)
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
+                        num_workers=num_workers)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model, _ = get_model_and_features(network_name)
+    model = model.to(device)
+    model.eval()
+
+    correct, total, batch_start_i = 0, 0, 0
+    with torch.no_grad():
+        for imgs, labels in loader:
+            imgs = imgs.to(device)
+            labels = labels.to(device)
+            
+            logits = model(imgs)
+            probs = F.softmax(logits, dim=1)
+            topk_probs, topk_indices = torch.topk(probs, k=top_k_preds, dim=1)
+            
+            preds = logits.argmax(dim=1)
+            correct += (preds == labels).sum().item()
+            total += labels.size(0)
+            
+            if print_details:
+                for i in range(len(imgs)):
+                    global_idx = batch_start_i + i
+                    image_name = os.path.basename(images_paths_sorted[global_idx])
+                    print(
+                        f"File: {image_name}\n" 
+                        f"    True class: {labels_true_sorted[global_idx]}\n"
+                        f"    Top-{top_k_preds} predictions: {[ \
+                            f'class {idx} ({prob:.8f})' for idx, prob in zip(topk_indices[i], topk_probs[i]) \
+                        ]}"
+                    )
+            batch_start_i += len(imgs)
+
+    accuracy = correct / total
+    print(f"Classification accuracy: {correct}/{total} ({accuracy:.2%})")
+    top2_prob_gap = topk_probs[0] - topk_probs[1] if get_top2_gap else None
+
+    return accuracy, correct, total, top2_prob_gap
+
+
+def val_model_orig_recon(network_name: str,
+                         orig_paths: str | list[str],
+                         recon_paths: str | list[str],
+                         per_subset: bool,
+                         labels_true: list[str], 
+                         class_info: str | None = "",
+                         num_workers: int | None = 8, 
+                         top_k_preds: int | None = 1,
+                         get_top2_gap: bool | None = False,
+                         print_details: bool | None = True) -> dict:
+    """
+    Validate a specific subset of images.
+    
+    Args:
+        network_name:  Name of PyTorch model to be evaluated.
+        orig_paths:    Directory containing original images as files or exact paths to images files.
+        recon_paths:   Directory containing reconstructed images as files or exact paths to images files.
+        per_subset:    If `False`, validates network on all files in directory given
+                       (PLEASE ENSURE `images_paths` IS A PATH TO DIRECTORY, NOT FILE!)
+                       Otherwise iterates over exact paths
+        labels_true:   List or array of true class indices, aligned with the sorted image file list.
+        class_info:    String identifying the subset (e.g., `"bs=4, class=100"`).
+        num_workers:   Number of subprocesses for data loading.
+        top_k_preds:   Number of top predictions to display when `print_details=True`.
+        print_details: If `True`, print file name, true class, and `top_k` predictions with probabilities
+                       for every image.
+
+    Returns:
+        Classification accuracy & number of correctly classified images for the network
+    """
+    subset_comment = f" on subset: {class_info}" if per_subset else ""
+    print(f"\nValidating {network_name}{subset_comment}...")
+    
+    classes_ids_n = len(set(labels_true))
+
+    print("\n    Original images validation:")
+    acc_orig, correct_orig, total_orig, top2_gap_orig = val_model_on_files(
+        network_name, 
+        orig_paths, 
+        per_subset,
+        labels_true, 
+        max(MODELS_CONFIGS[network_name]["batch_size"], classes_ids_n),
+        num_workers, 
+        top_k_preds,
+        get_top2_gap,
+        print_details,
+    )
+    print("\n    Reconstructed images validation:")
+    acc_recon, correct_recon, total_recon, top2_gap_recon = val_model_on_files(
+        network_name, 
+        recon_paths, 
+        per_subset,
+        labels_true, 
+        max(MODELS_CONFIGS[network_name]["batch_size"], classes_ids_n),
+        num_workers, 
+        top_k_preds,
+        get_top2_gap,
+        print_details
+    )
+        
+    val_results = {
+        "orig_accuracy":  acc_orig * 100,
+        "orig_correct":   correct_orig,
+        "recon_accuracy": acc_recon * 100,
+        "recon_correct":  correct_recon,
+        "total_images":   total_orig,
+    }
+    if get_top2_gap:
+        val_results["orig_top2_gap"] = top2_gap_orig
+        val_results["recon_top2_gap"] = top2_gap_recon
+    return val_results
