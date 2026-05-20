@@ -387,7 +387,7 @@ def mse_feature_loss(x: torch.Tensor,
 
 
 def tv_feature_loss(x: torch.Tensor, 
-            per_sample: bool | None = False) -> torch.Tensor:
+                    per_sample: bool | None = False) -> torch.Tensor:
     """
     Total variation (TV) loss with separate channel differences for RGB images.
     Computes horizontal and vertical differences, then adds cross-channel terms
