@@ -1,7 +1,8 @@
 import os
 import numpy as np
 from matplotlib import pyplot as plt, colors, cm
-from typing import Iterable
+from matplotlib.patches import Patch
+from typing import Iterable, Callable
 import pandas as pd
 
 
@@ -142,6 +143,116 @@ def plot_colored_barplot(values,
 # SPECIFIC PLOTS
 
 
+def plot_metrics_from_df(metrics: pd.DataFrame,
+                         x_column: str,
+                         title: str,
+                         x_label: str,
+                         y_label: str,
+                         columns_to_plot: list[str] | None = None,
+                         emph_columns: list[str] | None = None,
+                         emph_condition: Callable | None = None,
+                         emph_condition_name: str | None = "<0",
+                         cmap_name: str = "winter",
+                         emph_cmap_name: str = "spring",
+                         figsize: tuple = (20, 7)):
+    columns_to_skip = [x_column] \
+        if (emph_columns is None) or len(set(columns_to_plot).intersection(emph_columns)) else \
+                      [x_column] + emph_columns
+    metric_names = columns_to_plot or [
+        column for column in metrics.columns if (column not in columns_to_skip)
+    ]
+    x_values = metrics[x_column].values
+    unique_x = sorted(metrics[x_column].unique())
+
+    vlines_x = []
+    vlines_colors = []
+    column_met_condition = {
+        column: False for column in emph_columns
+    } if emph_columns else {}
+    all_conds_met = False
+
+    if emph_columns is not None:
+        n_emph = len(emph_columns)
+        emph_cmap = plt.get_cmap(emph_cmap_name)
+        for i, row in metrics.iterrows():
+            conds = [emph_condition(row[column]) for column in emph_columns]
+            if any(conds):
+                x_pos = row[x_column]
+                vlines_x.append(x_pos)
+                if all(conds):
+                    vlines_colors.append("red")
+                    all_conds_met = True
+                else:
+                    first_idx = next(i for i, c in enumerate(conds) if c)
+                    vlines_colors.append(emph_cmap(first_idx / (n_emph - 1)))
+                    column_met_condition[emph_columns[first_idx]] = True
+
+    fig, ax = plt.subplots(figsize=figsize)
+    cmap = plt.get_cmap(cmap_name)
+    max_metric = 0
+    min_metric = -1000
+
+    for i, column in enumerate(metric_names):
+        y_values = metrics[column].values
+        max_metric = max(max_metric, y_values.max())
+        min_metric = min(min_metric, y_values.min())
+        ax.plot(
+            x_values, 
+            y_values, 
+            marker='o', markersize=4,
+            color=cmap(i / len(metric_names)), 
+            label=column
+        )
+
+    for x, color in zip(vlines_x, vlines_colors):
+        ax.axvline(
+            x, 
+            color=color, alpha=0.8, linewidth=1.2, 
+            zorder=3
+        )
+
+    emph_legend_elements = []
+    if all_conds_met:
+        emph_legend_elements.append(Patch(
+            facecolor="red", 
+            edgecolor="red",
+            label="All conditions met"
+        ))
+    if emph_columns:
+        emph_cmap = plt.get_cmap(emph_cmap_name)
+        for i, column in enumerate(emph_columns):
+            if column_met_condition[column]:
+                color = emph_cmap(i / (n_emph - 1))
+                emph_legend_elements.append(Patch(facecolor=color, edgecolor=color,
+                                                  label=column + emph_condition_name))
+
+    if max_metric > 90:
+        y_ticks = list(range(0, 101, 5))
+    elif max_metric <= 2:
+        y_ticks = [i * 0.1 for i in range(-5, 20)]
+    elif max_metric < 5:
+        y_ticks = [i * 0.2 for i in range(0, 25)]
+    elif max_metric < 10:
+        y_ticks = [i * 0.5 for i in range(0, int(max_metric) * 2)]
+    else:
+        y_ticks = list(range(0, int(max_metric) + 6, 5))
+
+    ax.set(
+        xticks=unique_x,
+        xlabel=x_label,
+        yticks=y_ticks,
+        ylabel=y_label,
+        title=title,
+    )
+    # ax.set_xticklabels(ax.get_xticks(), rotation=-90)
+    ax_set_grid(ax, 0.5)
+
+    curve_legend = ax.legend(loc='upper left')
+    if emph_legend_elements:
+        ax.legend(handles=emph_legend_elements, loc='lower left')
+        ax.add_artist(curve_legend)
+
+    plt.tight_layout()
 
 
 
