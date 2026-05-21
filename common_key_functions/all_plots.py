@@ -10,7 +10,7 @@ def plot_metric(trains: list,
                 dataset_name: str | None = "dataset",
                 metric_name: str | None = "metric",
                 figsize: tuple[int, int] | None = (25, 3),
-                save_graph: bool | None = True,
+                save_graph: bool | None = False,
                 graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     ax.plot(
@@ -54,7 +54,7 @@ def plot_heatmap(values,
                  cmap_name: str | None = "seismic",
                  title: str | None = "Weights heatmap",
                  figsize: tuple[int, int] | None = (25, 3),
-                 save_graph: bool | None = True,
+                 save_graph: bool | None = False,
                  graph_dir: str | None = "graphs"):
     plt.figure(figsize=figsize)
     plt.imshow(
@@ -82,7 +82,7 @@ def plot_colored_barplot(values,
                          xticks: list | None = [],
                          xticklabels: list | None = [],   
                          figsize: tuple[int, int] | None = (25, 3),
-                         save_graph: bool | None = True,
+                         save_graph: bool | None = False,
                          graph_dir: str | None = "graphs"):
     fig, ax = plt.subplots(figsize=figsize)
     

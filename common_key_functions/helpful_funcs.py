@@ -38,16 +38,17 @@ def validate_top1_top5_time(model,
     
 def pretty_print_top1_top5_time(model, 
                                 loader: DataLoader, 
-                                top1_orig: float | None = 0,
-                                top5_orig: float | None = 0):    
+                                top1_orig: float | None = None,
+                                top5_orig: float | None = None):    
+    print(top1_orig, top5_orig)
     top1_new, top5_new, val_time = validate_top1_top5_time(model, loader)
     
-    if top1_orig:
+    if top1_orig is not None:
         drop1 = top1_orig - top1_new
         drop1_report = f", drop: {drop1:.4f}"
     else:
         drop1, drop1_report = None, ""
-    if top5_orig:
+    if top5_orig is not None:
         drop5 = top5_orig - top5_new
         drop5_report = f", drop: {drop5:.4f}"
     else:
