@@ -40,7 +40,6 @@ def pretty_print_top1_top5_time(model,
                                 loader: DataLoader, 
                                 top1_orig: float | None = None,
                                 top5_orig: float | None = None):    
-    print(top1_orig, top5_orig)
     top1_new, top5_new, val_time = validate_top1_top5_time(model, loader)
     
     if top1_orig is not None:
