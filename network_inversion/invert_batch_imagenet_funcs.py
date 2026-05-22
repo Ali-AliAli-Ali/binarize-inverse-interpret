@@ -696,22 +696,16 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
     # hook reshaping ViT encoder output to 4D feature map
     def vit_encoder_hook(module, input, output):
-        # Remove CLS token (assumed to be the first token)
-        patch_tokens = output[:, 1:, :]                     # (B, num_patches, D)
-        B, N, D = patch_tokens.shape
-        
-        # Calculate grid size (square root of num_patches)
-        grid_size = int(N ** 0.5)
-        if grid_size * grid_size != N:
-            raise ValueError(
-                f"Number of ViT patches {N} is not a perfect square, " \
-                f"check input image size and patch size."
-            )
-        
-        # Reshape: (B, grid, grid, D) -> (B, D, grid, grid)
-        activation['feat'] = patch_tokens.transpose(1, 2).reshape(B, D, grid_size, grid_size)    
+        # # Remove CLS token (assumed to be the first token)
+        # patch_tokens = output[:, 1:, :]                     # (B, num_patches, D)
+        # B, N, D = patch_tokens.shape
+        # grid_size = int(N ** 0.5)  # Calculate grid size (square root of num_patches)
+        #                            # Reshape: (B, grid, grid, D) -> (B, D, grid, grid)
+        # activation['feat'] = patch_tokens.transpose(1, 2).reshape(B, D, grid_size, grid_size)    
+        activation['feat'] = output[:, 0, :] .unsqueeze(-1).unsqueeze(-1)  # cls_token -> (B, D, 1, 1)
         
     if "vit_" in network_name:
+        model.encoder.pos_embedding.data.zero_()          # corrects reconstr colors
         hooks['feat'] = model.encoder.register_forward_hook(vit_encoder_hook)
     else:
         hooks['feat'] = features.register_forward_hook(hook_fn)    
@@ -847,7 +841,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
         logger.log(step, loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss)
         
-        if not step % n_steps_log:
+        if (run_mode == "debug") and (not step % n_steps_log):
             print(
                 f"Step {step:<5}/{steps} | "
                 f"KL: {loss_kl.item():<12.6f} "
@@ -887,14 +881,38 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
         # x is already in normalized space, classify directly
         logits_recon = model_cls(x)
-        preds_recon = logits_recon.argmax(dim=1)
+        probs_recon = F.softmax(logits_recon, dim=1)
+        
+        # Get top-2 logits & probs
+        top2_logits_recon, top2_indices_recon = torch.topk(logits_recon, k=2, dim=1)
+        top1_logits = top2_logits_recon[:, 0]
+        top2_logits = top2_logits_recon[:, 1]
+        top1_probs = probs_recon.gather(1, top2_indices_recon[:, :1]).squeeze()
+        top2_probs = probs_recon.gather(1, top2_indices_recon[:, 1:]).squeeze()
+        
+        preds_recon = top2_indices_recon[:, 0]  # logits_recon.argmax(dim=1)
         correct_mask = (preds_recon == all_labels_true)
         correct_recon = correct_mask.sum().item()
-        # correct_indices = torch.where(correct_mask)[0].cpu().tolist()
     
     # Print classification statistics
-    print("\nClassification accuracy (all samples):")
-    print(f"    Reconstructed images: {correct_recon}/{len(all_labels_true)} ({100*correct_recon/len(all_labels_true):.1f}%)")
+    print("\nClassification accuracy (all samples):"
+              f"    Reconstructed images: {correct_recon}/{len(all_labels_true)} ({100*correct_recon/len(all_labels_true):.1f}%)\n")
+    # Separate mean statistics for correct and incorrect predictions
+    if correct_recon:
+        print("    Mean statistics for CORRECT reconstructions:\n"
+              f"        Top-1 logit:       {top1_logits[correct_mask].mean().item():.4f}\n"
+              f"        Top-1 probability: {top1_probs[correct_mask].mean().item():.4f}\n"
+              f"        Top-2 logit:       {top2_logits[correct_mask].mean().item():.4f}\n"
+              f"        Top-2 probability: {top2_probs[correct_mask].mean().item():.4f}\n"
+              f"        Logit difference:  {(top1_logits[correct_mask] - top2_logits[correct_mask]).mean().item():.4f}")
+    if correct_recon < len(all_labels_true):
+        print("    Mean statistics for INCORRECT reconstructions:")
+        incorrect_mask = ~correct_mask
+        print(f"        Top-1 logit:      {top1_logits[incorrect_mask].mean().item():.4f}\n"
+              f"        Top-1 probability: {top1_probs[incorrect_mask].mean().item():.4f}\n"
+              f"        Top-2 logit:      {top2_logits[incorrect_mask].mean().item():.4f}\n"
+              f"        Top-2 probability: {top2_probs[incorrect_mask].mean().item():.4f}\n"
+              f"        Logit difference:  {(top1_logits[incorrect_mask] - top2_logits[incorrect_mask]).mean().item():.4f}")
     
     # Print per-class accuracy if multiple classes
     if len(class_ids) > 1 and class_ids[0] != -1:
