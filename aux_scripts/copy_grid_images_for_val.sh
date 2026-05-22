@@ -3,22 +3,28 @@
 # Copy best_orig_vs_recon_<class_id>.png from the nested logs directory
 # into a flat validation directory, renaming them as
 # bs_<batch_size>_<class_id>.png
+# Processes only networks: resnet18, resnet50, vit_b_16
 #
 
-SRC_BASE="inversion_images_logs_diff_batch_size_per_class"
-DST_BASE="inversion_images_val_diff_batch_size_per_class"
+SRC_BASE="../network_inversion/inversion_images_logs_diff_batch_size_per_class"
+DST_BASE="/home/user/Downloads"
 
 # Create destination base if it doesn't exist
 mkdir -p "$DST_BASE"
 
 for net_dir in "$SRC_BASE"/inversion_*_ImageNet; do
-    # Skip if no directories match (in case the pattern fails)
     [ -d "$net_dir" ] || continue
 
     # Extract network name: remove prefix "inversion_" and suffix "_ImageNet"
     dir_name=$(basename "$net_dir")
-    network_name=${dir_name#inversion_}         # remove leading "inversion_"
-    network_name=${network_name%_ImageNet}      # remove trailing "_ImageNet"
+    network_name=${dir_name#inversion_}
+    network_name=${network_name%_ImageNet}
+
+    # Process only specified networks
+    if [[ "$network_name" != "resnet18" && "$network_name" != "resnet50" && "$network_name" != "vit_b_16" ]]; then
+        echo "Skipping network: $network_name"
+        continue
+    fi
 
     echo "Processing network: $network_name"
 
@@ -28,10 +34,9 @@ for net_dir in "$SRC_BASE"/inversion_*_ImageNet; do
         class_dir_name=$(basename "$class_dir")   # e.g. bs_8_classes_0001
 
         # Parse batch_size and class_id from the directory name
-        # Format: bs_<batch_size>_classes_<class_id>
-        tmp=${class_dir_name#bs_}                 # remove leading "bs_"
-        batch_size=${tmp%%_classes_*}             # everything before "_classes_"
-        class_id=${tmp#*_classes_}                # everything after "_classes_"
+        tmp=${class_dir_name#bs_}
+        batch_size=${tmp%%_classes_*}
+        class_id=${tmp#*_classes_}
 
         src_file="$class_dir/best_orig_vs_recon_$(printf "%04d" $class_id).png"
 
