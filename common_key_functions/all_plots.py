@@ -139,6 +139,43 @@ def plot_colored_barplot(values,
         plt.savefig(os.path.join(graph_dir, f"regnet_{title}.png"))
 
 
+def plot_histogram(values: np.ndarray,
+                   bins: int | None = 50,
+                   title: str | None = "Histogram of values",
+                   xlabel: str | None = "value",
+                   ylabel: str | None = "frequency",
+                   cmap_name: str | None = "berlin",
+                   edge_color: str | None = "black",
+                   alpha: float | None = 0.7,
+                   figsize: tuple | None = (25, 3),
+                   save_graph: bool | None = False,
+                   graph_dir: str | None = "graphs"):
+    values_flat = values.flatten()
+    fig, ax = plt.subplots(figsize=figsize)
+
+    counts, bin_edges, patches = ax.hist(
+        values_flat, 
+        bins=bins, 
+        edgecolor=edge_color, 
+        alpha=alpha
+    )
+    bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2.0
+
+    cmap = plt.get_cmap(cmap_name)
+    norm = centralize_colormap(values_flat)          # symmetric normalization around 0
+    for center, patch in zip(bin_centers, patches):
+        patch.set_facecolor(cmap(norm(center)))
+
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax_set_grid(ax)
+    plt.tight_layout()
+
+    if save_graph:
+        os.makedirs(graph_dir, exist_ok=True)
+        plt.savefig(os.path.join(graph_dir, f"{title}.png"))
+
 
 # SPECIFIC PLOTS
 
