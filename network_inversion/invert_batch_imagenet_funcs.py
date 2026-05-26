@@ -529,7 +529,10 @@ def compute_all_losses(feat: torch.Tensor,
 # Images processing
 
 
-def denormalize_and_process(x, mean, std):
+def denormalize_and_process(x: torch.Tensor, 
+                            mean: torch.Tensor,
+                            std: torch.Tensor, 
+                            with_hsv_normalize: bool | None = True):
     """
     Denormalize a tensor and apply contrast/saturation normalization.
 
@@ -541,7 +544,9 @@ def denormalize_and_process(x, mean, std):
     Returns:
         Denormalised tensor clamped to [0,1] and processed by `normalize_contrast_saturation`.
     """
-    return normalize_contrast_saturation( (x * std + mean).clamp_(0., 1.) )
+    return normalize_contrast_saturation( (x * std + mean).clamp_(0., 1.) ) \
+        if with_hsv_normalize else \
+           (x * std + mean).clamp_(0., 1.) \
 
 
 def save_reconstructed_images(x, mean, std, output_path, nrow=None):
@@ -579,7 +584,7 @@ def save_best_images(x_best, imgs_best, mean, std, out_dir, class_id_str, nrow=N
         class_id_str: String identifier (e.g., class name or index).
         nrow: Number of images per row (default sqrt(batch_size)).
     """
-    recon_denorm = denormalize_and_process(x_best, mean, std)
+    recon_denorm = denormalize_and_process(x_best, mean, std, False)
     if not nrow:
         nrow = int(sqrt(len(x_best)))
     # Interleaved: orig, recon, orig, recon, ...
@@ -705,7 +710,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         activation['feat'] = output[:, 0, :] .unsqueeze(-1).unsqueeze(-1)  # cls_token -> (B, D, 1, 1)
         
     if "vit_" in network_name:
-        model.encoder.pos_embedding.data.zero_()          # corrects reconstr colors
+        # model.encoder.pos_embedding.data.zero_()          # corrects reconstr colors
         hooks['feat'] = model.encoder.register_forward_hook(vit_encoder_hook)
     else:
         hooks['feat'] = features.register_forward_hook(hook_fn)    
@@ -1031,6 +1036,8 @@ def get_grid_images_paths(networks_names: list[str],
                           val_images_dir: str,
                           classes_ids_list: list[int],
                           batch_sizes: dict[int] | None = None,
+                          network_prefix: str | None = "",
+                          network_postfix: str | None = "",
                           grid_images_prefix: str | None = "best_orig_vs_recon_",
                           grid_images_ext: str | None = "png") -> dict:
     """
@@ -1042,10 +1049,13 @@ def get_grid_images_paths(networks_names: list[str],
     
     Args:
         networks_names:     List of network names.
-        val_images_dir:     Path to directory with grid image(s).
+        val_images_dir:     Path to directory with grid image(s). Is considered to contain directories for each
+                            network named like `f"{network_prefix}{network_name}{network_postfix}"`
         classes_ids_list:   List of integer class IDs.
         batch_sizes:        Dict `{ network_name : batch_size }` for every network name in `networks_names`.
                             If `None`, default batch sizes from config are taken.
+        network_prefix:     Prefix  to network name defining it's results directory (if present)
+        network_postfix:    Postfix to network name defining it's results directory (if present)
         grid_images_prefix: Prefix for the grid image filename when a single path is generated.
         grid_images_ext:    File extension for the grid images (without dot).
 
@@ -1057,22 +1067,27 @@ def get_grid_images_paths(networks_names: list[str],
         for network_name in networks_names
     }
     
-    return {
-        network_name :  [ 
+    grid_images_paths = {}
+    for network_name in networks_names:
+        network_dirname = network_prefix + network_name + network_postfix
+        grid_images_paths[network_name] = [ 
                             os.path.join(
                                 val_images_dir, 
-                                network_name, 
+                                network_dirname, 
                                 f"{grid_images_prefix}{format_classes_ids_str(classes_ids_list)}.{grid_images_ext}"
                             ) 
-                        ]
-            if batch_sizes[network_name] >= len(classes_ids_list) else
+                        ] \
+            if batch_sizes[network_name] >= len(classes_ids_list) else \
                         [
-                           os.path.join(val_images_dir, network_name, image_name)
-                           for image_name in os.listdir( os.path.join(val_images_dir, network_name) ) 
+                           os.path.join(
+                               val_images_dir, 
+                               network_dirname, 
+                               image_name
+                            )
+                           for image_name in os.listdir( os.path.join(val_images_dir, network_dirname) ) 
                            if image_name.endswith(f".{grid_images_ext}")
                         ]
-        for network_name in networks_names
-    }
+    return grid_images_paths
 
 
 def split_comparison_val_image(grid_path: str,
@@ -1185,7 +1200,7 @@ def get_labels_for_val_from_names(images_path: list,
     for image_path in os.listdir(images_path):
         image_name = os.path.splitext(os.path.basename(image_path))[0]
         labels[image_name] = extract_label_func(image_name, **extract_label_args) \
-            if extract_label_func else \
+            if extract_label_func is not None else \
                              image_path.split("_")[2]
     return labels
 
@@ -1213,7 +1228,7 @@ def val_model_on_files(network_name: str,
                        batch_size: int | None = 32,
                        num_workers: int | None = 8, 
                        top_k_preds: int | None = 1,
-                       get_top2_gap: bool | None = False,
+                       get_top2_logits_gap: bool | None = False,
                        print_details: bool | None = True) -> tuple[float, int, int]:
     """
     Load saved images from disk and evaluate classification accuracy
@@ -1228,7 +1243,7 @@ def val_model_on_files(network_name: str,
         batch_size:    Batch size for inference.
         num_workers:   Number of subprocesses for data loading.
         top_k_preds:   Number of top predictions to display when `print_details=True`.
-        get_top2_gap:  If `True`, calculate difference between top-2 predictions probabilities.
+        get_top2_logits_gap:  If `True`, calculate mean difference between top-2 predictions logits over batch.
         print_details: If `True`, print file name, true class, and `top_k` predictions with probabilities
                        for every image.
 
@@ -1269,12 +1284,17 @@ def val_model_on_files(network_name: str,
     model.eval()
 
     correct, total, batch_start_i = 0, 0, 0
+    top2_logits_gaps = []
     with torch.no_grad():
         for imgs, labels in loader:
             imgs = imgs.to(device)
             labels = labels.to(device)
             
             logits = model(imgs)
+            if get_top2_logits_gap:
+                top2_logits, _ = torch.topk(logits, k=2, dim=1)
+                top2_logits_gaps.extend((top2_logits[:, 0] - top2_logits[:, 1]).to_list())
+            
             probs = F.softmax(logits, dim=1)
             topk_probs, topk_indices = torch.topk(probs, k=top_k_preds, dim=1)
             
@@ -1297,9 +1317,9 @@ def val_model_on_files(network_name: str,
 
     accuracy = correct / total
     print(f"Classification accuracy: {correct}/{total} ({accuracy:.2%})")
-    top2_prob_gap = topk_probs[0] - topk_probs[1] if get_top2_gap else None
+    top2_logits_gap = sum(top2_logits_gaps) / len(top2_logits_gaps) if get_top2_logits_gap else None
 
-    return accuracy, correct, total, top2_prob_gap
+    return accuracy, correct, total, top2_logits_gap
 
 
 def val_model_orig_recon(network_name: str,
