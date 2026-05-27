@@ -410,7 +410,7 @@ def tv_feature_loss(x: torch.Tensor,
     
     return dh.abs().sum(dim=[1,2,3]) + dw.abs().sum(dim=[1,2,3]) + dhr.abs().sum(dim=[1,2]) + dhb.abs().sum(dim=[1,2]) + dwr.abs().sum(dim=[1,2]) + dwb.abs().sum(dim=[1,2]) \
            if per_sample else \
-           dh.abs().sum() + dw.abs().sum() + dhr.abs().sum() + dhb.abs().sum() + dwr.abs().sum() + dwb.abs().sum()
+           (dh.abs().sum() + dw.abs().sum() + dhr.abs().sum() + dhb.abs().sum() + dwr.abs().sum() + dwb.abs().sum()) / x.shape[0]
 
 
 def gradient_edginess(x: torch.Tensor, 
@@ -1255,14 +1255,18 @@ def val_model_on_files(network_name: str,
         labels_true_sorted = labels_true
     else:
         images_paths_listed = os.listdir(images_paths)
+        
+        paired = sorted(zip(images_paths_listed, labels_true), key=lambda x: x[0])
+        images_paths_sorted = [ os.path.join(images_paths, image_path) for image_path, _ in paired ]
+        labels_true_sorted = [label for _, label in paired]
     
-        sorted_images_ids = sorted(
-            range(len(images_paths_listed)), 
-            key=lambda i: images_paths_listed[i]
-        )
-        images_paths_sorted = [ images_paths_listed[i] for i in sorted_images_ids ]
-        images_paths_sorted = [ os.path.join(images_paths, image_path) for image_path in images_paths_sorted ]
-        labels_true_sorted =  [ labels_true[i]  for i in sorted_images_ids ]    
+        # sorted_images_ids = sorted(
+        #     range(len(images_paths_listed)), 
+        #     key=lambda i: images_paths_listed[i]
+        # )
+        # images_paths_sorted = [ images_paths_listed[i] for i in sorted_images_ids ]
+        # images_paths_sorted = [ os.path.join(images_paths, image_path) for image_path in images_paths_sorted ]
+        # labels_true_sorted =  [ labels_true[i]  for i in sorted_images_ids ]    
         
          
     transform = transforms.Compose([
@@ -1272,7 +1276,7 @@ def val_model_on_files(network_name: str,
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225])
         # transforms.Normalize(mean=IMAGENET_CONSTANTS["mean"].tolist(),
-        #                      std=IMAGENET_CONSTANTS["std"].tolist())  # TODO: CHECK IF Normalize IS NEEDED!
+        #                      std=IMAGENET_CONSTANTS["std"].tolist())
     ])
     dataset = ImageFolderDataset(images_paths_sorted, labels_true_sorted, transform=transform)
     loader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
