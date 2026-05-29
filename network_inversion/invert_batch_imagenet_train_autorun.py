@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import Literal
+from pprint import pprint
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 module_dir = os.path.abspath( os.path.join(script_dir, '..', 'common_key_functions') )
@@ -8,7 +9,8 @@ if module_dir not in sys.path:
     sys.path.insert(0, module_dir)
     
 from constants_configs import MODELS_CONFIGS            # noqa: E402
-from invert_batch_imagenet_funcs import main_pipeline   # noqa: E402
+from invert_batch_imagenet_train_funcs import main_pipeline, \
+    evaluate_inversion_on_random_subset                 # noqa: E402
 from helpful_funcs import iterate_by_batch              # noqa: E402
 
 
@@ -29,7 +31,8 @@ def train_inversion(networks_names: list[str],
                     select_best_n: int | None = None,
                     n_images_per_row: int | None = 2,
                     out_dir_all: str | None = None,
-                    run_mode: Literal["debug", "run"] | None = "run"):
+                    run_mode: Literal["debug", "run"] | None = "run",
+                    seed: int | None = 42):
     """
     Run feature inversion training for ImageNet classes on a list of neural networks.
 
@@ -62,6 +65,7 @@ def train_inversion(networks_names: list[str],
                        determined as `sqrt(batch_size)`.
         out_dir:       Directory to save all results (reconstructed images, logs, etc.).
         run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
+        seed:          Random seed to fix state
     """
     out_dir_all = out_dir_all or "network_inversion/inversion_images_logs/"
     classes_ids_list = sorted([ class_id.strip() for class_id in classes_ids.split(',') ])
@@ -91,7 +95,8 @@ def train_inversion(networks_names: list[str],
                     out_dir_all,
                     f"inversion_{network_name}_{dataset_name}/steps_{n_training_steps}_classes_{classes_ids}"
                 ),
-                run_mode
+                run_mode,
+                seed
             )
         else:            
             for classes_ids_batch in iterate_by_batch(classes_ids_list, batch_size):
@@ -118,7 +123,8 @@ def train_inversion(networks_names: list[str],
                         out_dir_all,
                         f"inversion_{network_name}_{dataset_name}/steps_{n_training_steps}_classes_{classes_ids_batch_str}"
                     ),
-                    run_mode
+                    run_mode,
+                    seed
                 )
                 
 
@@ -140,7 +146,8 @@ def train_inversion_over_batch_size(networks_names: list[str],
                                     select_best_n: int | None = None,
                                     n_images_per_row: int | None = 2,
                                     out_dir_all: str | None = None,
-                                    run_mode: Literal["debug", "run"] | None = "run"):
+                                    run_mode: Literal["debug", "run"] | None = "run",
+                                    seed: int | None = 42):
     """
     Run feature inversion training for ImageNet classes on a list of neural networks.
 
@@ -173,6 +180,7 @@ def train_inversion_over_batch_size(networks_names: list[str],
                        determined as `sqrt(batch_size)`.
         out_dir:       Directory to save all results (reconstructed images, logs, etc.).
         run_mode:      Mode to run inversion training: `"debug"` adds debugging print statements
+         seed:         Random seed to fix state
     """
     out_dir_all = out_dir_all or "network_inversion/inversion_images_logs/"
     classes_ids_list = sorted([ class_id.strip() for class_id in classes_ids.split(',') ])
@@ -205,7 +213,8 @@ def train_inversion_over_batch_size(networks_names: list[str],
                         out_dir_all,
                         f"inversion_{network_name}_{dataset_name}/bs_{batch_size}_classes_{classes_ids}"
                     ),
-                    run_mode
+                    run_mode,
+                    seed
                 )
             else:            
                 for classes_ids_batch in iterate_by_batch(classes_ids_list, batch_size):
@@ -232,7 +241,8 @@ def train_inversion_over_batch_size(networks_names: list[str],
                             out_dir_all,
                             f"inversion_{network_name}_{dataset_name}/bs_{batch_size}_classes_{classes_ids_batch_str}"
                         ),
-                        run_mode
+                        run_mode,
+                        seed
                     )
 
 
@@ -241,35 +251,40 @@ if __name__ == '__main__':
     dataset_dir_imagenet = "/media/user/Hitachi/ILSVRC/Data/CLS-LOC"
     dataset_name = "ImageNet"
     
-    classes_ids_test = "1, 10, 100, 999"
+    classes_ids_test = "10, 100, 999"
     classes_ids_max_gap = "24, 79, 409, 701, 712, 850, 950, 953, 954"
     classes_ids = classes_ids_test  + ", " + classes_ids_max_gap
     
     classes_ids_int = [ int(class_id.strip()) for class_id in classes_ids.split(",") ]
     classes_ids_n = len(classes_ids_int)
     
-    networks_names = ["regnet_x_3_2", "regnet_x_16", "resnet50", "vit_b_16"] #, MODELS_CONFIGS.keys()
+    networks_names = [ 
+        name 
+        for name in MODELS_CONFIGS.keys() 
+        if MODELS_CONFIGS[name]["batch_size"] > 2
+    ]
     # networks_batch_sizes = {
     #     "regnet_x_3_2" : [16, 8, 4, 2],
     #     "regnet_x_16" :  [4, 2],
-    #     "resnet50":      [12, 8, 4, 2],
+    #     "resnet50":      [3], # [12, 8, 4, 2],
+    #     "resnet18":      [12, 3],
     #     "vit_b_16":      [4, 2]
     # }
     n_training_steps = 10_000
     select_best_n = 10
 
-    for class_id in classes_ids_int:
-        print(f"Processing class {class_id}...")
-        train_inversion(
-            networks_names,
-            dataset_dir_imagenet, 
-            dataset_name, 
-            n_training_steps=n_training_steps,
-            classes_ids=str(class_id),
-            select_best_n=select_best_n,
-            out_dir_all="network_inversion/inversion_images_logs_mse_batch_indept/",
-            run_mode="run"
-        )
+    # for class_id in [1]:#classes_ids_int:
+    #     print(f"Processing class {class_id}...")
+        # train_inversion(
+        #     networks_names,
+        #     dataset_dir_imagenet, 
+        #     dataset_name, 
+        #     n_training_steps=n_training_steps,
+        #     classes_ids=str(class_id),
+        #     select_best_n=select_best_n,
+        #     out_dir_all="network_inversion/inversion_images_logs_no_hsv_onsave_tests/",
+        #     run_mode="run"
+        # )
         # train_inversion_over_batch_size(
         #     networks_names,
         #     networks_batch_sizes,
@@ -281,3 +296,15 @@ if __name__ == '__main__':
         #     out_dir_all="network_inversion/inversion_images_logs_diff_batch_size_per_class/",
         #     run_mode="run"
         # )
+
+networks_metrics = {}   
+for network_name in networks_names:
+    networks_metrics[network_name] = evaluate_inversion_on_random_subset(
+        dataset_dir_imagenet,
+        network_name,
+        10,
+        num_repeats=1,
+        steps=n_training_steps,
+    )
+
+pprint(networks_metrics, indent=4)
