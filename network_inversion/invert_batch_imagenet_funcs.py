@@ -326,10 +326,9 @@ def ab_for_threshold(t: float):
 
 
 def sym_kl_div_feature_loss(x: torch.Tensor, 
-                            y: torch.Tensor, 
-                            per_sample: bool = False) -> float:
+                            y: torch.Tensor) -> float:
     """
-    Symmetric Kullback-Leibler divergence between two logit tensors.
+    Symmetric Kullback-Leibler divergence between 2 logit tensors.
 
     Both inputs are assumed to be logits (will be converted to log-probabilities
     using log_softmax along dimension 1). The symmetric divergence is defined as
@@ -345,17 +344,10 @@ def sym_kl_div_feature_loss(x: torch.Tensor,
     Returns:
         Symmetric KL divergence.
     """
-    # Mean along spatial dimensions (2, 3) to emulate avgpool2d, then softmax along channels (dim=1)
-    #x = F.log_softmax(x.mean(dim=[2, 3], keepdim=True), dim=1)  # (B, C, 1, 1)
-    #y = F.log_softmax(y.mean(dim=[2, 3], keepdim=True), dim=1)  # (B, C, 1, 1)
     x = F.log_softmax(x, dim=1)
     y = F.log_softmax(y, dim=1)
-    if per_sample:
-        kl1 = F.kl_div(x, y, log_target=True, reduction='none').sum(dim=[1,2,3])  # (B, C, H, W) -> (B,)
-        kl2 = F.kl_div(y, x, log_target=True, reduction='none').sum(dim=[1,2,3])  # (B, C, H, W) -> (B,)
-    else:
-        kl1 = F.kl_div(x, y, log_target=True, reduction='batchmean')
-        kl2 = F.kl_div(y, x, log_target=True, reduction='batchmean')
+    kl1 = F.kl_div(x, y, log_target=True, reduction='none').sum(dim=[1,2,3])  # (B, C, H, W) -> (B,)
+    kl2 = F.kl_div(y, x, log_target=True, reduction='none').sum(dim=[1,2,3])  # (B, C, H, W) -> (B,)
 
     return 0.5 * (kl1 + kl2)
 
@@ -386,20 +378,17 @@ def mse_feature_loss(x: torch.Tensor,
             F.mse_loss(x_mean, y_mean, reduction="mean")
 
 
-def tv_feature_loss(x: torch.Tensor, 
-            per_sample: bool | None = False) -> torch.Tensor:
+def tv_feature_loss(x: torch.Tensor) -> torch.Tensor:
     """
     Total variation (TV) loss with separate channel differences for RGB images.
     Computes horizontal and vertical differences, then adds cross-channel terms
     (R-G, B-G) for both directions.
 
     Args:
-        x: Input tensor of shape (B, 3, H, W) in arbitrary range.
-        per_sample: If True, returns a 1D tensor of shape (B,) with per-sample losses;
-                    otherwise returns a scalar (sum over batch).
+        x: Input tensor of shape (B, 3, H, W).
 
     Returns:
-        TV loss value (scalar or per-sample vector).
+        TV loss value (per-sample vector of shape (B,)).
     """
     dh = x[:, :, 1:, :] - x[:, :, :-1, :]
     dw = x[:, :, :, 1:] - x[:, :, :, :-1]
@@ -408,35 +397,31 @@ def tv_feature_loss(x: torch.Tensor,
     dwr = dw[:, 0, :, :] - dw[:, 1, :, :]
     dwb = dw[:, 2, :, :] - dw[:, 1, :, :]
     
-    return dh.abs().sum(dim=[1,2,3]) + dw.abs().sum(dim=[1,2,3]) + dhr.abs().sum(dim=[1,2]) + dhb.abs().sum(dim=[1,2]) + dwr.abs().sum(dim=[1,2]) + dwb.abs().sum(dim=[1,2]) \
-           if per_sample else \
-           dh.abs().sum() + dw.abs().sum() + dhr.abs().sum() + dhb.abs().sum() + dwr.abs().sum() + dwb.abs().sum()
+    return dh.abs().sum(dim=[1,2,3]) + dw.abs().sum(dim=[1,2,3]) + \
+           dhr.abs().sum(dim=[1,2]) + dhb.abs().sum(dim=[1,2]) + \
+           dwr.abs().sum(dim=[1,2]) + dwb.abs().sum(dim=[1,2])
 
 
-def gradient_edginess(x: torch.Tensor, 
-                      eps: float = 1e-8) -> torch.Tensor:
+def gray_edge_per_sample(rgb: torch.Tensor) -> torch.Tensor:
     """
-    Compute edge strength (gradient magnitude) per pixel.
-
-    Uses simple forward differences along height and width, then sums over channels
-    and takes square root. The result is a 2D map per sample.
+    Computes per-sample gray-edge loss by measuring L1 deviation of channel-wise gradients from their mean across channels, averaged over space and summed over horizontal/vertical directions.
+    
+    Penalises color inconsistencies in edges, promoting reconstructions naturality.
 
     Args:
-        x:   Input tensor of shape (B, C, H, W), in float32, normalized as in inversion.
-        eps: Small constant for numerical stability.
+        rgb: ImageNet-normalised RGB tensor of shape (B, 3, H, W).
 
     Returns:
-        Edge strength tensor of shape (B, H, W) >= 0.
+        1-D tensor of shape (B,) with non-negative loss values per sample.
     """
-    # simple forward differences (cheap + stable)
-    du = x[..., 1:, :] - x[..., :-1, :]
-    dv = x[..., :, 1:] - x[..., :, :-1]
+    dx = rgb[:, :, :, 1:] - rgb[:, :, :, :-1]
+    dy = rgb[:, :, 1:, :] - rgb[:, :, :-1, :]
 
-    # pad back to (H,W)
-    du = F.pad(du, (0, 0, 0, 1))  # pad last row
-    dv = F.pad(dv, (0, 1, 0, 0))  # pad last col
+    def dev_from_mean(d):
+        m = d.mean(dim=1, keepdim=True)
+        return (d - m).abs().sum(dim=1)
 
-    return torch.sqrt((du * du + dv * dv).sum(dim=1) + eps)  # sum over channels
+    return dev_from_mean(dx).mean(dim=[1, 2]) + dev_from_mean(dy).mean(dim=[1, 2])
 
 
 def centering_feature_losses(x: torch.Tensor, 
@@ -477,19 +462,77 @@ def centering_feature_losses(x: torch.Tensor,
     L_bord = (s * d2).sum(dim=(1,2)).mean() / (s.sum(dim=(1,2)).mean() + eps)
 
     return L_ctr, L_bord
-  
+ 
 
-AllLosses = tuple[float, float, float, float, float, float, float]
+def input_norm_moments_per_sample(x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Computes per-sample penalties for spatial statistics:
+    - mean deviating from 0,
+    - std deviating from 1.
+
+    Args:
+        x: Input tensor of shape (B, 3, H, W), expected to be ImageNet-normalised.
+
+    Returns:
+        A tuple (mean_ps, std_ps) each of shape (B,), containing non-negative loss
+        components for each sample.
+    """
+    mean_ps = x.mean(dim=[2, 3]).pow(2).mean(dim=1)
+    std_ps = (x.std(dim=[2, 3], unbiased=False) - 1.0).pow(2).mean(dim=1)
+    return mean_ps, std_ps
+
+
+def project_input_spatial(x: torch.Tensor, 
+                          eps: float = 1e-5,
+                          inplace: bool = True) -> None | torch.Tensor:
+    """
+    In-place normalises each channel of each sample to have zero spatial mean and unit spatial std.
+
+    Args:
+        x: Input tensor of shape (B, C, H, W). Modified in-place.
+        eps: Small constant for numerical stability when standard deviation is near zero.
+    """
+    mu = x.mean(dim=(2, 3), keepdim=True)
+    sig = x.std(dim=(2, 3), keepdim=True, unbiased=False).clamp(min=eps)
+    if inplace:
+        x.sub_(mu).div_(sig)
+        return None
+    else:
+        return x.copy().sub_(mu).div_(sig)
+
+
+def reduce_batch_lp(losses: torch.Tensor, 
+                    p: float = 2) -> torch.Tensor:
+    """
+    Aggregate per-sample losses using the L_p norm over the batch dimension.Сompute L_p norm of the loss vector:
+        (mean_i |loss_i|^p)^(1/p)
+    yielding a batch-size-independent scalar.
+
+    Args:
+        losses: Per-sample losses tensor, can be of any shape (will be flattened).
+        p:      L_p norm degree (p >= 1). For p=2 the reduction corresponds to
+    RMSE, for p=1 to MAE.
+
+    Returns:
+        Scalar tensor containing the L_p norm of the losses.
+    """
+    losses = losses.reshape(-1).abs().pow(p)
+    return losses.mean().pow(1.0 / p)
+
+
+AllLosses = tuple[float, float, float, float, float, float, float, float, float]
 def compute_all_losses(feat: torch.Tensor, 
                        target_feat: torch.Tensor, 
                        x: torch.Tensor, 
-                       tv_weight: float | None = 0.0, 
-                       l2_weight: float | None = 0.0, 
-                       l1_weight: float | None = 0.0, 
+                       tv_weight: float | None = 0, 
+                       l2_weight: float | None = 0, 
+                       mean_weight: float | None = 0,
+                       std_weight: float | None = 0,
+                       l1_weight: float | None = 0, 
                        tv_loss_orig: float | None = None, 
-                       per_sample: bool | None = False) -> AllLosses:
+                       batch_norm_p: float | None = 2) -> AllLosses:
     """
-    Compute all loss components for feature matching and image regularization:
+    Compute per-sample loss components for feature matching and visual regularization, then L_p reduce over batch (batch-size independent):
         - Symmetric KL divergence between `feat` and `target_feat`.
         - Total variation loss on `x`, optionally with a threshold relative to `tv_loss_orig`.
         - L2 (MSE) loss on the channel-wise mean of `feat` and `target_feat`.
@@ -500,30 +543,53 @@ def compute_all_losses(feat: torch.Tensor,
         feat:         Predicted feature map.
         target_feat:  Target feature map.
         x:            Reconstructed image.
-        tv_weight:    Weight for the total variation term.
-        l2_weight:    Weight for the MSE term.
-        l1_weight:    Weight for the L1 term.
+        tv_weight:    Weight for total variation term.
+        l2_weight:    Weight for MSE term.
+        mean_weight:  Weight for mean term.
+        std_weight    Weight for std term.
+        l1_weight:    Weight for L1 term.
         tv_loss_orig: Reference TV loss used to clip TV loss.
-        per_sample:   If `True`, returns per-sample loss components; else scalar averages.
+
 
     Returns:
-        tuple(loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss), where
-        losses are not weighted and `total_loss` is a weighted sum.
+        tuple(
+            loss_kl, 
+            loss_mse, 
+            loss_mean,
+            loss_std,
+            loss_tv, 
+            loss_l1,
+            centering_loss,
+            loss_border,
+            loss_total,
+            loss_kl_per_sample
+        ), where losses are not weighted and `loss_total` is a weighted sum.
     """
-    loss_kl = sym_kl_div_feature_loss(feat, target_feat, per_sample=per_sample)
-    loss_mse =  mse_feature_loss(feat, target_feat, per_sample=per_sample)
-    loss_l1 = gray_edge_l1(x)
-    loss_centering, loss_border = centering_feature_losses(x)
-    
-    loss_tv = tv_feature_loss(x, per_sample=per_sample) # TV loss with threshold: max(tv_feature_loss(x) - 0.1*tv_feature_loss_orig, 0)
+    kl_ps = sym_kl_div_feature_loss(feat, target_feat)
+    feat_mean = feat.mean(dim=[1, 2, 3])
+    target_mean = target_feat.mean(dim=[1, 2, 3])
+    mse_ps = (feat_mean - target_mean).pow(2)
+    mean_ps, std_ps = input_norm_moments_per_sample(x)
+
+    tv_ps = tv_feature_loss(x)
     if tv_loss_orig is not None:
-        loss_tv = torch.maximum(
-            loss_tv - 0.4 * tv_loss_orig, 
-            torch.tensor(0.0, device=x.device, dtype=loss_tv.dtype)
-        )
+        tv_ps = torch.maximum(tv_ps - 0.4 * tv_loss_orig, torch.zeros_like(tv_ps))
+    edge_ps = gray_edge_per_sample(x)
+
+    loss_kl = reduce_batch_lp(kl_ps, batch_norm_p)
+    loss_mse = l2_weight * reduce_batch_lp(mse_ps, batch_norm_p)
+    loss_mean = mean_weight * reduce_batch_lp(mean_ps, batch_norm_p)
+    loss_std = std_weight * reduce_batch_lp(std_ps, batch_norm_p)
+    loss_tv = tv_weight * reduce_batch_lp(tv_ps, batch_norm_p)
+    loss_l1 = l1_weight * reduce_batch_lp(edge_ps, batch_norm_p)
+
+    loss_centering, loss_border = centering_feature_losses(x)
+
+    loss_total = loss_kl + loss_mse + loss_mean + loss_std + loss_tv + loss_l1
     
-    return loss_kl, loss_mse, loss_tv, loss_l1, loss_centering, loss_border, \
-           loss_kl + l2_weight * loss_mse + tv_weight * loss_tv + l1_weight * loss_l1
+    return loss_kl, loss_mse, loss_mean, loss_std, loss_tv, loss_l1, \
+           loss_centering, loss_border, \
+           loss_total, kl_ps
 
 
 # Images processing
@@ -610,11 +676,11 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
                   num_workers: int | None = 8,
                   steps: int | None = 4000,
                   lr: float | None = 0.1,
-                  sigma: float | None = 0.01,
+                  sigma: float | None = 0.1,
                   beta: float | None = 4.0,
                   tv_weight: float | None = 5e-5,
                   l2_weight: float | None = 10.0,
-                  l1_weight: float | None = 0.0,
+                  l1_weight: float | None = 0,
                   subset_size: int | None = 5000,
                   threshold: float | None = None,
                   select_best_n: int | None = None,
@@ -819,7 +885,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
     # 6. Reconstruction loop
     
     logger = TrainingLogger(
-        metric_names=["kl_loss", "mse_loss", "tv_loss", "l1_loss", "centering_loss", "border_loss", "total_loss"],
+        metric_names=["kl_loss", "mse_loss", "tv_loss", "l1_loss", "centering_loss", "border_loss", "loss_total"],
         log_file=os.path.join(out_dir, "training_log.npz"),
         max_steps=steps
     )
@@ -833,11 +899,11 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         optimizer.zero_grad()
         
         feat = forward_and_get_feat(model, x, activation)
-        loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss = compute_all_losses(
+        loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, loss_total = compute_all_losses(
             feat, 
             target_feat, 
             x, 
-            tv_weight, 
+            tv_weight=tv_weight, 
             l2_weight=l2_weight, 
             l1_weight=l1_weight, 
             tv_loss_orig=tv_loss_orig
@@ -845,7 +911,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         
         recon_step_time = time.perf_counter() - recon_step_start
         
-        logger.log(step, loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, total_loss)
+        logger.log(step, loss_kl, loss_mse, loss_tv, loss_l1, centering_loss, border_loss, loss_total)
         
         if not step % n_steps_log:
             print(
@@ -856,7 +922,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
                 f"L1: {loss_l1.item():<12.6f} "
                 f"Centering: {centering_loss.item():<12.6f} "
                 f"Border: {border_loss.item():<12.6f} "
-                f"Total: {total_loss.item():<12.6f} "
+                f"Total: {loss_total.item():<12.6f} "
                 f"LR: {optimizer.param_groups[0]['lr']:<10.6f} "
                 f"Step time: {recon_step_time:<6.3f} s"
             )
@@ -869,7 +935,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
                     nrow=nrow
                 )
 
-        total_loss.backward()
+        loss_total.backward()
         optimizer.step()
         scheduler.step()
         
@@ -917,7 +983,7 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
             feat, 
             target_feat, 
             x,
-            tv_weight, 
+            tv_weight=tv_weight, 
             l2_weight=l2_weight, 
             l1_weight=l1_weight, 
             tv_loss_orig=tv_feature_loss(imgs_norm, per_sample=True), 
@@ -964,8 +1030,8 @@ def main_pipeline(data_dir: str | None = './data/imagenet',
         save_best_images(x_best, imgs_best, IMAGENET_CONSTANTS["mean_awb"], IMAGENET_CONSTANTS["std"], out_dir, class_id_str, nrow=nrow)
         
         # Print loss statistics
-        print(f"\nBest samples total_loss range: [{loss_per_sample[best_indices].min().item():<12.6f}, {loss_per_sample[best_indices].max().item():<12.6f}]")
-        print(f"Mean total_loss for best samples: {loss_per_sample[best_indices].mean().item():<12.6f}")
+        print(f"\nBest samples loss_total range: [{loss_per_sample[best_indices].min().item():<12.6f}, {loss_per_sample[best_indices].max().item():<12.6f}]")
+        print(f"Mean loss_total for best samples: {loss_per_sample[best_indices].mean().item():<12.6f}")
 
     
     # 8. Clean model from hooks
